@@ -1,0 +1,280 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0f;
+  background-color: #f6f6f6;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #2f2f2f;
+  }
+
+  a:hover {
+    color: #24c8db;
+  }
+
+  input,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+  button:active {
+    background-color: #0f0f0f69;
+  }
+}
+  
+body {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  color: #050505;
+  padding-top: 56px; /* Height of the navbar */
+  padding-left: 60px; /* Width of the icon sidebar */
+  display: flex;
+}
+
+.sidebar_container {
+  background-color: white;
+  width: 40px; /* Initial icon-only width */
+  position: fixed;
+  top: 56px;
+  left: 1rem;
+  height: calc(100vh - 56px);
+  border-right: 1px solid #ddd;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1070; /* Higher than content */
+  overflow-x: hidden; /* Hide text when collapsed */
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  padding-top: 1rem;
+  transform: translateX(-250px); /* Initially hidden in expanded state */
+}
+
+.sidebar_container.expanded {
+  transform: translateX(0); /* Slide in when expanded */
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  width: 250px;
+}
+
+.sidebar_container a {
+  color: #050505;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem;
+  text-decoration: none;
+}
+
+.sidebar_container a i {
+  margin-right: 0.75rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.sidebar_container a span {
+  white-space: nowrap;
+}
+
+.sidebar_container.collapsed a span {
+  display: none;
+}
+
+.sidebar_container.collapsed {
+  transform: translateX(0); /* Always visible icon bar */
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  width: 40px;
+}
+
+.sidebar_container a:hover {
+  background-color: #e9ecef;
+}
+
+#content {
+  flex-grow: 1;
+  padding: 0.5rem;
+  margin-left: 60px; /* Margin to the right of the icon sidebar */
+
+}
+
+.top_section {
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+}
+
+.top_section_left {
+  display: flex;
+  align-items: center;
+}
+
+.top_section_left button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.top_section_right {
+  display: flex;
+  align-items: center;
+}
+
+.top_section_right button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 1rem;
+  font-size: 1.2rem;
+}
+
+.mobile_search_bar {
+  display: none; /* Hidden by default */
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  top: 56px; /* Below the navbar */
+  left: 0;
+  width: 100%;
+  z-index: 1040; /* Below the navbar but above content */
+}
+
+.mobile_search_bar input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+  
+/* Mobile Styles */
+@media (max-width: 768px) {
+  body {
+    padding-left: 0;
+    flex-direction: column;
+    padding-top: 56px;
+  }
+
+  .top_section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+  }
+
+  .top_section_left {
+    flex-direction: row; /* Keep button and placeholder in a row */
+    align-items: center;
+  }
+
+  .top_section_left input[type="text"] {
+    display: none; /* Hide the inline search bar */
+  }
+
+  .sidebar_container {
+    top: 56px;
+    left: -250px;
+    width: 250px;
+    height: calc(100vh - 56px);
+    border-right: 1px solid #ddd;
+    border-bottom: none;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 1rem;
+    overflow-y: auto;
+    z-index: 1080;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar_container.expanded {
+    transform: translateX(250px); /* Slide in from left */
+  }
+
+  .sidebar_container.collapsed {
+    transform: translateX(-250px); /* Ensure it's hidden when collapsed */
+  }
+
+  .sidebar_container.collapsed a span {
+    display: inline; /* Show text when collapsed on mobile */
+  }
+
+  .sidebar_container.collapsed .submenu_wrapper > a.has_submenu span,
+  .sidebar_container.collapsed .submenu_wrapper .submenu {
+    display: none;
+  }
+  
+  #content {
+    margin-left: 0;
+    margin-top: 56px; /* Adjust top margin to be below the navbar */
+    padding-top: 0.5rem; /* Add some top padding */
+  }
+
+  .top_section_right button {
+    font-size: 1rem;
+    margin-left: 0.5rem;
+  }
+}
+
+.submenu_wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.submenu_wrapper > a.has_submenu {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.submenu_wrapper > a.has_submenu .chevron {
+  margin-left: auto;
+}
+
+.sidebar_container.expanded .submenu_wrapper > a.has_submenu .chevron {
+  opacity: 1;
+}
+
+.submenu {
+  display: none;
+  padding-left: 1.5rem;
+  background-color: #f0f0f0;
+}
+
+.submenu.expanded {
+  display: block;
+}
+
+.submenu a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #555;
+  text-decoration: none;
+}
+
+.submenu a:hover {
+  background-color: #e0e0e0;
+}

@@ -1,0 +1,206 @@
+.chat_container {
+    height: 100vh; /* Make the container fill the viewport height */
+    margin: 0 auto; /* Center the container */
+    display: flex; /* For layout adjustments */
+    flex-direction: row; /* Keep sidebar and chat side-by-side by default */
+}
+
+.chat_contact {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    padding: 0.75rem 0.3rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.chat_contact:last-child {
+    border-bottom: none;
+}
+
+.chat_contact:hover {
+    background-color: #e9ecef;
+}
+
+.chat_contact.active {
+    background-color: #d1fae5;
+}
+
+
+.chat_sidebar {
+    background-color: #f8f9fa; /* Light background for sidebar */
+    border-right: 1px solid #dee2e6; /* Add a separator */
+    border-radius: 10px;
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    display: flex;
+    flex-direction: column;
+    padding-right: 10px;
+    padding-top: 5px;
+}
+
+.chat_list_header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.chat_list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chat_messages_wrapper {
+    background-color: #e5ddd5;
+    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+    background-size: cover;
+    background-repeat: repeat;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    border-left: 1px solid #dee2e6;
+    transition: transform 0.3s ease-in-out; /* For sliding animation */
+}
+
+.chat_messages_wrapper .list-visible {
+    transform: translateX(100%);
+}
+
+.chat_header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chat_header .back-button {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    display: none; /* Hidden on larger screens */
+}
+
+.chat_messages {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat_bubble {
+    max-width: 80%;
+    border-radius: 20px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
+
+.chat_bubble.bg-light {
+    background-color: #ece5dd !important;
+}
+
+.chat_bubble.bg-primary {
+    background-color: #dcf8c6 !important;
+    color: #000;
+}
+
+.chat_messages small.text-muted {
+    font-size: 0.75rem;
+}
+
+.chat_input_area {
+    border-top: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+}
+
+.chat_input_group {
+    display: flex;
+    align-items: center;
+}
+
+.chat_input_group .btn {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.chat_input_group input[type="text"] {
+    border-radius: 18px;
+    flex-grow: 1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+}
+
+.chat_input_group button.send-button {
+    border-radius: 5%;
+    width: 98px;
+    height: 48px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    margin-left: 0.5rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .chat_container {
+        flex-direction: column; /* Stack vertically */
+    }
+
+    .chat-sidebar {
+        width: 100%;
+        max-height: 300px; /* Allow scrolling for contacts */
+        overflow-y: auto;
+        border-bottom: 1px solid #dee2e6;
+        position: absolute; /* Initially cover the whole screen */
+        top: 0;
+        left: 0;
+        z-index: 100; /* Ensure it's above the chat */
+        transform: translateX(0); /* Initially visible */
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .chat-sidebar.hidden {
+        transform: translateX(-100%); /* Slide out to hide */
+    }
+
+    .chat_messages_wrapper {
+        width: 100%;
+        height: 100%;
+        border-left: none;
+        position: fixed;
+        top: 0;
+        left: 100%; /* Initially off-screen to the right */
+        transform: translateX(-100%); /* Slide in from right */
+        z-index: 90; /* Below the sidebar during transition */
+        background-color: #e5ddd5; /* Ensure full background */
+    }
+
+    .chat_messages_wrapper .visible {
+        transform: translateX(0);
+    }
+
+    .chat_header {
+        justify-content: flex-start;
+        background-color: rgba(255, 255, 255, 0.8); /* Add some background for visibility */
+        backdrop-filter: blur(5px); /* Optional blur effect */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 105; /* Above messages */
+    }
+
+    .chat_header .back-button {
+        display: block;
+        z-index: 110; /* Above other header elements */
+    }
+
+    .chat_messages {
+        padding-top: 3.5rem; /* Space for fixed header */
+    }
+}

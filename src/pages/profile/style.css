@@ -1,0 +1,184 @@
+body {
+    background-color: #f0f2f5; /* WhatsApp background */
+    overflow: hidden; /* Prevent scrolling on the body when chat is fullscreen */
+}
+
+.chat-container {
+    height: 100vh; /* Make the container fill the viewport height */
+    margin: 0 auto; /* Center the container */
+    display: flex; /* For layout adjustments */
+    flex-direction: row; /* Keep sidebar and chat side-by-side by default */
+}
+
+.chat-sidebar {
+    background-color: #f8f9fa; /* Light background for sidebar */
+    border-right: 1px solid #dee2e6; /* Add a separator */
+    width: 350px; /* Fixed width for the sidebar on larger screens */
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-sidebar .chat-list-header {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.chat-sidebar .chat-list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chat-contact {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.chat-contact:last-child {
+    border-bottom: none;
+}
+
+.chat-contact:hover {
+    background-color: #e9ecef;
+}
+
+.chat-contact.active {
+    background-color: #d1fae5; /* Light green for active chat */
+}
+
+.chat-messages-wrapper {
+    background-color: #e5ddd5; /* WhatsApp chat background */
+    background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Optional: WhatsApp background pattern */
+    background-size: cover;
+    background-repeat: repeat;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    border-left: 1px solid #dee2e6; /* Add a separator */
+}
+
+.chat-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chat-header .back-button {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    display: none; /* Hidden on larger screens */
+}
+
+.chat-messages {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-bubble {
+    max-width: 80%; /* Prevent long messages from taking full width */
+    border-radius: 18px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    word-break: break-word; /* Prevent overflow */
+}
+
+.chat-bubble.bg-light {
+    background-color: #ece5dd !important; /* Light gray for received messages */
+}
+
+.chat-bubble.bg-primary {
+    background-color: #dcf8c6 !important; /* Light green for sent messages */
+    color: #000;
+}
+
+.chat-messages small.text-muted {
+    font-size: 0.75rem;
+}
+
+.chat-input-area {
+    border-top: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+}
+
+.chat-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.chat-input-group .btn {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.chat-input-group input[type="text"] {
+    border-radius: 18px;
+    flex-grow: 1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+}
+
+.chat-input-group button.send-button {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    margin-left: 0.5rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .chat-container {
+        flex-direction: column; /* Stack vertically on smaller screens */
+    }
+
+    .chat-sidebar {
+        width: 100%;
+        max-height: 300px; /* Allow scrolling for contacts */
+        overflow-y: auto;
+        border-bottom: 1px solid #dee2e6;
+        position: absolute; /* Initially cover the whole screen */
+        top: 0;
+        left: 0;
+        z-index: 100; /* Ensure it's above the chat */
+        transform: translateX(0); /* Initially visible */
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .chat-sidebar.hidden {
+        transform: translateX(-100%); /* Slide out to hide */
+    }
+
+    .chat-messages-wrapper {
+        border-left: none;
+        position: relative; /* For back button positioning */
+    }
+
+    .chat-header {
+        justify-content: flex-start; /* Align back button to the left */
+    }
+
+    .chat-header .back-button {
+        display: block; /* Show back button on mobile */
+    }
+
+    .chat-messages {
+        padding-top: 3.5rem; /* Make space for the header with back button */
+    }
+}

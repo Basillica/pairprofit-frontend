@@ -1,0 +1,150 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6; /* Tailwind's gray-100 */
+    color: #1f2937; /* Tailwind's gray-800 */
+    margin: 0; /* Reset default body margin */
+    overflow-y: scroll;
+}
+
+.container {
+    /* margin-left: auto;
+    margin-right: auto; */
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.section_title {
+    font-size: 2.25rem; /* Tailwind's text-3xl */
+    font-weight: 700; /* Tailwind's font-bold */
+    color: #1e293b; /* Tailwind's gray-900 */
+    margin-bottom: 2rem; /* Tailwind's mb-8 */
+    text-align: center;
+}
+.listing_card {
+    background-color: #fff;
+    border-radius: 0.75rem; /* Tailwind's rounded-lg */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind's shadow-md */
+    margin-bottom: 2rem; /* Tailwind's mb-8 */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column;
+    height: 100%;
+}
+.listing_card:hover {
+    transform: translateY(-0.25rem); /* Tailwind's hover:translate-y-px */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05); /* Tailwind's hover:shadow-xl */
+}
+.listing_header {
+    padding: 1.5rem; /* Tailwind's p-6 */
+    border-bottom: 1px solid #e5e7eb; /* Tailwind's border-b border-gray-200 */
+}
+.listing_title {
+    font-size: 1.5rem; /* Tailwind's text-2xl */
+    font-weight: 600; /* Tailwind's font-semibold */
+    color: #1e293b; /* Tailwind's gray-900 */
+    margin-bottom: 0.5rem; /* Tailwind's mb-2 */
+}
+.listing_provider {
+    font-size: 1rem; /* Tailwind's text-base */
+    color: #6b7280; /* Tailwind's text-gray-500 */
+    margin-bottom: 0;
+}
+.listing_body {
+    padding: 1.5rem; /* Tailwind's p-6 */
+    flex-grow: 1; /* Allow body to take up available space */
+}
+.listing_description {
+    font-size: 1rem; /* Tailwind's text-base */
+    color: #374151; /* Tailwind's text-gray-700 */
+    line-height: 1.75; /* Tailwind's leading-relaxed */
+    margin-bottom: 1rem;
+}
+.listing_details {
+    margin-bottom: 1.5rem; /* Tailwind's mb-6 */
+}
+.detail_item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem; /* Tailwind's mb-3 */
+}
+.detail_icon {
+    margin-right: 0.75rem; /* Tailwind's mr-3 */
+    color: #4b5563; /* Tailwind's text-gray-600 */
+    width: 1.25rem; /* Tailwind's w-5 */
+    height: 1.25rem; /* Tailwind's h-5 */
+}
+.detail_text {
+    font-size: 1rem; /* Tailwind's text-base */
+    color: #374151; /* Tailwind's text-gray-700 */
+}
+.listing_footer {
+    padding: 1.5rem; /* Tailwind's p-6 */
+    border-top: 1px solid #e5e7eb; /* Tailwind's border-t border-gray-200 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.listing_price {
+    font-size: 1.25rem; /* Tailwind's text-xl */
+    font-weight: 600; /* Tailwind's font-semibold */
+    color: #1e293b; /* Tailwind's gray-900 */
+}
+.negotiable {
+    font-size: 0.875rem; /* Tailwind's text-sm */
+    color: #6b7280; /* Tailwind's text-gray-500 */
+    margin-left: 0.5rem;
+}
+.contact_button {
+    background-color: #3b82f6; /* Tailwind's bg-blue-500 */
+    color: #fff;
+    padding: 0.75rem 1.5rem; /* Tailwind's py-3 px-6 */
+    border-radius: 0.5rem; /* Tailwind's rounded-md */
+    font-weight: 600; /* Tailwind's font-semibold */
+    transition: background-color 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+.contact_button:hover {
+    background-color: #2563eb; /* Tailwind's hover:bg-blue-700 */
+}
+.urgency_badge {
+    border-radius: 1rem; /* Tailwind's rounded-full */
+    padding: 0.25rem 0.75rem; /* Tailwind's px-3 py-1 */
+    font-size: 0.875rem; /* Tailwind's text-sm */
+    font-weight: 500; /* Tailwind's font-medium */
+}
+.urgency_high {
+    background-color: #ef4444; /* Tailwind's bg-red-500 */
+    color: #fff;
+    margin: 2px;
+}
+.urgency_medium {
+    background-color: #f59e0b; /* Tailwind's bg-yellow-500 */
+    color: #fff;
+    margin: 2px;
+}
+.urgency_low {
+    background-color: #10b981; /* Tailwind's bg-green-500 */
+    color: #fff;
+    margin: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .section_title {
+        font-size: 2rem; /* Tailwind's text-3xl on md and up is 2.25rem */
+    }
+    .listing_header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .listing_title {
+        margin-bottom: 0.25rem; /* Tailwind's mb-1 */
+    }
+    .listing_footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .listing_price {
+        margin-bottom: 0.75rem; /* Tailwind's mb-3 */
+    }
+}

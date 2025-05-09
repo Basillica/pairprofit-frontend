@@ -1,0 +1,226 @@
+
+
+.section_title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+#map {
+    height: 85vh;
+    border-radius: 0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.listing-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 25%;
+}
+.listing-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+.listing-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+.listing-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+.listing-provider {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0;
+}
+.listing-body {
+    padding: 1rem;
+    flex-grow: 1;
+}
+.listing-description {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}
+.listing-details {
+    margin-bottom: 1rem;
+}
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.detail-icon {
+    margin-right: 0.75rem;
+    color: #4b5563;
+    width: 1rem;
+    height: 1rem;
+}
+.detail-text {
+    font-size: 0.875rem;
+    color: #374151;
+}
+.listing-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.listing-price {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+.negotiable {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-left: 0.5rem;
+}
+.contact-button {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+.contact-button:hover {
+    background-color: #2563eb;
+}
+.urgency-badge {
+    border-radius: 1rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.urgency-high {
+    background-color: #ef4444;
+    color: #fff;
+}
+.urgency-medium {
+    background-color: #f59e0b;
+    color: #fff;
+}
+.urgency-low {
+    background-color: #10b981;
+    color: #fff;
+}
+
+/* Map Styles */
+#map {
+    position: absolute !important;
+}
+
+/* Flex layout for map and listings */
+.row.content-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+.col-lg-6.listings-column {
+    flex: 1;
+    padding-right: 0;
+    width: 30%;
+    z-index: 20;
+    position: relative;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+.col-lg-6.map-column {
+    flex: 1;
+    padding-left: 0;
+}
+
+@media (min-width: 992px) {
+    .row.content-wrapper {
+        flex-direction: row;
+    }
+    .col-lg-6.listings-column {
+        padding-right: 0;
+        width: 30%;
+    }
+    .col-lg-6.map-column {
+        padding-left: 0;
+        width: 70%;
+    }
+}
+
+.sticky-card {
+    position: sticky;
+    height: fit-content; /* Ensures the sticky card's height adjusts to its content */
+}
+.scrollable-list {
+    /*height: 500px; !* Example height for the scrollable area *!  Important:  Let content determine height, or set a max-height*/
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.chart_card {
+    background-color: #fff !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem !important;
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    /* height: 500px !important; */
+    position: sticky !important;
+    overflow: hidden;
+}
+
+.chart_card_new{
+    background-color: #fff !important;
+    border-radius: 0.75rem !important;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .section_title {
+        font-size: 1.75rem;
+    }
+    .listing-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .listing-title {
+        margin-bottom: 0.25rem;
+    }
+    .listing-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .listing-price {
+        margin-bottom: 0.75rem;
+    }
+    #map {
+        width: 100%;
+        height: 400px;
+        position: relative;
+    }
+    .col-lg-6.listings-column{
+        width: 100%;
+        max-height: none;
+        overflow-y: auto;
+    }
+}

@@ -1,0 +1,63 @@
+body {
+    font-family: sans-serif;
+    background-color: #f8f9fa;
+}
+
+.email-app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.email-app .row {
+    flex-grow: 1;
+}
+
+.email-app aside {
+    background-color: #f8f9fa;
+}
+
+.email-app main {
+    background-color: #fff;
+}
+
+.email-app .list-group-item {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    padding: 0.75rem 1rem;
+}
+
+.email-app .list-group-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.email-app .list-group-item.unread {
+    font-weight: bold;
+}
+
+.email-app .list-group-item .subject {
+    flex-grow: 1;
+    margin-left: 1rem;
+}
+
+.email-app .list-group-item .fa-paperclip {
+    margin-left: 0.5rem;
+}
+
+.email-app .list-group-item .fa-star {
+    color: #ffc107;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .email-app .row {
+        flex-direction: column;
+    }
+    .email-app aside {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+}
