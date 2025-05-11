@@ -7,9 +7,9 @@ export const ServiceListingA: Component<{
   listings: Service[],
 }> = (props) => {
   return (
-    <div class="row">
+    <div class="flex flex-wrap -mx-2">
       <For each={props.listings}>{(service) => (
-        <div class="col-md-6 col-lg-4 mb-2">
+        <div class="md:w-6/12 px-2 lg:w-4/12 px-2 mb-2">
           <div class={css_module.listing_card}>
             <div class={css_module.listing_header}>
               <h3 class={css_module.listing_title}>{service.title}</h3>

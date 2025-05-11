@@ -59,6 +59,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-wrap: wrap;
 }
 
 .filter_toggle {

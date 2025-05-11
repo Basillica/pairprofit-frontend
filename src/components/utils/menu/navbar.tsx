@@ -5,7 +5,6 @@ export const NavBar = () =>  {
   const [expanded, setExpanded] = createSignal(window.innerWidth > 768 ? false : true);
 
   const toggleSidebar = () => {
-    console.log("......................")
     setExpanded(!expanded());
   };
 

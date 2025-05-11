@@ -95,7 +95,7 @@ export const Cards: Component = () => {
   return (
     <div class="container-fluid text-center">
       <div class="row gy-4" style={"margin-bottom: 10px"}>
-        <div class="col-12 col-md-4">
+        <div class="col-12 md:w-4/12 px-2">
           <div class="card">
             <img src="https://picsum.photos/200" class="card-img-top" alt="Card 1-1"/>
             <div class="card-body">
@@ -105,7 +105,7 @@ export const Cards: Component = () => {
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 md:w-4/12 px-2">
           <div class="card">
             <img src="https://picsum.photos/200" class="card-img-top" alt="Card 1-2"/>
             <div class="card-body">
@@ -115,7 +115,7 @@ export const Cards: Component = () => {
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 md:w-4/12 px-2">
           <div class="card">
             <img src="https://picsum.photos/200" class="card-img-top" alt="Card 1-3"/>
             <div class="card-body">

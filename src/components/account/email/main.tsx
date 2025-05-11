@@ -108,7 +108,7 @@ export const EmailInbox = ()  => {
 
   return (
     <div class="container-fluid email-app">
-      <div class="row">
+      <div class="flex flex-wrap -mx-2">
         <aside class="col-md-3 col-lg-2 bg-light p-3 border-end">
           <button class="btn btn-danger btn-block mb-3"><i class="fas fa-plus me-2"></i> Compose</button>
           <ul class="nav flex-column">

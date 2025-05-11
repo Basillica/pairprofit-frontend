@@ -102,7 +102,7 @@ export const Home = () => {
 
   return (
     <div class="container-auth" style={"height: 90vh"}>
-      <div class="row">
+      <div class="flex flex-wrap -mx-2">
         <div class="col-md-6 left-panel">
           <img src="https://picsum.photos/400" alt="Company Logo" class="logo" style={"border-radius: 50%"}/>
         </div>

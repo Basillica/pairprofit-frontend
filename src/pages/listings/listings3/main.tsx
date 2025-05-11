@@ -48,8 +48,8 @@ export const ServiceListingsC: Component<{
     };
 
   return (
-    <div class="row">
-        <div class="col-md-4">
+    <div class="flex md:flex-row flex-col">
+        <div class="md:w-4/12 px-2">
             <div class="card">
                 <div class="card-body">
                     <div class="scrollable-list">
@@ -101,9 +101,9 @@ export const ServiceListingsC: Component<{
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="md:w-8/12 px-2">
             <div class="sticky-card">
-                  <div class="col-lg-9">
+                  <div class="lg:w-9/12 px-2">
                     <div id="map" class="chart_card_new" ref={mapElement}></div>
                   </div>
             </div>

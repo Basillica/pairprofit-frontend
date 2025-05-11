@@ -56,8 +56,9 @@ export const UserProfile = () => {
 
   return (
     <div class="mt-5">
-      <div class="row">
-        <div class="col-md-4">
+      <div class="flex flex-wrap -mx-2">
+        
+        <div class="md:w-4/12 px-2">
           <div class={`${css_module.card} mb-4`}>
             <div class={`${css_module.card_body} text-center`}>
               <img src={user.profileImageUrl} alt="Profile Picture" class="rounded-circle img-thumbnail mb-3" />
@@ -92,9 +93,10 @@ export const UserProfile = () => {
               </ul>
             </div>
           </div>
+
         </div>
 
-        <div class="col-md-4">
+        <div class="md:w-4/12 px-2">
           <div class={`${css_module.card} mb-4`}>
             <div class={`${css_module.card_body}`}>
               <h6 class="card-title mb-3">Create Post</h6>
@@ -129,11 +131,11 @@ export const UserProfile = () => {
           )}</For>
 
           <div class="text-center">
-            <button class="btn btn-outline-secondary btn-sm">Load More Posts</button>
+            <button class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm">Load More Posts</button>
           </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="md:w-4/12 px-2">
           <div class={`${css_module.card} mb-4`}>
             <div class={`${css_module.card_body}`}>
               <h6 class="card-title mb-3">Create Post</h6>
@@ -168,7 +170,7 @@ export const UserProfile = () => {
           )}</For>
 
           <div class="text-center">
-            <button class="btn btn-outline-secondary btn-sm">Load More Posts</button>
+            <button class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm">Load More Posts</button>
           </div>
         </div>
       </div>

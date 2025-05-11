@@ -205,7 +205,7 @@ export const ServiceProviderDashboard = () => {
   return (
     <div class='container-fluid'>
         <p class={`${css_module.dashboard_title}`}>Service Provider Dashboard</p>
-        <div class="row">
+        <div class="flex flex-wrap -mx-2">
             <div class="col-lg-8">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
@@ -229,7 +229,7 @@ export const ServiceProviderDashboard = () => {
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="flex flex-wrap -mx-2">
             <SummaryCard iconClass="fas fa-dollar-sign" iconBgClass={`${css_module.income_icon}`} title="Total Income" value="€45,231.89" />
             <SummaryCard
                 iconClass="fas fa-check-circle"
@@ -245,7 +245,7 @@ export const ServiceProviderDashboard = () => {
             />
             <SummaryCard iconClass="fas fa-phone" iconBgClass={`${css_module.contact_icon}`} title="Contact Views" value="5,678" />
         </div>
-        <div class="row">
+        <div class="flex flex-wrap -mx-2">
             <div class="col-lg-6">
                 <div class={`${css_module.charter_card}`}>
                     <h2 class={`${css_module.chart_title}`}>Income Over Time</h2>
@@ -306,7 +306,7 @@ export const ServiceProviderDashboard = () => {
         </div>
 
 
-        <div class="row">
+        <div class="flex flex-wrap -mx-2">
             <div class={css_module.chart_card}>
               <div class={css_module.chart_card_new} ref={mapDiv}></div>
             </div>
@@ -320,7 +320,7 @@ export const ServiceProviderDashboard = () => {
         </div>
 
         
-        <div class="row">
+        <div class="flex flex-wrap -mx-2">
             <div class="col-lg-6">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
