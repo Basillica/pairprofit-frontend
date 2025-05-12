@@ -17,23 +17,6 @@ interface CustomerLocation {
     coordinates: [number, number];
 }
 
-
-const SummaryCard2 = (props: SummaryCardProps) => {
-  return (
-    <div class="">
-        <div class={`${css_module.summary_card}`}>
-            <div class={`${css_module.summary_card_icon} ${props.iconBgClass}`}>
-                <i class={props.iconClass}></i>
-            </div>
-            <div class={`${css_module.summary_card_content}`}>
-                <h2 class={`${css_module.summary_card_title}`}>{props.title}</h2>
-                <p class={`${css_module.summary_card_value}`}>{props.value}</p>
-            </div>
-        </div>
-    </div>
-  );
-};
-
 const SummaryCard = (props: SummaryCardProps) => {
   return (
     <div class="md:w-6/12 lg:w-3/12 px-2">
