@@ -17,10 +17,26 @@ interface CustomerLocation {
     coordinates: [number, number];
 }
 
-  
+
+const SummaryCard2 = (props: SummaryCardProps) => {
+  return (
+    <div class="">
+        <div class={`${css_module.summary_card}`}>
+            <div class={`${css_module.summary_card_icon} ${props.iconBgClass}`}>
+                <i class={props.iconClass}></i>
+            </div>
+            <div class={`${css_module.summary_card_content}`}>
+                <h2 class={`${css_module.summary_card_title}`}>{props.title}</h2>
+                <p class={`${css_module.summary_card_value}`}>{props.value}</p>
+            </div>
+        </div>
+    </div>
+  );
+};
+
 const SummaryCard = (props: SummaryCardProps) => {
   return (
-    <div class="col-md-6 col-lg-3">
+    <div class="md:w-6/12 lg:w-3/12 px-2">
         <div class={`${css_module.summary_card}`}>
             <div class={`${css_module.summary_card_icon} ${props.iconBgClass}`}>
                 <i class={props.iconClass}></i>
@@ -203,10 +219,11 @@ export const ServiceProviderDashboard = () => {
   });
 
   return (
-    <div class='container-fluid'>
+    <>
+    <div class='container mx-auto'>
         <p class={`${css_module.dashboard_title}`}>Service Provider Dashboard</p>
-        <div class="flex flex-wrap -mx-2">
-            <div class="col-lg-8">
+        <div class="flex flex-wrap">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
                     <p class={`${css_module.contact_details}`}>
@@ -217,7 +234,7 @@ export const ServiceProviderDashboard = () => {
                     </p>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
                     <p class={`${css_module.contact_details}`}>
@@ -229,12 +246,12 @@ export const ServiceProviderDashboard = () => {
                 </div>
             </div>
         </div>
-        <div class="flex flex-wrap -mx-2">
-            <SummaryCard iconClass="fas fa-dollar-sign" iconBgClass={`${css_module.income_icon}`} title="Total Income" value="€45,231.89" />
+        <div class="flex flex-wrap">
+            <SummaryCard iconClass="fas fa-dollar-sign" iconBgClass={`${css_module.income_icon}`} title="Income" value="€45,231.89" />
             <SummaryCard
                 iconClass="fas fa-check-circle"
                 iconBgClass={`${css_module.tasks_completed_icon}`}
-                title="Tasks Completed"
+                title="Completed"
                 value="12,540"
             />
             <SummaryCard
@@ -245,8 +262,8 @@ export const ServiceProviderDashboard = () => {
             />
             <SummaryCard iconClass="fas fa-phone" iconBgClass={`${css_module.contact_icon}`} title="Contact Views" value="5,678" />
         </div>
-        <div class="flex flex-wrap -mx-2">
-            <div class="col-lg-6">
+        <div class="flex flex-wrap">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.charter_card}`}>
                     <h2 class={`${css_module.chart_title}`}>Income Over Time</h2>
                     <canvas id={`income_chart_canvas`} class={`${css_module.income_chart_canvas}`} ref={incomeChartCanvas}></canvas>
@@ -297,7 +314,7 @@ export const ServiceProviderDashboard = () => {
                     />
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.charter_card}`}>
                     <h2 class={`${css_module.chart_title}`}>Task Status</h2>
                     <canvas id={`tasks_chart_canvas`} class={`${css_module.tasks_chart_canvas}`}  ref={tasksChartCanvas}></canvas>
@@ -305,23 +322,9 @@ export const ServiceProviderDashboard = () => {
             </div>
         </div>
 
-
-        <div class="flex flex-wrap -mx-2">
-            <div class={css_module.chart_card}>
-              <div class={css_module.chart_card_new} ref={mapDiv}></div>
-            </div>
-              {/* <div class={`${css_module.chart_card}`}>
-                  <h2 class={`${css_module.chart_title}`}>Customer Locations</h2>
-                  <div id="map" class={`${css_module.map}`}>
-                    hello world
-                  </div>
-              </div> */}
-            {/* </div> */}
-        </div>
-
         
-        <div class="flex flex-wrap -mx-2">
-            <div class="col-lg-6">
+        <div class="flex flex-wrap mx-2">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
                     <p class={`${css_module.contact_details}`}>
@@ -332,7 +335,7 @@ export const ServiceProviderDashboard = () => {
                     </p>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="lg:w-6/12 px-2">
                 <div class={`${css_module.contact_card}`}>
                     <h2 class={`${css_module.contact_title}`}>Contact Information</h2>
                     <p class={`${css_module.contact_details}`}>
@@ -345,5 +348,6 @@ export const ServiceProviderDashboard = () => {
             </div>
         </div>
     </div>
+    </>
   );
 }

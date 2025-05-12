@@ -154,6 +154,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     }
   };
 
+  
   return (
     <div class="container mx-auto px-4">
         <button id="filter_toggle" class={`${css_class.filter_toggle} md:hidden fixed bottom-4 right-4 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-colors duration-200 hover:bg-blue-700 z-10`} onClick={toggleFilterBar}>

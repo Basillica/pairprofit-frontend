@@ -1,10 +1,12 @@
 import { createSignal, createEffect, createMemo, Component, Accessor, Setter } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
 import './menustyles.css';
 
 export const PersistentSidebar: Component<{
   expanded: Accessor<boolean>;
   setExpanded: Setter<boolean>;
 }> = (props) =>  {
+  const navigate = useNavigate()
   const [settingsExpanded, setSettingsExpanded] = createSignal(false);
   const [profileExpanded, setProfileExpanded] = createSignal(false);
 
@@ -19,6 +21,14 @@ export const PersistentSidebar: Component<{
   const toggleProfileSubmenu = () => {
     setProfileExpanded(!profileExpanded());
   };
+
+  const handleUserProfile = (e: MouseEvent & {
+    currentTarget: HTMLButtonElement;
+    target: Element;
+  }) => {
+    e.stopPropagation();
+    navigate("/profile/dashboard")
+  }
 
   createEffect(() => {
     const handleResize = () => {
@@ -45,9 +55,9 @@ export const PersistentSidebar: Component<{
           <input type="text" placeholder="Search" class="desktop-search-bar" />
         </div>
         <div class="top-section-right">
-          <button><i class="fas fa-plus"></i></button>
-          <button><i class="fas fa-bell"></i></button>
-          <button><i class="fas fa-user"></i></button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full" onClick={() => navigate("")}><i class="fas fa-plus"></i></button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full" onClick={() => navigate("")}><i class="fas fa-bell"></i></button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full" onClick={(e) => handleUserProfile(e)}><i class="fas fa-user"></i></button>
         </div>
       </div>
 

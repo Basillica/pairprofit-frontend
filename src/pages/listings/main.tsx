@@ -214,7 +214,7 @@ export const ServiceListings = () => {
     //   </Switch>
     // </div>
 
-    <div class="container mx-auto px-4">
+    <div class="container mx-0 px-2">
       <div class="flex flex-nowrap justify-between items-center">
         {/* <div>
           <h2 class={css_module.section_title}>Available Services</h2>

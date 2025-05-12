@@ -90,7 +90,6 @@ export const Home = () => {
 
   const handleForgotPasswordSubmit = (e: Event) => {
     e.preventDefault();
-    console.log('Forgot Password Form Submitted', { email: forgotEmail() });
     showPage('reset-password-page');
   };
 
@@ -102,7 +101,7 @@ export const Home = () => {
 
   return (
     <div class="container-auth" style={"height: 90vh"}>
-      <div class="flex flex-wrap -mx-2">
+      <div class="flex flex-wrap" style={"min-height: 90vh"}>
         <div class="col-md-6 left-panel">
           <img src="https://picsum.photos/400" alt="Company Logo" class="logo" style={"border-radius: 50%"}/>
         </div>
