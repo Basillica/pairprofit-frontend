@@ -203,7 +203,7 @@ export const ServiceProviderDashboard = () => {
 
   return (
     <>
-    <div class='container mx-auto'>
+    <div class='mx-auto'>
         <p class={`${css_module.dashboard_title}`}>Service Provider Dashboard</p>
         <div class="flex flex-wrap">
             <div class="lg:w-6/12 px-2">

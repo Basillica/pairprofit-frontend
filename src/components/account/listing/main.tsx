@@ -156,24 +156,27 @@ export const ServiceProviderListings = (): JSX.Element => {
 
   
   return (
-    <div class="container mx-auto px-4">
+    <div class="flex flex-wrap">
         <button id="filter_toggle" class={`${css_class.filter_toggle} md:hidden fixed bottom-4 right-4 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-colors duration-200 hover:bg-blue-700 z-10`} onClick={toggleFilterBar}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class={css_class.filter_icon}>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M12 10.2a2.4 2.4 0 012.4-2.4c.666 0 1.297.253 1.76.707L19.5 10.2l-4.94 4.94a3.42 3.42 0 01-1.76.707 2.4 2.4 0 01-2.4-2.4v-1.8z" />
             </svg>
         </button>
 
-        <FilterBar
-            categories={categories}
-            subCategories={subCategories}
-            locations={locations}
-            prices={prices}
-            onApplyFilters={handleApplyFilters}
-        />
+        <div style={"width: 94vw"}>
+            <FilterBar
+                categories={categories}
+                subCategories={subCategories}
+                locations={locations}
+                prices={prices}
+                onApplyFilters={handleApplyFilters}
+            />
+        </div>
 
-        <div class="flex flex-wrap -mx-2" style={"min-height: 80vh;"}>
+        <div class="flex flex-wrap" style={"margin-top: 20px; min-height: 80vh"}>
             <For each={profiles()}>{(profile) => (
-                <div class="flex md:w-6/12 px-2 lg:w-4/12 px-2">
+                // <div class="flex md:w-6/12 px-2 lg:w-4/12 px-2">
+                <div class="md:w-6/12 px-2 lg:w-4/12 px-2 mb-2">
                     <div class={css_class.profile_card}>
                         <div class={css_class.profile_header}>
                             <img src={profile.imageUrl} alt={profile.name} class={css_class.profile_picture} />

@@ -181,58 +181,31 @@ export const ServiceListings = () => {
   }
 
   return (
-    // <div class="container-fluid">
-    //   <div class="flex justify-between items-center">
-    //     <div>
-    //       <h2 class={css_module.section_title}>Available Services</h2>
-    //     </div>
-    //     <div class="space-x-2">
-    //       <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type1")}>Card View</button>
-    //       <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type2")}>List View</button>
-    //       <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type3")}>Map View</button>
-    //     </div>
-    //   </div>
-
-    //   <FilterBar
-    //       categories={categories}
-    //       subCategories={subCategories}
-    //       locations={locations}
-    //       prices={prices}
-    //       onApplyFilters={handleApplyFilters}
-    //     />
-
-    //   <Switch fallback={<p>Loading is between 5 and 10</p>}>
-    //     <Match when={ListingType() === "Type1"} >
-    //       <ServiceListingA listings={serviceListings}/>
-    //     </Match>
-    //     <Match when={ListingType() === "Type2"}>
-    //       <ServiceListingsB listings={serviceListings} />
-    //     </Match>
-    //     <Match when={ListingType() === "Type3"}>
-    //       <ServiceListingsC listings={serviceListings} />
-    //     </Match>
-    //   </Switch>
-    // </div>
-
-    <div class="container mx-0 px-2">
-      <div class="flex flex-nowrap justify-between items-center">
-        {/* <div>
-          <h2 class={css_module.section_title}>Available Services</h2>
-        </div> */}
-        <div class="space-x-2 flex-shrink-0"> {/* Added flex-shrink-0 */}
-          <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type1")}>Card View</button>
-          <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type2")}>List View</button>
-          <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type3")}>Map View</button>
+    <div class="container">
+      {
+        window.innerWidth > 768 && 
+        <div class="flex flex-nowrap justify-between items-center rounded-md" style={"padding-top: 4px"}>
+          {/* <div>
+            <h2 class={css_module.section_title}>Available Services</h2>
+          </div> */}
+          <div class="space-x-2 flex-shrink-0"> {/* Added flex-shrink-0 */}
+            <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type1")}>Card View</button>
+            <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type2")}>List View</button>
+            <button class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`} onClick={() => handleListingTypeToggle("Type3")}>Map View</button>
+          </div>
         </div>
-      </div>
+      }
 
-      <FilterBar
-        categories={categories}
-        subCategories={subCategories}
-        locations={locations}
-        prices={prices}
-        onApplyFilters={handleApplyFilters}
-      />
+      <div style={"width: 94vw"}>
+          <FilterBar
+            categories={categories}
+            subCategories={subCategories}
+            locations={locations}
+            prices={prices}
+            onApplyFilters={handleApplyFilters}
+          />
+      </div>
+      
 
       <Switch fallback={<p>Loading is between 5 and 10</p>}>
           <Match when={ListingType() === "Type1"} >

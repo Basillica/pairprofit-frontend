@@ -1,9 +1,8 @@
 /* Custom CSS for the filter bar */
 .filter-bar {
-    background-color: #ffffff; /* White background */
-    border-bottom: 1px solid #e2e8f0; /* Light border */
-    padding: 1rem; /* Padding for the entire bar */
-    margin-bottom: 2rem; /* Space below the filter bar */
+    background-color: white; /* White background */
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 2rem;
   }
   
   .filter-section {

@@ -48,7 +48,7 @@ export const ServiceListingsC: Component<{
     };
 
   return (
-    <div class="flex md:flex-row flex-col">
+    <div class="flex flex-wrap md:flex-row flex-col" style={"width: 95vw;"}>
         <div class="md:w-4/12 px-2">
             <div class="card">
                 <div class="card-body">

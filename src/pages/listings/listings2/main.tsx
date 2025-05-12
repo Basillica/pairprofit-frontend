@@ -7,7 +7,7 @@ export const ServiceListingsB: Component<{
 }> = (props) =>  {
 
   return (
-    <div class="flex flex-wrap -mx-2">
+    <div class="flex flex-wrap" style={"width: 94vw"}>
       <For each={props.listings}>{(service) => (
         <div class="col-12 listing-item">
           <div class={css_class.listing_card}>
