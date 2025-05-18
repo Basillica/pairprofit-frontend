@@ -164,19 +164,19 @@
 .linkedin-btn:hover {
     background-color: #004182;
 }
-.yahoo-btn {
-    background-color: #430297;
+.github-btn {
+    background-color: #cbe1b5;
     color: #fff;
 }
-.yahoo-btn:hover {
+.github-btn:hover {
     background-color: #310173;
 }
-.tiktok-btn {
-    background-color: #000000;
+.facebook-btn {
+    background-color: #9fd8e9;
     color: #ffffff;
 }
-.tiktok-btn:hover {
-    background-color: #1e1e1e;
+.facebook-btn:hover {
+    background-color: #8dc3dc;
 }
 
 .logout-btn {

@@ -64,8 +64,8 @@
 
 .filter_toggle {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    top: 20rem;
+    right: 1rem;
     background-color: #3b82f6;
     color: #fff;
     width: 3rem;

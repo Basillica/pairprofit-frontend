@@ -1,5 +1,5 @@
-import { createSignal, JSX } from 'solid-js';
-import './styles.css'
+import { createSignal, JSX } from "solid-js";
+import "./styles.css";
 
 interface AuthCardProps {
   id: string;
@@ -11,7 +11,11 @@ interface AuthCardProps {
 
 const AuthCard = (props: AuthCardProps) => {
   return (
-    <div id={props.id} class="auth-card" style={{ display: props.show() ? 'block' : 'none' }}>
+    <div
+      id={props.id}
+      class="auth-card"
+      style={{ display: props.show() ? "block" : "none" }}
+    >
       <div class="auth-header">
         <h2 class="auth-title">{props.title}</h2>
         <p class="auth-subtitle">{props.subtitle}</p>
@@ -42,23 +46,27 @@ interface SocialButtonProps {
 }
 
 const SocialButton = (props: SocialButtonProps) => {
+  console.log(props, "the social button props");
   return (
-    <button class={`social-btn ${props.children!.toString().toLowerCase()}-btn`} onClick={props.onClick}>
+    <button
+      class={`social-btn ${props.children!.toString().toLowerCase()}-btn`}
+      onClick={props.onClick}
+    >
       <i class={props.iconClass}></i> {props.children}
     </button>
   );
 };
 
 export const Home = () => {
-  const [currentPage, setCurrentPage] = createSignal('login-page');
-  const [loginEmail, setLoginEmail] = createSignal('');
-  const [loginPassword, setLoginPassword] = createSignal('');
-  const [registerEmail, setRegisterEmail] = createSignal('');
-  const [registerPassword, setRegisterPassword] = createSignal('');
-  const [confirmPassword, setConfirmPassword] = createSignal('');
-  const [forgotEmail, setForgotEmail] = createSignal('');
-  const [resetPassword, setResetPassword] = createSignal('');
-  const [resetConfirmPassword, setResetConfirmPassword] = createSignal('');
+  const [currentPage, setCurrentPage] = createSignal("login-page");
+  const [loginEmail, setLoginEmail] = createSignal("");
+  const [loginPassword, setLoginPassword] = createSignal("");
+  const [registerEmail, setRegisterEmail] = createSignal("");
+  const [registerPassword, setRegisterPassword] = createSignal("");
+  const [confirmPassword, setConfirmPassword] = createSignal("");
+  const [forgotEmail, setForgotEmail] = createSignal("");
+  const [resetPassword, setResetPassword] = createSignal("");
+  const [resetConfirmPassword, setResetConfirmPassword] = createSignal("");
 
   const showPage = (pageId: string) => {
     setCurrentPage(pageId);
@@ -66,7 +74,9 @@ export const Home = () => {
 
   const handleNavigation = (e: Event) => {
     e.preventDefault();
-    const targetId = (e.currentTarget as HTMLAnchorElement).getAttribute('href')?.substring(1);
+    const targetId = (e.currentTarget as HTMLAnchorElement)
+      .getAttribute("href")
+      ?.substring(1);
     if (targetId) {
       showPage(targetId);
     }
@@ -74,44 +84,54 @@ export const Home = () => {
 
   const handleLoginSubmit = (e: Event) => {
     e.preventDefault();
-    console.log('Login Form Submitted', { email: loginEmail(), password: loginPassword() });
-    showPage('logout-page');
+    console.log("Login Form Submitted", {
+      email: loginEmail(),
+      password: loginPassword(),
+    });
+    showPage("logout-page");
   };
 
   const handleRegisterSubmit = (e: Event) => {
     e.preventDefault();
-    console.log('Register Form Submitted', {
+    console.log("Register Form Submitted", {
       email: registerEmail(),
       password: registerPassword(),
       confirmPassword: confirmPassword(),
     });
-    showPage('login-page');
+    showPage("login-page");
   };
 
   const handleForgotPasswordSubmit = (e: Event) => {
     e.preventDefault();
-    showPage('reset-password-page');
+    showPage("reset-password-page");
   };
 
   const handleResetPasswordSubmit = (e: Event) => {
     e.preventDefault();
-    console.log('Reset Password Form Submitted', { password: resetPassword(), confirmPassword: resetConfirmPassword() });
-    showPage('login-page');
+    console.log("Reset Password Form Submitted", {
+      password: resetPassword(),
+      confirmPassword: resetConfirmPassword(),
+    });
+    showPage("login-page");
   };
 
   return (
     <div class="container-auth" style={"height: 90vh"}>
       <div class="flex flex-wrap" style={"min-height: 90vh"}>
         <div class="col-md-6 left-panel">
-          <img src="https://picsum.photos/400" alt="Company Logo" class="logo" style={"border-radius: 50%"}/>
+          <img
+            src="https://picsum.photos/400"
+            alt="Company Logo"
+            class="logo"
+            style={"border-radius: 50%"}
+          />
         </div>
         <div class="col-md-2 right-panel">
-
           <AuthCard
             id="login-page"
             title="Login"
             subtitle="Welcome back! Please sign in to continue."
-            show={() => currentPage() === 'login-page'}
+            show={() => currentPage() === "login-page"}
           >
             <form id="login-form" onSubmit={handleLoginSubmit}>
               <div class="form-group">
@@ -126,7 +146,9 @@ export const Home = () => {
                   placeholder="Enter your email"
                   required
                   value={loginEmail()}
-                  onInput={(e) => setLoginEmail((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setLoginEmail((e.currentTarget as HTMLInputElement).value)
+                  }
                 />
               </div>
               <div class="form-group">
@@ -141,7 +163,11 @@ export const Home = () => {
                   placeholder="Enter your password"
                   required
                   value={loginPassword()}
-                  onInput={(e) => setLoginPassword((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setLoginPassword(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <button type="submit" class="btn-primary">
@@ -159,8 +185,8 @@ export const Home = () => {
             <div class="social-login">
               <SocialButton iconClass="fab fa-google">Google</SocialButton>
               <SocialButton iconClass="fab fa-linkedin">LinkedIn</SocialButton>
-              <SocialButton iconClass="fab fa-yahoo">Yahoo</SocialButton>
-              <SocialButton iconClass="fab fa-tiktok">TikTok</SocialButton>
+              <SocialButton iconClass="fab fa-github">Github</SocialButton>
+              <SocialButton iconClass="fab fa-facebook">Facebook</SocialButton>
             </div>
             <AuthLink href="#register-page" onClick={handleNavigation}>
               Don't have an account? Register
@@ -171,7 +197,7 @@ export const Home = () => {
             id="register-page"
             title="Register"
             subtitle="Create an account to get started."
-            show={() => currentPage() === 'register-page'}
+            show={() => currentPage() === "register-page"}
           >
             <form id="register-form" onSubmit={handleRegisterSubmit}>
               <div class="form-group">
@@ -186,7 +212,11 @@ export const Home = () => {
                   placeholder="Enter your email"
                   required
                   value={registerEmail()}
-                  onInput={(e) => setRegisterEmail((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setRegisterEmail(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <div class="form-group">
@@ -201,7 +231,11 @@ export const Home = () => {
                   placeholder="Enter your password"
                   required
                   value={registerPassword()}
-                  onInput={(e) => setRegisterPassword((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setRegisterPassword(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <div class="form-group">
@@ -216,7 +250,11 @@ export const Home = () => {
                   placeholder="Confirm your password"
                   required
                   value={confirmPassword()}
-                  onInput={(e) => setConfirmPassword((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setConfirmPassword(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <button type="submit" class="btn-primary">
@@ -234,8 +272,8 @@ export const Home = () => {
             <div class="social-login">
               <SocialButton iconClass="fab fa-google">Google</SocialButton>
               <SocialButton iconClass="fab fa-linkedin">LinkedIn</SocialButton>
-              <SocialButton iconClass="fab fa-yahoo">Yahoo</SocialButton>
-              <SocialButton iconClass="fab fa-tiktok">TikTok</SocialButton>
+              <SocialButton iconClass="fab fa-github">Github</SocialButton>
+              <SocialButton iconClass="fab fa-facebook">Facebook</SocialButton>
             </div>
           </AuthCard>
 
@@ -243,9 +281,12 @@ export const Home = () => {
             id="forgot-password-page"
             title="Forgot Password"
             subtitle="Enter your email to receive a password reset link."
-            show={() => currentPage() === 'forgot-password-page'}
+            show={() => currentPage() === "forgot-password-page"}
           >
-            <form id="forgot-password-form" onSubmit={handleForgotPasswordSubmit}>
+            <form
+              id="forgot-password-form"
+              onSubmit={handleForgotPasswordSubmit}
+            >
               <div class="form-group">
                 <label for="forgot-email" class="form-label">
                   Email Address
@@ -258,7 +299,9 @@ export const Home = () => {
                   placeholder="Enter your email"
                   required
                   value={forgotEmail()}
-                  onInput={(e) => setForgotEmail((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setForgotEmail((e.currentTarget as HTMLInputElement).value)
+                  }
                 />
               </div>
               <button type="submit" class="btn-primary">
@@ -274,7 +317,7 @@ export const Home = () => {
             id="reset-password-page"
             title="Reset Password"
             subtitle="Enter your new password."
-            show={() => currentPage() === 'reset-password-page'}
+            show={() => currentPage() === "reset-password-page"}
           >
             <form id="reset-password-form" onSubmit={handleResetPasswordSubmit}>
               <div class="form-group">
@@ -289,7 +332,11 @@ export const Home = () => {
                   placeholder="Enter your new password"
                   required
                   value={resetPassword()}
-                  onInput={(e) => setResetPassword((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setResetPassword(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <div class="form-group">
@@ -304,7 +351,11 @@ export const Home = () => {
                   placeholder="Confirm your new password"
                   required
                   value={resetConfirmPassword()}
-                  onInput={(e) => setResetConfirmPassword((e.currentTarget as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setResetConfirmPassword(
+                      (e.currentTarget as HTMLInputElement).value
+                    )
+                  }
                 />
               </div>
               <button type="submit" class="btn-primary">
@@ -317,15 +368,14 @@ export const Home = () => {
             id="logout-page"
             title="Logout"
             subtitle="You have been logged out."
-            show={() => currentPage() === 'logout-page'}
+            show={() => currentPage() === "logout-page"}
           >
             <AuthLink href="#login-page" onClick={handleNavigation}>
               Back to Login
             </AuthLink>
           </AuthCard>
-
         </div>
       </div>
     </div>
   );
-}
+};

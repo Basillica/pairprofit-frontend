@@ -1,5 +1,5 @@
-import { For, createSignal, createEffect } from 'solid-js';
-import './style.css'; // Assuming you have a style.css file with the provided styles
+import { For, createSignal, createEffect } from "solid-js";
+import "./style.css"; // Assuming you have a style.css file with the provided styles
 
 interface Email {
   id: number;
@@ -11,13 +11,43 @@ interface Email {
   hasAttachment?: boolean;
 }
 
-export const EmailInbox = ()  => {
+export const EmailInbox = () => {
   const [emails, setEmails] = createSignal<Email[]>([
-    { id: 1, sender: 'Sender 1', subject: 'Subject of email 1', date: 'Today, 10:30 AM', hasAttachment: true },
-    { id: 2, sender: 'Sender 2', subject: 'Another subject line', date: 'Yesterday, 2:15 PM', isUnread: true },
-    { id: 3, sender: 'Sender 3', subject: 'Important update', date: 'May 1, 2025, 9:00 AM', isStarred: true },
-    { id: 4, sender: 'Sender 4', subject: 'Quick question', date: 'April 30, 2025, 5:45 PM', hasAttachment: true },
-    { id: 5, sender: 'Sender 5', subject: 'Meeting reminder', date: 'April 29, 2025, 11:00 AM', isUnread: true },
+    {
+      id: 1,
+      sender: "Sender 1",
+      subject: "Subject of email 1",
+      date: "Today, 10:30 AM",
+      hasAttachment: true,
+    },
+    {
+      id: 2,
+      sender: "Sender 2",
+      subject: "Another subject line",
+      date: "Yesterday, 2:15 PM",
+      isUnread: true,
+    },
+    {
+      id: 3,
+      sender: "Sender 3",
+      subject: "Important update",
+      date: "May 1, 2025, 9:00 AM",
+      isStarred: true,
+    },
+    {
+      id: 4,
+      sender: "Sender 4",
+      subject: "Quick question",
+      date: "April 30, 2025, 5:45 PM",
+      hasAttachment: true,
+    },
+    {
+      id: 5,
+      sender: "Sender 5",
+      subject: "Meeting reminder",
+      date: "April 29, 2025, 11:00 AM",
+      isUnread: true,
+    },
   ]);
 
   const [unreadFilter, setUnreadFilter] = createSignal(false);
@@ -26,9 +56,10 @@ export const EmailInbox = ()  => {
   const [selectAll, setSelectAll] = createSignal(false);
 
   const filteredEmails = () => {
-    return emails().filter(email => {
+    return emails().filter((email) => {
       const showsUnread = !unreadFilter() || (unreadFilter() && email.isUnread);
-      const showsImportant = !importantFilter() || (importantFilter() && email.isStarred);
+      const showsImportant =
+        !importantFilter() || (importantFilter() && email.isStarred);
       return showsUnread && showsImportant;
     });
   };
@@ -43,11 +74,11 @@ export const EmailInbox = ()  => {
 
   const handleSelectEmail = (id: number, event: Event) => {
     const checked = (event.target as HTMLInputElement).checked;
-    setSelectedEmails(prev => {
+    setSelectedEmails((prev) => {
       if (checked) {
         return [...prev, id];
       } else {
-        return prev.filter(emailId => emailId !== id);
+        return prev.filter((emailId) => emailId !== id);
       }
     });
   };
@@ -56,7 +87,7 @@ export const EmailInbox = ()  => {
     const checked = (event.target as HTMLInputElement).checked;
     setSelectAll(checked);
     if (checked) {
-      setSelectedEmails(filteredEmails().map(email => email.id));
+      setSelectedEmails(filteredEmails().map((email) => email.id));
     } else {
       setSelectedEmails([]);
     }
@@ -71,9 +102,11 @@ export const EmailInbox = ()  => {
   });
 
   const markAsRead = () => {
-    setEmails(prev =>
-      prev.map(email =>
-        selectedEmails().includes(email.id) ? { ...email, isUnread: false } : email
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails().includes(email.id)
+          ? { ...email, isUnread: false }
+          : email
       )
     );
     setSelectedEmails([]);
@@ -81,9 +114,11 @@ export const EmailInbox = ()  => {
   };
 
   const markAsUnread = () => {
-    setEmails(prev =>
-      prev.map(email =>
-        selectedEmails().includes(email.id) ? { ...email, isUnread: true } : email
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails().includes(email.id)
+          ? { ...email, isUnread: true }
+          : email
       )
     );
     setSelectedEmails([]);
@@ -91,9 +126,11 @@ export const EmailInbox = ()  => {
   };
 
   const starEmail = () => {
-    setEmails(prev =>
-      prev.map(email =>
-        selectedEmails().includes(email.id) ? { ...email, isStarred: !email.isStarred } : email
+    setEmails((prev) =>
+      prev.map((email) =>
+        selectedEmails().includes(email.id)
+          ? { ...email, isStarred: !email.isStarred }
+          : email
       )
     );
     setSelectedEmails([]);
@@ -101,43 +138,73 @@ export const EmailInbox = ()  => {
   };
 
   const deleteEmail = () => {
-    setEmails(prev => prev.filter(email => !selectedEmails().includes(email.id)));
+    setEmails((prev) =>
+      prev.filter((email) => !selectedEmails().includes(email.id))
+    );
     setSelectedEmails([]);
     setSelectAll(false);
   };
 
   return (
-    <div class="container-fluid email-app">
+    <div class="email-app">
       <div class="flex flex-wrap -mx-2">
         <aside class="col-md-3 col-lg-2 bg-light p-3 border-end">
-          <button class="btn btn-danger btn-block mb-3"><i class="fas fa-plus me-2"></i> Compose</button>
+          <button class="btn btn-danger btn-block mb-3">
+            <i class="fas fa-plus me-2"></i> Compose
+          </button>
           <ul class="nav flex-column">
             <li class="nav-item mb-2">
-              <a class="nav-link active" href="#"><i class="fas fa-inbox me-2"></i> Inbox <span class="badge bg-primary rounded-pill float-end">{emails().filter(e => e.isUnread).length}</span></a>
+              <a class="nav-link active" href="#">
+                <i class="fas fa-inbox me-2"></i> Inbox{" "}
+                <span class="badge bg-primary rounded-pill float-end">
+                  {emails().filter((e) => e.isUnread).length}
+                </span>
+              </a>
             </li>
             <li class="nav-item mb-2">
-              <a class="nav-link" href="#"><i class="fas fa-star me-2"></i> Starred</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-star me-2"></i> Starred
+              </a>
             </li>
             <li class="nav-item mb-2">
-              <a class="nav-link" href="#"><i class="fas fa-paper-plane me-2"></i> Sent</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-paper-plane me-2"></i> Sent
+              </a>
             </li>
             <li class="nav-item mb-2">
-              <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i> Drafts <span class="badge bg-secondary rounded-pill float-end">3</span></a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-file-alt me-2"></i> Drafts{" "}
+                <span class="badge bg-secondary rounded-pill float-end">3</span>
+              </a>
             </li>
             <li class="nav-item mb-2">
-              <a class="nav-link" href="#"><i class="fas fa-trash me-2"></i> Trash</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-trash me-2"></i> Trash
+              </a>
             </li>
           </ul>
           <hr />
           <h6>Filters</h6>
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="unread" checked={unreadFilter()} onChange={handleUnreadChange} />
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="unread"
+              checked={unreadFilter()}
+              onChange={handleUnreadChange}
+            />
             <label class="form-check-label" for="unread">
               Unread
             </label>
           </div>
           <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="important" checked={importantFilter()} onChange={handleImportantChange} />
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="important"
+              checked={importantFilter()}
+              onChange={handleImportantChange}
+            />
             <label class="form-check-label" for="important">
               Important
             </label>
@@ -146,13 +213,19 @@ export const EmailInbox = ()  => {
           <h6>Labels</h6>
           <ul class="nav flex-column">
             <li class="nav-item mb-1">
-              <a class="nav-link" href="#"><i class="fas fa-circle text-primary me-2"></i> Work</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-circle text-primary me-2"></i> Work
+              </a>
             </li>
             <li class="nav-item mb-1">
-              <a class="nav-link" href="#"><i class="fas fa-circle text-success me-2"></i> Personal</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-circle text-success me-2"></i> Personal
+              </a>
             </li>
             <li class="nav-item mb-1">
-              <a class="nav-link" href="#"><i class="fas fa-circle text-warning me-2"></i> Urgent</a>
+              <a class="nav-link" href="#">
+                <i class="fas fa-circle text-warning me-2"></i> Urgent
+              </a>
             </li>
           </ul>
         </aside>
@@ -162,59 +235,142 @@ export const EmailInbox = ()  => {
             <h3>Inbox</h3>
             <div>
               <div class="input-group">
-                <input type="text" class="form-control form-control-sm" placeholder="Search emails..." />
-                <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-search"></i></button>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Search emails..."
+                />
+                <button class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-search"></i>
+                </button>
               </div>
             </div>
           </div>
 
           <div class="d-flex align-items-center mb-2">
             <div class="form-check me-3">
-              <input class="form-check-input" type="checkbox" id="selectAll" checked={selectAll()} onChange={handleSelectAllChange} />
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="selectAll"
+                checked={selectAll()}
+                onChange={handleSelectAllChange}
+              />
               <label class="form-check-label" for="selectAll"></label>
             </div>
             <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary" onClick={markAsRead} disabled={selectedEmails().length === 0}><i class="fas fa-envelope-open"></i> Mark as Read</button>
-              <button class="btn btn-outline-secondary" onClick={markAsUnread} disabled={selectedEmails().length === 0}><i class="fas fa-envelope"></i> Mark as Unread</button>
-              <button class="btn btn-outline-secondary" onClick={starEmail} disabled={selectedEmails().length === 0}><i class="fas fa-star"></i> Star</button>
-              <button class="btn btn-outline-secondary" onClick={deleteEmail} disabled={selectedEmails().length === 0}><i class="fas fa-trash"></i> Delete</button>
+              <button
+                class="btn btn-outline-secondary"
+                onClick={markAsRead}
+                disabled={selectedEmails().length === 0}
+              >
+                <i class="fas fa-envelope-open"></i> Mark as Read
+              </button>
+              <button
+                class="btn btn-outline-secondary"
+                onClick={markAsUnread}
+                disabled={selectedEmails().length === 0}
+              >
+                <i class="fas fa-envelope"></i> Mark as Unread
+              </button>
+              <button
+                class="btn btn-outline-secondary"
+                onClick={starEmail}
+                disabled={selectedEmails().length === 0}
+              >
+                <i class="fas fa-star"></i> Star
+              </button>
+              <button
+                class="btn btn-outline-secondary"
+                onClick={deleteEmail}
+                disabled={selectedEmails().length === 0}
+              >
+                <i class="fas fa-trash"></i> Delete
+              </button>
             </div>
             <div class="ms-auto">
               <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button
+                  class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                  type="button"
+                  id="sortDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
                   Sort by Date
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
-                  <li><a class="dropdown-item" href="#">Date (Newest First)</a></li>
-                  <li><a class="dropdown-item" href="#">Date (Oldest First)</a></li>
-                  <li><a class="dropdown-item" href="#">Sender (A-Z)</a></li>
-                  <li><a class="dropdown-item" href="#">Sender (Z-A)</a></li>
-                  <li><a class="dropdown-item" href="#">Subject (A-Z)</a></li>
-                  <li><a class="dropdown-item" href="#">Subject (Z-A)</a></li>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="sortDropdown"
+                >
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Date (Newest First)
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Date (Oldest First)
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Sender (A-Z)
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Sender (Z-A)
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Subject (A-Z)
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      Subject (Z-A)
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
 
           <ul class="list-group">
-            <For each={filteredEmails()}>{(email) => (
-              <li class={`list-group-item d-flex align-items-center ${email.isUnread ? 'unread' : ''} ${email.isStarred ? 'starred' : ''}`}>
-                <div class="form-check me-3">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id={`email${email.id}`}
-                    checked={selectedEmails().includes(email.id)}
-                    onChange={(event) => handleSelectEmail(email.id, event)}
-                  />
-                  <label class="form-check-label" for={`email${email.id}`}></label>
-                </div>
-                <span class="fw-bold">{email.sender}</span> - <span class="subject">{email.subject}</span>
-                <span class="ms-auto text-muted small">{email.date}</span>
-                {email.hasAttachment && <i class="fas fa-paperclip ms-2 text-muted"></i>}
-                {email.isStarred && <i class="fas fa-star text-warning ms-2"></i>}
-              </li>
-            )}</For>
+            <For each={filteredEmails()}>
+              {(email) => (
+                <li
+                  class={`list-group-item d-flex align-items-center ${
+                    email.isUnread ? "unread" : ""
+                  } ${email.isStarred ? "starred" : ""}`}
+                >
+                  <div class="form-check me-3">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id={`email${email.id}`}
+                      checked={selectedEmails().includes(email.id)}
+                      onChange={(event) => handleSelectEmail(email.id, event)}
+                    />
+                    <label
+                      class="form-check-label"
+                      for={`email${email.id}`}
+                    ></label>
+                  </div>
+                  <span class="fw-bold">{email.sender}</span> -{" "}
+                  <span class="subject">{email.subject}</span>
+                  <span class="ms-auto text-muted small">{email.date}</span>
+                  {email.hasAttachment && (
+                    <i class="fas fa-paperclip ms-2 text-muted"></i>
+                  )}
+                  {email.isStarred && (
+                    <i class="fas fa-star text-warning ms-2"></i>
+                  )}
+                </li>
+              )}
+            </For>
           </ul>
 
           <div class="mt-3 d-flex justify-content-end">
@@ -225,9 +381,21 @@ export const EmailInbox = ()  => {
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item active">
+                  <a class="page-link" href="#">
+                    1
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">
+                    2
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">
+                    3
+                  </a>
+                </li>
                 <li class="page-item">
                   <a class="page-link" href="#" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
@@ -240,4 +408,4 @@ export const EmailInbox = ()  => {
       </div>
     </div>
   );
-}
+};
