@@ -167,18 +167,18 @@ export const ServiceProviderListings = (): JSX.Element => {
   };
 
   function showModal() {
-    document.getElementById("myModal")!.classList.remove("hidden");
-    document.getElementById("myModal")!.style.left = "0";
-    document.getElementById("myModal")!.style.opacity = "1";
-    document.getElementById("myModal")!.style.visibility = "visible";
+    document.getElementById("filterModal")!.classList.remove("hidden");
+    document.getElementById("filterModal")!.style.left = "0";
+    document.getElementById("filterModal")!.style.opacity = "1";
+    document.getElementById("filterModal")!.style.visibility = "visible";
   }
 
   function hideModal() {
-    document.getElementById("myModal")!.style.left = "-100%";
-    document.getElementById("myModal")!.style.opacity = "0";
-    document.getElementById("myModal")!.style.visibility = "hidden";
+    document.getElementById("filterModal")!.style.left = "-100%";
+    document.getElementById("filterModal")!.style.opacity = "0";
+    document.getElementById("filterModal")!.style.visibility = "hidden";
     setTimeout(() => {
-      document.getElementById("myModal")!.classList.add("hidden");
+      document.getElementById("filterModal")!.classList.add("hidden");
     }, 300);
   }
 
@@ -210,8 +210,8 @@ export const ServiceProviderListings = (): JSX.Element => {
       )}
 
       <div
-        class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50 hidden"
-        id="myModal"
+        class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-300 bg-opacity-50 hidden"
+        id="filterModal"
       >
         <div class="bg-white p-2 rounded-lg shadow-lg w-7/8 h-3/4 transition-all duration-300">
           <FilterBar
@@ -229,13 +229,6 @@ export const ServiceProviderListings = (): JSX.Element => {
           </button>
         </div>
       </div>
-
-      <button
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => showModal()}
-      >
-        Open Modal
-      </button>
 
       {openFilterBar() && (
         <div style={"width: 94vw"}>

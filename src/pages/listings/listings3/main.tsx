@@ -21,7 +21,6 @@ export const ServiceListingsC: Component<{
       const newMarkers: L.Marker[] = [];
       props.listings.forEach((listing) => {
         const marker = L.marker(listing.coordinates).addTo(map!);
-        console.log(marker, "------------");
         marker.bindPopup(
           `<h3>${listing.title}</h3>
             <p>${listing.location}</p>
