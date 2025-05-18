@@ -6,7 +6,6 @@ export const RootLayout = (props: any) => {
     window.innerWidth > 768 ? false : true
   );
   return (
-    // <main class="container" style={"width: 100vw"}>
     <div class="bg-gray-100 font-inter" style={{ "overflow-x": "hidden" }}>
       {/* <NavBar /> */}
       <div
