@@ -224,7 +224,7 @@ export const ServiceProviderDashboard = () => {
 
   return (
     <>
-      <div class="mx-auto">
+      <div style={"width: 79vw"}>
         <p class={`${css_module.dashboard_title}`}>
           Service Provider Dashboard
         </p>

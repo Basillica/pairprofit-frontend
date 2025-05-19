@@ -1,6 +1,7 @@
 .chat_container {
     height: 100vh; /* Make the container fill the viewport height */
-    margin: 0 auto; /* Center the container */
+    width: 96vw;
+    margin: 5 auto; /* Center the container */
     display: flex; /* For layout adjustments */
     flex-direction: row; /* Keep sidebar and chat side-by-side by default */
 }
