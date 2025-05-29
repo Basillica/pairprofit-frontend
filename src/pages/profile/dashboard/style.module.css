@@ -1,220 +1,248 @@
+/* Dashboard Container */
+.dashboard_container {
+  padding: 1.5rem; /* Consistent padding around the entire dashboard */
+  background-color: #f7fafc; /* Light background for the dashboard area */
+}
+
 .dashboard_title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 2rem;
-    text-align: center;
+  font-size: 1.8rem; /* Slightly larger for a main title */
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  text-align: center;
 }
+
+/* --- Summary Card Styles --- */
 .summary_card {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem; /* Standardized margin-bottom for all cards */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align content to the start */
 }
+
 .summary_card_icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
+  width: 3.5rem; /* Slightly larger icon */
+  height: 3.5rem; /* Ensure square aspect ratio */
+  border-radius: 9999px; /* Fully circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem; /* Adjust icon size */
 }
 .summary_card_content {
-    margin-left: 1.5rem;
-    margin-right: auto;
+  margin-left: 1.5rem;
 }
 .summary_card_title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.25rem;
+  font-size: 1rem; /* Slightly smaller title for more compact cards */
+  font-weight: 600;
+  color: #6b7280; /* Subtler color */
+  margin-bottom: 0.25rem;
 }
 .summary_card_value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #374151;
+  font-size: 1.875rem; /* Main value stands out */
+  font-weight: 700;
+  color: #374151;
 }
+
+/* Summary Card Icon Colors */
 .income_icon {
-    background-color: #10b981;
+  background-color: #10b981; /* Green */
 }
 .tasks_completed_icon {
-    background-color: #3b82f6;
+  background-color: #3b82f6; /* Blue */
 }
 .tasks_open_icon {
-    background-color: #f59e0b;
+  background-color: #f59e0b; /* Amber/Orange */
 }
 .contact_icon {
-    background-color: #8b5cf6;
+  background-color: #8b5cf6; /* Purple */
 }
 
-.charter_card {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.income_chart_canvas, .tasks_chart_canvas {
-    width: 100%;
-    height: 300px;
-}
-
-.contact_card {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-}
-.contact_title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-.contact_details {
-    font-size: 1rem;
-    color: #374151;
-    line-height: 1.75;
-}
-.contact_name {
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.latest-section {
-    margin-top: 2rem;
-}
-.latest-section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-.latest_items_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-.latest_item_card {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1rem;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-.latest_item_card:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-}
-.latest_item_title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-.latest_item_details {
-    font-size: 0.875rem;
-    color: #374151;
-    line-height: 1.5;
-}
-
-@media (max-width: 768px) {
-    .summary_card {
-        flex-direction: column;
-        text-align: center;
-    }
-    .summary_card_content {
-        margin-left: 0;
-        margin-top: 1rem;
-    }
-     .latest_items_grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-div > div.anthony {
-    display: block !important;
-    /* Ensure it's a block-level element */
-    clear: both !important;
-    /* Clear any floats */
-}
-
-.anthony {
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    max-width: 100% !important;
-}
-
-/* .chart_card {
-    background-color: #fff !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-    padding: 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    padding: 1.5rem !important;
-    margin-bottom: 2rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 400px !important;
-    width: 100% !important;
-    position: relative !important;
-    padding: 10px;
-} */
-
-.chart_card_new{
-    background-color: #fff !important;
-    border-radius: 0.75rem !important;
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
+/* --- Chart and Map Card Styles --- */
 .chart_card {
-    background-color: #fff !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-    padding: 0.5rem !important;
-    margin-bottom: 1rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    height: 500px !important;
-    position: relative !important;
-    overflow: hidden;
-
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem; /* Standardized margin-bottom */
+  height: 400px; /* Fixed height for consistent chart/map display */
+  display: flex;
+  flex-direction: column;
+  position: relative; /* For map positioning */
+  overflow: hidden; /* Hide overflow from map/chart */
 }
 
 .chart_title {
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    color: #1e293b !important;
-    text-align: center !important;
+  font-size: 1.25rem; /* Chart titles */
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem; /* Space below title */
+  text-align: center;
 }
 
-.map {
-    position: absolute !important;
+.income_chart_canvas,
+.tasks_chart_canvas {
+  flex-grow: 1; /* Make canvas fill remaining space in chart_card */
+  width: 100%;
+  height: 100%; /* Important for Chart.js responsiveness within flex container */
 }
 
-/* .map {
-    height: calc(100% - 2.5rem) !important;
-    width: 100% !important;
-    border-radius: 0.75rem !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-    padding: 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    margin-bottom: 0 !important;
-    position: absolute !important;
-    top: 2.5rem !important;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-} */
+/* Map specific styling */
+.map_container {
+  flex-grow: 1; /* Make map fill remaining space in chart_card */
+  width: 100%;
+  height: 100%; /* Important for Leaflet map display */
+  border-radius: 0.5rem; /* Match card border-radius */
+  overflow: hidden; /* Ensure map doesn't overflow rounded corners */
+}
+
+/* --- Contact Card Styles --- */
+.contact_card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem; /* Standardized margin-bottom */
+}
+.contact_title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.contact_details {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.75;
+}
+.contact_name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* --- Latest Items Styles --- */
+.latest_items_wrapper {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem; /* Standardized margin-bottom */
+  display: flex;
+  flex-direction: column; /* Stack title and grid */
+}
+
+.latest_section_title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.latest_items_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Adjusted minmax for better responsiveness */
+  gap: 1.5rem;
+}
+.latest_item_card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Lighter shadow */
+  padding: 1rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.latest_item_card:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+.latest_item_title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+.latest_item_details {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 1024px) { /* Adjust for smaller desktops/large tablets */
+  .dashboard_title {
+    font-size: 1.6rem;
+  }
+  .summary_card_value {
+    font-size: 1.6rem;
+  }
+  .summary_card_icon {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) { /* Tablets and smaller */
+  .dashboard_container {
+    padding: 1rem; /* Less padding on smaller screens */
+  }
+  .dashboard_title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .summary_card {
+    flex-direction: column; /* Stack icon and content */
+    text-align: center;
+    margin-bottom: 1rem; /* Reduced margin */
+  }
+  .summary_card_content {
+    margin-left: 0;
+    margin-top: 1rem; /* Space between icon and text when stacked */
+  }
+  .summary_card_title {
+    font-size: 1.1rem;
+  }
+  .summary_card_value {
+    font-size: 1.7rem;
+  }
+
+  .chart_card,
+  .contact_card,
+  .latest_items_wrapper {
+    margin-bottom: 1.5rem; /* Consistent margins for all larger cards */
+    height: auto; /* Allow content to dictate height on mobile */
+  }
+  .chart_card {
+    height: 350px; /* Adjust height for charts on smaller screens */
+  }
+
+  .latest_items_grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 1rem;
+  }
+  .latest_item_card {
+    margin-bottom: 0; /* Handled by grid gap */
+  }
+}
+
+@media (max-width: 640px) { /* Smaller phones */
+  .dashboard_title {
+    font-size: 1.3rem;
+  }
+  .summary_card_value {
+    font-size: 1.5rem;
+  }
+  .summary_card_icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.2rem;
+  }
+  .chart_card {
+    height: 300px; /* Even smaller chart height on tiny screens */
+  }
+}

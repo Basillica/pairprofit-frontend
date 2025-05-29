@@ -1,3 +1,3 @@
-export {LovelyChat, Shitty} from './chat'
-export { ServiceProviderDashboard } from './dashboard'
-export { KanbanBoard } from './kanban'
+export { LovelyChat } from "./chat";
+export { ServiceProviderDashboard } from "./dashboard";
+export { KanbanBoard } from "./kanban";

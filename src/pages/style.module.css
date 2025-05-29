@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     min-height: 90vh;
-    background-color: #f7fafc; /* Light background */
+    width: 100vw;
 }
 .error_code {
     font-size: 9rem; /* Large font size for 404 */

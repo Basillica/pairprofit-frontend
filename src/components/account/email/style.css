@@ -1,63 +1,392 @@
-body {
-    font-family: sans-serif;
-    background-color: #f8f9fa;
+:root {
+  /* Colors */
+  --primary-blue: #0d6efd; /* Bootstrap primary blue */
+  --secondary-gray: #6c757d; /* Bootstrap secondary gray */
+  --danger-red: #dc3545; /* Bootstrap danger red */
+  --warning-yellow: #ffc107; /* Bootstrap warning yellow */
+  --success-green: #198754; /* Bootstrap success green */
+  --light-bg: #f8f9fa; /* Bootstrap light background */
+  --border-color: #dee2e6; /* Bootstrap border color */
+  --hover-bg: #f0f0f0;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
 }
 
 .email-app {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  display: grid;
+  /* Define grid for desktop: sidebar (fixed width) and main content (takes rest) */
+  grid-template-columns: 250px 1fr; /* Fixed width for sidebar, rest for main */
+  min-height: 100vh;
+  gap: 0; /* Remove gap if no space between grid items */
 }
 
-.email-app .row {
-    flex-grow: 1;
+/* Specific styling for the main layout areas */
+.email-app-sidebar {
+  background-color: var(--light-bg);
+  padding: var(--space-4); /* p-3 equivalent */
+  border-right: 1px solid var(--border-color); /* border-end equivalent */
+  display: flex; /* Flex container for content inside sidebar */
+  flex-direction: column;
 }
 
-.email-app aside {
-    background-color: #f8f9fa;
+.email-app-main-content {
+  background-color: var(--white);
+  padding: var(--space-4); /* p-3 equivalent */
+  overflow-y: auto; /* Allow scrolling for main content if it overflows */
 }
 
-.email-app main {
-    background-color: #fff;
+/* Compose Button */
+.email-app-sidebar .compose-btn {
+  background-color: var(--danger-red);
+  color: var(--white);
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: 0.25rem; /* Bootstrap's btn-block mb-3 */
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
-.email-app .list-group-item {
-    border-left: none;
-    border-right: none;
-    border-radius: 0;
-    padding: 0.75rem 1rem;
+.email-app-sidebar .compose-btn:hover {
+  background-color: #bb2d3b; /* Darker red */
 }
 
-.email-app .list-group-item:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
+.email-app-sidebar .compose-btn i {
+  margin-right: var(--space-2); /* me-2 equivalent */
 }
 
-.email-app .list-group-item.unread {
-    font-weight: bold;
+/* Navigation List */
+.email-app-sidebar .nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.email-app .list-group-item .subject {
-    flex-grow: 1;
-    margin-left: 1rem;
+.email-app-sidebar .nav-item {
+  margin-bottom: var(--space-2); /* mb-2 equivalent */
 }
 
-.email-app .list-group-item .fa-paperclip {
-    margin-left: 0.5rem;
+.email-app-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  color: var(--secondary-gray); /* Default text color */
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.email-app .list-group-item .fa-star {
-    color: #ffc107;
+.email-app-sidebar .nav-link:hover,
+.email-app-sidebar .nav-link.active {
+  background-color: var(--primary-blue);
+  color: var(--white);
 }
 
-/* Responsive adjustments */
+.email-app-sidebar .nav-link.active i {
+  color: var(--white); /* Ensure icon color matches active link */
+}
+
+.email-app-sidebar .nav-link i {
+  margin-right: var(--space-2);
+  width: 1rem; /* Fixed width for icons */
+  text-align: center;
+  color: var(--secondary-gray); /* Default icon color */
+}
+
+.email-app-sidebar .nav-link .badge {
+  margin-left: auto; /* Push badge to the right float-end */
+  background-color: var(--primary-blue); /* Primary badge color */
+  border-radius: 1rem; /* rounded-pill */
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--white);
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.email-app-sidebar .nav-link.active .badge {
+  background-color: var(--white); /* White badge on active link */
+  color: var(--primary-blue);
+}
+
+/* Horizontal Rule */
+.email-app-sidebar hr {
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Filters and Labels Headers */
+.email-app-sidebar h6 {
+  color: var(--secondary-gray);
+  margin-bottom: var(--space-3);
+  font-size: 0.875rem; /* Smaller font size for headers */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Form Check (checkboxes) */
+.email-app-sidebar .form-check {
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+}
+
+.email-app-sidebar .form-check-input {
+  margin-right: var(--space-2);
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
+}
+
+.email-app-sidebar .form-check-label {
+  font-size: 0.9rem;
+  color: var(--dark-gray); /* Adjust as needed */
+  cursor: pointer;
+}
+
+/* Label Colors (Work, Personal, Urgent) */
+.email-app-sidebar .nav-link .text-primary {
+  color: var(--primary-blue) !important;
+}
+.email-app-sidebar .nav-link .text-success {
+  color: var(--success-green) !important;
+}
+.email-app-sidebar .nav-link .text-warning {
+  color: var(--warning-yellow) !important;
+}
+
+/* Main Content Header & Search */
+.email-app-main-content .header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: var(--space-3); /* Gap between elements on wrap */
+}
+
+.email-app-main-content .header-controls h3 {
+  margin: 0; /* Remove default margin */
+  font-size: 1.75rem;
+}
+
+.email-app-main-content .search-box {
+  display: flex;
+  border-radius: 0.25rem;
+  overflow: hidden; /* Ensures borders apply correctly */
+}
+
+.email-app-main-content .search-box .form-control-sm {
+  border: 1px solid var(--border-color);
+  padding: 0.375rem 0.75rem; /* Bootstrap's form-control-sm padding */
+  font-size: 0.875rem;
+  border-right: none; /* No border between input and button */
+  box-shadow: none; /* Remove focus outline */
+}
+
+.email-app-main-content .search-box .form-control-sm:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Bootstrap focus style */
+}
+
+.email-app-main-content .search-box .btn-outline-secondary {
+  border: 1px solid var(--border-color);
+  background-color: var(--white);
+  color: var(--secondary-gray);
+  padding: 0.375rem 0.75rem;
+  border-left: none; /* No border between input and button */
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.email-app-main-content .search-box .btn-outline-secondary:hover {
+  background-color: var(--light-bg);
+  border-color: var(--secondary-gray);
+  color: var(--secondary-gray);
+}
+
+/* Toolbar (Select All, Actions, Sort) */
+.email-app-main-content .toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: var(--space-3); /* Gap between elements on wrap */
+}
+
+.email-app-main-content .toolbar .form-check {
+  margin-right: var(--space-3); /* me-3 equivalent */
+}
+
+.email-app-main-content .toolbar .btn-group-sm .btn {
+  padding: 0.375rem 0.75rem; /* Bootstrap's btn-sm padding */
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  margin-right: -1px; /* To make them look connected */
+}
+
+.email-app-main-content .toolbar .btn-group-sm .btn:first-child {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+.email-app-main-content .toolbar .btn-group-sm .btn:last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  margin-right: 0;
+}
+
+.email-app-main-content .toolbar .btn-group-sm .btn i {
+  margin-right: var(--space-2);
+}
+
+.email-app-main-content .toolbar .ms-auto {
+  margin-left: auto !important; /* Push sort dropdown to the right */
+}
+
+.email-app-main-content .toolbar .dropdown-menu {
+  right: 0; /* Align dropdown to the right */
+  left: auto;
+}
+
+/* Email List Items */
+.email-app-main-content .email-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--border-color); /* Add top border for list group effect */
+  border-bottom: 1px solid var(--border-color);
+}
+
+.email-app-main-content .list-group-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem var(--space-3); /* Adjust padding */
+  border: 1px solid var(--border-color);
+  border-top: none; /* Only show bottom border */
+  border-left: none; /* border-left: none; */
+  border-right: none; /* border-right: none; */
+  border-radius: 0;
+  transition: background-color 0.2s ease;
+}
+
+.email-app-main-content .list-group-item:hover {
+  background-color: var(--hover-bg);
+  cursor: pointer;
+}
+
+.email-app-main-content .list-group-item.unread {
+  font-weight: bold;
+  background-color: rgba(200, 220, 255, 0.3); /* Slightly different background for unread */
+}
+
+.email-app-main-content .list-group-item.starred .fa-star {
+  color: var(--warning-yellow);
+}
+
+.email-app-main-content .list-group-item .form-check {
+  margin-right: var(--space-3); /* me-3 equivalent */
+}
+
+.email-app-main-content .list-group-item .fw-bold {
+  font-weight: 700; /* Use numerical value for font-weight */
+}
+
+.email-app-main-content .list-group-item .subject {
+  flex-grow: 1;
+  margin-left: var(--space-3); /* ml-3 equivalent */
+  white-space: nowrap; /* Prevent subject from wrapping */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis for overflow */
+  max-width: 60%; /* Limit subject width */
+}
+
+.email-app-main-content .list-group-item .text-muted {
+  color: var(--secondary-gray) !important;
+}
+
+.email-app-main-content .list-group-item .small {
+  font-size: 0.875em;
+}
+
+.email-app-main-content .list-group-item .fa-paperclip {
+  margin-left: var(--space-2); /* ms-2 equivalent */
+  color: var(--secondary-gray);
+}
+
+.email-app-main-content .list-group-item .fa-star {
+  margin-left: var(--space-2); /* ms-2 equivalent */
+  color: #ccc; /* Default color for unstarred */
+}
+
+/* Pagination */
+.email-app-main-content .pagination-container {
+  display: flex;
+  justify-content: flex-end; /* Push to the right */
+  margin-top: var(--space-4); /* mt-3 equivalent */
+}
+
+.email-app-main-content .pagination-sm .page-link {
+  padding: 0.25rem 0.5rem; /* Bootstrap's pagination-sm padding */
+  font-size: 0.875rem;
+}
+
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
-    .email-app .row {
-        flex-direction: column;
-    }
-    .email-app aside {
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-    }
+  .email-app {
+    grid-template-columns: 1fr; /* Stack sidebar and main content vertically */
+    grid-template-rows: auto 1fr; /* Sidebar takes auto height, main takes rest */
+  }
+
+  .email-app-sidebar {
+    border-right: none; /* Remove right border */
+    border-bottom: 1px solid var(--border-color); /* Add bottom border */
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .email-app-main-content .header-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .email-app-main-content .header-controls .search-box {
+    width: 100%; /* Full width search box */
+  }
+
+  .email-app-main-content .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2); /* Smaller gap for stacked items */
+  }
+
+  .email-app-main-content .toolbar .btn-group-sm {
+    width: 100%; /* Make button group full width */
+  }
+
+  .email-app-main-content .toolbar .btn-group-sm .btn {
+    width: 100%; /* Make individual buttons full width */
+    margin-right: 0; /* Remove negative margin for stacked buttons */
+    border-radius: 0.25rem !important; /* Ensure rounded corners on all buttons */
+  }
+
+  .email-app-main-content .toolbar .ms-auto {
+    margin-left: 0 !important; /* Remove auto margin to align left */
+    width: 100%; /* Ensure dropdown takes full width */
+  }
+
+  .email-app-main-content .list-group-item .subject {
+    max-width: 50%; /* Adjust subject width on smaller screens */
+  }
 }

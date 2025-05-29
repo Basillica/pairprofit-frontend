@@ -35,7 +35,10 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
   };
 
   return (
-    <div class="container filter-bar filter-section" style={"padding: 4px"}>
+    <div
+      class="container-fluid filter-bar filter-section"
+      style={"padding: 4px"}
+    >
       <div class="filter-section">
         <label for="main-category" class="filter-label">
           Main Category

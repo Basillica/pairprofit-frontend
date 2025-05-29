@@ -1,225 +1,485 @@
+:root {
+  /* Define color variables for easier theming and consistency */
+  --primary-blue: #3b82f6;
+  --hover-blue: #2563eb;
+  --light-blue-bg: #e0f2fe;
+  --dark-gray-text: #1e293b;
+  --medium-gray-text: #6b7280;
+  --light-gray-border: #d1d5db;
+  --light-gray-divider: #e5e7eb;
+  --white: #fff;
+  --red-error: #ef4444;
+  --red-logout: #dc2626;
+  --red-logout-hover: #b80f0a;
+  --green-success: #10b981;
+  --google-blue: #4285f4;
+  --google-hover: #f8f9fa;
+  --linkedin-blue: #0077b5;
+  --linkedin-hover: #004182;
+  --github-bg: #cbe1b5; /* This seems like a non-standard GitHub color, typically it's black/dark gray */
+  --github-hover: #310173; /* This seems like a non-standard GitHub color */
+  --facebook-bg: #9fd8e9; /* This seems like a non-standard Facebook color, typically it's #1877F2 */
+  --facebook-hover: #8dc3dc; /* This seems like a non-standard Facebook color */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif; /* Ensure a fallback font */
+}
 
 .container-auth {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    padding: 0;
+  display: grid; /* Use grid for main layout */
+  grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
 }
-.row {
-    display: flex;
-    flex-grow: 1;
-    margin: 0;
-    padding: 0;
-}
+
 .left-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #e0f2fe;
-    width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--light-blue-bg);
+  padding: 2rem; /* Add some padding */
 }
+
 .logo {
-    max-width: 80%;
-    height: auto;
+  max-width: 80%; /* Keep max-width for image scaling */
+  height: auto;
+  border-radius: 50%; /* Apply border-radius directly if it's always circular */
 }
+
 .right-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    padding-left: 1rem;
-    padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem; /* Adjust padding for better spacing */
+  width: 100%; /* Ensure it takes full available width in its grid column */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
 }
+
 .auth-card {
-    background-color: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    margin-bottom: 2rem;
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 95%; /* Use a fixed width or max-width for better control */
+  max-width: 450px; /* Set a max-width for desktop */
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-sizing: border-box;
 }
+
 .auth-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
+
 .auth-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dark-gray-text);
+  margin-bottom: 0.5rem;
 }
+
 .auth-subtitle {
-    font-size: 1rem;
-    color: #6b7280;
-    margin-bottom: 0;
+  font-size: 1rem;
+  color: var(--medium-gray-text);
+  margin-bottom: 0;
 }
+
 .form-group {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
+
 .form-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--dark-gray-text);
+  margin-bottom: 0.5rem;
 }
+
 .form-control {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
-    outline: none;
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-gray-border);
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-sizing: border-box; /* Crucial for form elements */
 }
+
 .form-control:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
+
 .btn-primary {
-    background-color: #3b82f6;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    display: block;
-    transition: background-color 0.2s ease-in-out;
+  background-color: var(--primary-blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+  box-sizing: border-box;
 }
+
 .btn-primary:hover {
-    background-color: #2563eb;
+  background-color: var(--hover-blue);
 }
+
 .auth-link {
-    font-size: 0.875rem;
-    color: #3b82f6;
-    text-decoration: none;
-    margin-top: 1rem;
-    display: block;
-    text-align: center;
+  font-size: 0.875rem;
+  color: var(--primary-blue);
+  text-decoration: none;
+  margin-top: 1rem;
+  display: block;
+  text-align: center;
 }
+
 .auth-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
+
 .divider {
-    display: flex;
-    align-items: center;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
+
 .divider-text {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-left: 1rem;
-    margin-right: 1rem;
+  font-size: 0.875rem;
+  color: var(--medium-gray-text);
+  margin-left: 1rem;
+  margin-right: 1rem;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
+
 .divider-line {
-    flex-grow: 1;
-    height: 1px;
-    background-color: #e5e7eb;
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--light-gray-divider);
 }
+
 .social-login {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
+
 .social-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    max-width: 300px;
-    transition: background-color 0.2s ease-in-out;
-    font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px; /* Limit max-width for social buttons */
+  transition: background-color 0.2s ease-in-out;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
+
 .social-btn i {
-    margin-right: 0.75rem;
-    width: 1rem;
-    height: 1rem;
+  margin-right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
 }
+
 .google-btn {
-    background-color: #fff;
-    color: #4285f4;
-    border: 1px solid #4285f4;
+  background-color: var(--white);
+  color: var(--google-blue);
+  border: 1px solid var(--google-blue);
 }
+
 .google-btn:hover {
-    background-color: #f8f9fa;
+  background-color: var(--google-hover);
 }
+
 .linkedin-btn {
-    background-color: #0077b5;
-    color: #fff;
+  background-color: var(--linkedin-blue);
+  color: var(--white);
 }
+
 .linkedin-btn:hover {
-    background-color: #004182;
+  background-color: var(--linkedin-hover);
 }
+
 .github-btn {
-    background-color: #cbe1b5;
-    color: #fff;
+  /* Using standard GitHub colors for better consistency */
+  background-color: #24292e; /* Dark gray/black */
+  color: var(--white);
 }
+
 .github-btn:hover {
-    background-color: #310173;
+  background-color: #000000; /* Even darker */
 }
+
 .facebook-btn {
-    background-color: #9fd8e9;
-    color: #ffffff;
+  /* Using standard Facebook colors for better consistency */
+  background-color: #1877f2; /* Facebook Blue */
+  color: var(--white);
 }
+
 .facebook-btn:hover {
-    background-color: #8dc3dc;
+  background-color: #166fe5; /* Slightly darker blue */
 }
 
 .logout-btn {
-    background-color: #dc2626;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    display: block;
-    transition: background-color 0.2s ease-in-out;
-    margin-top: 2rem;
+  background-color: var(--red-logout);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 2rem;
+  box-sizing: border-box;
 }
+
 .logout-btn:hover {
-    background-color: #b80f0a;
+  background-color: var(--red-logout-hover);
 }
 
 .success-message {
-    background-color: #10b981;
-    color: #fff;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
+  background-color: var(--green-success);
+  color: var(--white);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .error-message {
-    background-color: #ef4444;
-    color: #fff;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
+  background-color: var(--red-error);
+  color: var(--white);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
+/* --- Mobile Styles --- */
 @media (max-width: 768px) {
-    .left-panel {
-        display: none;
-    }
-    .right-panel {
-        width: 100%;
-    }
+  .container-auth {
+    grid-template-columns: 1fr; /* Stack columns on mobile */
+  }
+
+  .left-panel {
+    display: none; /* Hide the left panel on mobile */
+  }
+
+  .right-panel {
+    width: 100%; /* Take full width on mobile */
+    padding: 1rem; /* Adjust padding for mobile */
+  }
+
+  .auth-card {
+    width: 100%; /* Make auth card take full width on mobile */
+    max-width: none; /* Remove max-width constraint on mobile */
+  }
+}
+
+
+/* Footer Variables (reusing some from previous examples) */
+:root {
+  --footer-bg-dark: #2c3e50; /* A dark, professional background */
+  --footer-text-light: #ecf0f1; /* Light text for contrast */
+  --footer-link-hover: #3498db; /* A vibrant blue for link hover */
+  --footer-heading-color: #f0f0f0; /* Slightly lighter heading */
+  --footer-icon-color: #bdc3c7; /* Lighter grey for icons */
+}
+
+.site-footer {
+  background-color: var(--footer-bg-dark);
+  color: var(--footer-text-light);
+  padding: 3rem 0; /* Ample padding top and bottom */
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.footer-container {
+  max-width: 1200px; /* Aligns with common container widths */
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
+  justify-content: space-between; /* Distributes space between sections */
+  gap: 2rem; /* Space between columns */
+  padding: 0 1.5rem; /* Horizontal padding for responsiveness */
+}
+
+.footer-section {
+  flex: 1; /* Allows sections to grow and shrink */
+  min-width: 200px; /* Minimum width before wrapping */
+  max-width: 280px; /* Max width to control column size */
+}
+
+.footer-section h4 {
+  color: var(--footer-heading-color);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+/* Underline effect for headings */
+.footer-section h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--footer-link-hover);
+}
+
+.footer-section p {
+  margin-bottom: 0.8rem;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer-section a:hover {
+  color: var(--footer-link-hover);
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem; /* Space between icons */
+}
+
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; /* Fixed size for social icons */
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background */
+  color: var(--footer-icon-color);
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.social-icons a:hover {
+  background-color: var(--footer-link-hover);
+  color: var(--footer-text-light);
+}
+
+.footer-section.contact p i {
+  margin-right: 0.5rem;
+  color: var(--footer-icon-color);
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separator line */
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* Space between copyright and bottom links */
+}
+
+.footer-bottom p {
+  margin: 0;
+  flex-shrink: 0; /* Prevent copyright text from shrinking too much */
+}
+
+.bottom-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center links if they wrap */
+  gap: 1rem;
+}
+
+.bottom-links li {
+  margin: 0;
+}
+
+.bottom-links a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.bottom-links a:hover {
+  color: var(--footer-link-hover);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center; /* Center items when stacked */
+    text-align: center;
+  }
+
+  .footer-section {
+    max-width: 100%; /* Take full width on smaller screens */
+    margin-bottom: 2rem; /* Add space between stacked sections */
+  }
+
+  .footer-section:last-child {
+    margin-bottom: 0; /* No margin on the last section */
+  }
+
+  .footer-section h4::after {
+    left: 50%; /* Center the underline */
+    transform: translateX(-50%);
+  }
+
+  .social-icons {
+    justify-content: center; /* Center social icons */
+  }
+
+  .footer-bottom {
+    flex-direction: column; /* Stack bottom elements */
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-footer {
+    padding: 2rem 0; /* Reduce padding on very small screens */
+  }
 }

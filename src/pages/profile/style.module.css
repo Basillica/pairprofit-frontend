@@ -1,9 +1,39 @@
+/* Base styles for the chat container */
 .chat_container {
-    height: 100vh; /* Make the container fill the viewport height */
-    width: 96vw;
-    margin: 5 auto; /* Center the container */
-    display: flex; /* For layout adjustments */
-    flex-direction: row; /* Keep sidebar and chat side-by-side by default */
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling if columns exceed screen width */
+    height: calc(100vh - 80px); /* Adjust height to fit viewport, considering header/footer */
+    padding: 20px;
+    gap: 20px; /* Space between columns */
+    background-color: #f7fafc; /* Consistent with body background, or slightly different if desired */
+    align-items: flex-start; /* Align columns to the top */
+    flex-wrap: nowrap; /* Prevent columns from wrapping to the next line */
+}
+
+/* Chat Sidebar (Contact List) */
+.chat_sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    flex-basis: 350px; /* Fixed width for desktop sidebar */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding-right: 10px;
+    padding-top: 5px;
+    transition: transform 0.3s ease-in-out;
+    width: 350px; /* Explicitly set width for desktop */
+}
+
+.chat_list_header {
+    margin-top: 50px;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.chat_list ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px;
 }
 
 .chat_contact {
@@ -27,28 +57,7 @@
     background-color: #d1fae5;
 }
 
-
-.chat_sidebar {
-    background-color: #f8f9fa; /* Light background for sidebar */
-    border-right: 1px solid #dee2e6; /* Add a separator */
-    border-radius: 10px;
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
-    display: flex;
-    flex-direction: column;
-    padding-right: 10px;
-    padding-top: 5px;
-}
-
-.chat_list_header {
-    padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.chat_list {
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
+/* Chat Messages Wrapper */
 .chat_messages_wrapper {
     background-color: #e5ddd5;
     background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
@@ -56,44 +65,69 @@
     background-repeat: repeat;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    border-left: 1px solid #dee2e6;
-    transition: transform 0.3s ease-in-out; /* For sliding animation */
+    flex-grow: 1; /* Allows it to take remaining space on desktop */
+    transition: transform 0.3s ease-in-out;
+    min-height: 100vh; /* Ensure it fills height on mobile */
+    position: relative;
+    /* On desktop, it takes remaining space */
+    width: auto;
 }
 
-.chat_messages_wrapper .list-visible {
-    transform: translateX(100%);
-}
-
+/* Chat Header (Desktop) */
 .chat_header {
     border-bottom: 1px solid #dee2e6;
     padding: 0.75rem 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: #f8f9fa;
+    flex-shrink: 0;
 }
 
-.chat_header .back-button {
-    font-size: 1.2rem;
-    margin-right: 1rem;
-    cursor: pointer;
-    display: none; /* Hidden on larger screens */
+/* Mobile Chat Header */
+.mobile_chat_nav {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
+/* Chat Messages Body */
 .chat_messages {
-    padding: 1rem;
+    padding: 1rem; /* Base padding */
     overflow-y: auto;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
+/* Message Alignment */
+.message_user {
+    align-self: flex-end; /* Align user messages to the right */
+    margin-left: 10%; /* Ensure some space from the left edge */
+    margin-right: 0; /* Remove any default right margin */
+}
+
+.message_other {
+    align-self: flex-start; /* Align other messages to the left */
+    margin-right: 10%; /* Ensure some space from the right edge */
+    margin-left: 0; /* Remove any default left margin */
+}
+
+/* Chat Bubbles */
 .chat_bubble {
-    max-width: 80%;
     border-radius: 20px;
     padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
     word-break: break-word;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* Important for inner alignment */
+    align-items: flex-start; /* Default align content to start for text */
+}
+
+.message_user .chat_bubble {
+    align-items: flex-end; /* Align content to end for user bubbles (makes timestamp align right) */
 }
 
 .chat_bubble.bg-light {
@@ -105,13 +139,18 @@
     color: #000;
 }
 
-.chat_messages small.text-muted {
-    font-size: 0.75rem;
+.message_timestamp {
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+    color: rgba(0, 0, 0, 0.5);
 }
 
+/* Chat Input Area */
 .chat_input_area {
     border-top: 1px solid #dee2e6;
     padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    flex-shrink: 0;
 }
 
 .chat_input_group {
@@ -121,87 +160,140 @@
 
 .chat_input_group .btn {
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 0.5rem;
+    font-size: 1.1rem;
 }
 
 .chat_input_group input[type="text"] {
-    border-radius: 18px;
+    border-radius: 20px;
     flex-grow: 1;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
+    padding: 0.75rem 1.2rem;
+    border: 1px solid #ced4da;
 }
 
 .chat_input_group button.send-button {
-    border-radius: 5%;
-    width: 98px;
-    height: 48px;
+    border-radius: 20px;
+    padding: 0.75rem 1.5rem;
     background-color: #007bff;
     color: white;
     border: none;
-    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Mobile Styles */
+.chat_input_group button.send-button i {
+    margin-right: 0.5rem;
+}
+
+/* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
     .chat_container {
-        flex-direction: column; /* Stack vertically */
+        flex-direction: column;
+        /* Remove padding here, let child elements manage their own spacing */
+        /* padding: 0; */
     }
 
-    .chat-sidebar {
-        width: 100%;
-        max-height: 300px; /* Allow scrolling for contacts */
+    .chat_sidebar {
+        width: 100vw;
+        max-height: 100vh;
         overflow-y: auto;
+        border-right: none;
         border-bottom: 1px solid #dee2e6;
-        position: absolute; /* Initially cover the whole screen */
+        position: fixed;
         top: 0;
         left: 0;
-        z-index: 100; /* Ensure it's above the chat */
-        transform: translateX(0); /* Initially visible */
-        transition: transform 0.3s ease-in-out;
+        z-index: 20;
+        transform: translateX(0%);
+        padding-right: 0;
+        /* Remove margin/border-radius here to avoid pixel pushing issues */
+        margin: 0;
+        border-radius: 0;
+        box-sizing: border-box; /* Important for full width calculations */
     }
 
-    .chat-sidebar.hidden {
-        transform: translateX(-100%); /* Slide out to hide */
+    .chat_sidebar.hidden {
+        transform: translateX(-100vw); /* Slide sidebar out using 100vw */
     }
 
     .chat_messages_wrapper {
-        width: 100%;
-        height: 100%;
-        border-left: none;
-        position: fixed;
-        top: 0;
-        left: 100%; /* Initially off-screen to the right */
-        transform: translateX(-100%); /* Slide in from right */
-        z-index: 90; /* Below the sidebar during transition */
-        background-color: #e5ddd5; /* Ensure full background */
-    }
-
-    .chat_messages_wrapper .visible {
-        transform: translateX(0);
-    }
-
-    .chat_header {
-        justify-content: flex-start;
-        background-color: rgba(255, 255, 255, 0.8); /* Add some background for visibility */
-        backdrop-filter: blur(5px); /* Optional blur effect */
+        width: 100vw; /* Take full viewport width */
+        height: 100vh;
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        z-index: 105; /* Above messages */
+        z-index: 10;
+        transform: translateX(0%);
+        padding-top: 56px; /* Space for the mobile chat header */
+        /* Remove margin/border-radius here to avoid pixel pushing issues */
+        margin: 0;
+        border-radius: 0;
+        box-sizing: border-box; /* Important for full width calculations */
     }
 
-    .chat_header .back-button {
-        display: block;
-        z-index: 110; /* Above other header elements */
+    .chat_messages_wrapper.hidden {
+        transform: translateX(100vw); /* Slide chat out using 100vw */
     }
 
+    /* Message padding and alignment on mobile */
     .chat_messages {
-        padding-top: 3.5rem; /* Space for fixed header */
+        padding: 1rem; /* Consistent padding */
+        padding-top: calc(1rem + 56px); /* Adjust for sticky header */
+        padding-bottom: 1rem; /* Ensure space at bottom */
+    }
+
+    .message_user {
+        margin-left: 1rem; /* More specific margin for mobile */
+        margin-right: 0;
+    }
+
+    .message_other {
+        margin-right: 1rem; /* More specific margin for mobile */
+        margin-left: 0;
+    }
+
+    .chat_bubble {
+        max-width: calc(100% - 2rem); /* Keep some space from edges */
+    }
+
+    /* Mobile Header and Input Area */
+    .mobile_chat_nav, .chat_input_area {
+        width: 100%; /* Ensure full width */
+        box-sizing: border-box; /* Include padding in width */
+        padding-left: 1rem; /* Consistent padding */
+        padding-right: 1rem; /* Consistent padding */
+    }
+
+    .mobile_chat_nav {
+        border-radius: 0; /* No rounded corners on sticky top bar */
+        flex-direction: row;
+        background-color: red;
+
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f8f9fa;
+        flex-shrink: 0;
+
+        /* border-bottom: 1px solid #dee2e6;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #f8f9fa;
+        flex-shrink: 0; */
+    }
+
+    .chat_input_area {
+        border-radius: 0; /* No rounded corners on sticky bottom bar */
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        z-index: 15; /* Ensure it's above messages when scrolling */
     }
 }

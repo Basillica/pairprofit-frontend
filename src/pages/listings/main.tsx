@@ -213,7 +213,7 @@ export const ServiceListings = () => {
         </div>
       )}
 
-      <div style={"width: 94vw"}>
+      <div style={"padding-bottom: 10px; margin-top: 5px"}>
         <FilterBar
           categories={categories}
           subCategories={subCategories}

@@ -1,0 +1,428 @@
+/* --- Kanban Board Container --- */
+.kanban-board {
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling if columns exceed screen width */
+    height: calc(100vh - 80px); /* Adjust height to fit viewport, considering header/footer */
+    padding: 20px;
+    gap: 20px; /* Space between columns */
+    background-color: #f7fafc; /* Consistent with body background, or slightly different if desired */
+    align-items: flex-start; /* Align columns to the top */
+    flex-wrap: nowrap; /* Prevent columns from wrapping to the next line */
+}
+
+/* --- Kanban Column --- */
+.kanban-column {
+    background-color: #ebecf0; /* Light gray for column background, standard for Trello-like boards */
+    border-radius: 8px; /* Slightly more rounded corners */
+    padding: 15px;
+    width: 300px; /* Fixed width for columns */
+    min-width: 300px; /* Ensures columns don't shrink */
+    max-height: calc(100vh - 120px); /* Constrain column height for scrolling */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25); /* Subtle shadow for depth */
+    flex-shrink: 0; /* Prevents columns from shrinking during drag */
+}
+
+.kanban-column h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.25rem; /* Slightly smaller for better fit */
+    font-weight: 600;
+    color: #172b4d;
+    text-align: center; /* Center column titles */
+}
+
+/* --- Task List within Column --- */
+.task-list {
+    flex-grow: 1; /* Allows task list to take up available space */
+    overflow-y: auto; /* Enables vertical scrolling for tasks within a column */
+    padding-right: 5px; /* Space for scrollbar */
+    /* Custom scrollbar for webkit browsers */
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+        background: #ebecf0;
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #c4c6ca;
+        border-radius: 10px;
+        border: 2px solid #ebecf0;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #a7aaad;
+    }
+}
+
+
+/* --- Task Card --- */
+.task-card {
+    background-color: white;
+    border-radius: 6px; /* Rounded corners for tasks */
+    padding: 15px;
+    margin-bottom: 10px; /* Space between tasks */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Improved shadow */
+    font-size: 0.95rem;
+    cursor: grab; /* Indicates draggable */
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    border: 1px solid #e0e0e0; /* Subtle border */
+    position: relative; /* For dropdown positioning */
+}
+
+.task-card:last-child {
+    margin-bottom: 0; /* No margin on the last task */
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08); /* More pronounced shadow on hover */
+}
+
+/* Dragging feedback */
+.task-card.is-dragging {
+    opacity: 0.6;
+    border: 2px dashed #007bff; /* Visual cue for dragging */
+    background-color: #e2f0ff;
+    transform: rotate(2deg); /* Slight rotation while dragging */
+}
+
+/* Drop target feedback */
+.kanban-column.dragging-over {
+    background-color: #d1d5da; /* Darker background when dragging over a column */
+    border: 2px dashed #007bff;
+}
+
+.task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.task-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #172b4d;
+    font-weight: 500;
+}
+
+/* Task details */
+.task-description {
+    color: #5e6c84; /* Slightly darker gray for readability */
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.task-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: block; /* Ensure image behaves as a block */
+}
+
+.task-creation-date,
+.task-due-date {
+    font-size: 0.75rem;
+    color: #7a869a;
+    margin-top: 5px;
+}
+.task-due-date {
+    font-weight: 600;
+    color: #d64545; /* Red for due date */
+}
+
+
+/* --- Dropdown Menu for Task Card --- */
+.dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem; /* Slightly smaller icon */
+    color: #6b7280; /* Neutral gray */
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-toggle:hover {
+    background-color: #e4e6ea;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 30px; /* Position below the toggle button */
+    right: 0;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* More prominent shadow for menu */
+    z-index: 100; /* Ensure it's above other content */
+    min-width: 120px;
+    overflow: hidden; /* For rounded corners */
+}
+
+.dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f4f5f7;
+}
+
+/* --- Add/Delete Buttons --- */
+.add-task-button,
+.delete-column-button {
+    background-color: #f0f2f5; /* Lighter button background */
+    color: #5e6c84; /* Darker text for readability */
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-top: auto; /* Push buttons to the bottom of the column */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* More space between icon and text */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.add-task-button:hover,
+.delete-column-button:hover {
+    background-color: #e0e2e5;
+    color: #172b4d;
+}
+
+.delete-column-button {
+    background-color: #ffebe6; /* Light red for delete button */
+    color: #bf2600; /* Darker red text */
+}
+
+.delete-column-button:hover {
+    background-color: #ffdae0;
+    color: #8c1c00;
+}
+
+
+/* --- Add Column Area --- */
+.add-column {
+    background-color: #f4f5f7;
+    border-radius: 8px;
+    padding: 15px;
+    width: 280px; /* Slightly narrower than columns */
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch; /* Stretch input and button */
+    flex-shrink: 0;
+    height: fit-content; /* Only take content height */
+    box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+}
+
+.add-column input {
+    padding: 10px 12px;
+    border: 1px solid #dfe1e6;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-column input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.add-column button {
+    background-color: #007bff; /* Primary blue for add button */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.add-column button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+/* --- Modal Styles --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure modal is on top */
+    backdrop-filter: blur(3px); /* Subtle blur effect */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px; /* Max width for readability */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative; /* For image preview positioning */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #172b4d;
+    text-align: center;
+}
+
+.modal-content label {
+    font-weight: 600;
+    color: #5e6c84;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.modal-content input[type="text"],
+.modal-content textarea,
+.modal-content input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dfe1e6;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.modal-content textarea {
+    min-height: 80px;
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.modal-content input[type="file"] {
+    padding: 10px 0; /* Adjust padding for file input */
+}
+
+.image-preview {
+    max-width: 100px; /* Smaller preview */
+    max-height: 100px;
+    border-radius: 4px;
+    object-fit: cover; /* Crop image to fit */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dfe1e6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.modal-actions button:first-child { /* Create Task button */
+    background-color: #28a745; /* Green for primary action */
+    color: white;
+}
+
+.modal-actions button:first-child:hover {
+    background-color: #218838;
+}
+
+.modal-actions button:last-child { /* Cancel button */
+    background-color: #dc3545; /* Red for destructive/cancel action */
+    color: white;
+}
+
+.modal-actions button:last-child:hover {
+    background-color: #c82333;
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .kanban-board {
+        flex-direction: column; /* Stack columns vertically on smaller screens */
+        align-items: center; /* Center stacked columns */
+        padding: 15px;
+        height: auto; /* Auto height when stacked */
+    }
+
+    .kanban-column {
+        width: 100%; /* Full width for columns */
+        min-width: unset; /* Remove min-width constraint */
+        max-height: unset; /* Remove max-height constraint */
+        margin-bottom: 15px; /* Space between stacked columns */
+    }
+
+    .kanban-column:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .add-column {
+        width: 100%; /* Full width for add column area */
+        min-width: unset;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 95%; /* Slightly wider modal on mobile */
+    }
+
+    .modal-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .modal-actions {
+        flex-direction: column; /* Stack modal buttons vertically */
+        gap: 10px;
+    }
+
+    .modal-actions button {
+        width: 100%; /* Full width buttons */
+    }
+}

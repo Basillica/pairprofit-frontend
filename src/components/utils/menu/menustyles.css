@@ -48,7 +48,7 @@ body {
   width: 40px; /* Initial icon-only width */
   position: fixed;
   top: 56px;
-  left: 1rem;
+  /* left: 1rem; */
   height: calc(100vh - 56px);
   border-right: 1px solid #ddd;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
