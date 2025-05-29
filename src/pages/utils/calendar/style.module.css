@@ -1,0 +1,82 @@
+.calendar_day_cell {
+    min-height: 120px; /* Minimum height for each day cell */
+    border: 1px solid #E5E7EB; /* Tailwind border border-gray-200 */
+    border-top: none; /* Remove top border to merge with row above */
+    border-left: none; /* Remove left border to merge with col on left */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: 2rem; /* Space for the day number */
+    transition: background-color 0.2s ease; /* Smooth hover */
+}
+
+/* Remove border from the first row and first column */
+.calendar_day_cell:nth-child(-n + 7) { /* First row */
+    border-top: 1px solid #E5E7EB;
+}
+
+.calendar_day_cell:nth-child(7n + 1) { /* First column (Sunday) */
+    border-left: 1px solid #E5E7EB;
+}
+
+.calendar_day_cell:hover {
+    background-color: #F9FAFB; /* Tailwind bg-gray-50 */
+    cursor: pointer;
+}
+
+/* Today's Cell Highlighting */
+.today_cell {
+    background-color: #EBF8FF; /* Tailwind bg-blue-50 */
+    border-color: #90CDF4; /* Tailwind border-blue-300 */
+}
+
+/* Customize Button (Same as Dashboard, but kept here for self-containment) */
+.customize_btn {
+    width: 3.75rem; /* 60px */
+    height: 3.75rem; /* 60px */
+    text-align: center;
+    line-height: 1.25; /* Adjust line height for text wrapping */
+    z-index: 40; /* Ensure it's below the modal but above calendar content */
+}
+
+/* Responsive Adjustments for Calendar Cells */
+@media (max-width: 767px) { /* Smaller screens (e.g., mobile) */
+    .calendar_day_cell {
+        min-height: 80px; /* Smaller height for mobile */
+        padding-top: 1.5rem;
+    }
+    .calendar_day_cell > div:first-child { /* Day number */
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.75rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+    .calendar_day_cell .text-xs { /* Event text size */
+        font-size: 0.65rem; /* Even smaller event text */
+    }
+    .calendar_day_cell .space-y-1 > div {
+        padding-top: 0.125rem; /* py-0.5 is 2px, maybe less */
+        padding-bottom: 0.125rem;
+    }
+    .customize_btn {
+        width: 3rem; /* Smaller button on mobile */
+        height: 3rem;
+        font-size: 0.6rem;
+        right: 1rem;
+        top: auto;
+        bottom: 1rem; /* Move to bottom right */
+        transform: none; /* Remove translate-y */
+        padding: 0.25rem; /* Smaller padding */
+    }
+    .customize_btn i {
+        font-size: 1rem; /* Smaller icon */
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) { /* Medium screens (tablets) */
+    .calendar_day_cell {
+        min-height: 100px;
+    }
+}

@@ -1,0 +1,97 @@
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.card_header {
+    background-color: #fff; /* Tailwind bg-white */
+    padding: 1.5rem; /* Tailwind p-6 */
+    border-bottom: 1px solid #E5E7EB; /* Tailwind border-b border-gray-200 */
+    font-size: 1.125rem; /* Tailwind text-lg */
+    font-weight: 600; /* Tailwind font-semibold */
+    color: #1F2937; /* Tailwind text-gray-800 */
+}
+
+/* Sparkline Chart (for Weekly Sales) */
+.sparkline_chart {
+    display: flex;
+    align-items: flex-end; /* Bars start from bottom */
+    height: 40px; /* Fixed height for the chart area */
+    gap: 0.125rem; /* Tailwind gap-0.5 (2px) */
+}
+
+.sparkline_bar {
+    width: 0.5rem; /* Tailwind w-2 (8px) */
+    border-radius: 0.125rem; /* Tailwind rounded-sm (2px) */
+}
+
+/* Donut Chart Placeholder (for Market Share) */
+.donut_chart_placeholder {
+    width: 6.25rem; /* 100px */
+    height: 6.25rem; /* 100px */
+    border-radius: 9999px; /* Tailwind rounded-full */
+    background: conic-gradient(
+        #3B82F6 0% 40%, /* Tailwind blue-500 */
+        #22C55E 40% 75%, /* Tailwind green-500 */
+        #6B7280 75% 100% /* Tailwind gray-500 */
+    );
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.donut_center_text {
+    /* Background and text color handled by Tailwind in JSX */
+    width: 3.75rem; /* 60px */
+    height: 3.75rem; /* 60px */
+    border-radius: 9999px; /* Tailwind rounded-full */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.color_dot {
+    display: inline-block;
+    width: 0.625rem; /* 10px */
+    height: 0.625rem; /* 10px */
+    border-radius: 9999px; /* Tailwind rounded-full */
+    margin-right: 0.5rem; /* Tailwind mr-2 */
+}
+
+/* Weather Card Icon */
+.weather_icon {
+    font-size: 3rem; /* Tailwind text-5xl might be close */
+}
+
+/* Project Initial Avatar */
+.project_initial_avatar {
+    width: 2.5rem; /* 40px */
+    height: 2.5rem; /* 40px */
+    border-radius: 0.5rem; /* Tailwind rounded-md */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Tailwind text-white */
+    font-weight: 700; /* Tailwind font-bold */
+    font-size: 1rem; /* Tailwind text-base */
+    flex-shrink: 0;
+}
+
+/* Customize Button (Total Sales Chart) */
+.customize_btn {
+    width: 3.75rem; /* 60px */
+    height: 3.75rem; /* 60px */
+    text-align: center;
+    line-height: 1.25;
+}
+
+/* Space Warning Card */
+.space_warning_card {
+    background: linear-gradient(135deg, #FEE2E2, #FCE7F3); /* Tailwind-like red-200 and pink-200 */
+}

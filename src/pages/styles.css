@@ -1,5 +1,4 @@
 :root {
-  /* Define color variables for easier theming and consistency */
   --primary-blue: #3b82f6;
   --hover-blue: #2563eb;
   --light-blue-bg: #e0f2fe;
@@ -31,8 +30,6 @@ body {
 .container-auth {
   display: grid; /* Use grid for main layout */
   grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
-  height: 100vh;
-  width: 100vw;
   margin: 0;
   padding: 0;
 }

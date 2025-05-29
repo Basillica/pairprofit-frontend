@@ -9,6 +9,8 @@ import {
   KanbanBoard,
   LovelyChat,
   Page404,
+  ProfileDashboard,
+  Calendar,
 } from "./pages";
 import "./App.css";
 import { EmailInbox, UserProfile } from "./components";
@@ -39,7 +41,8 @@ render(
 
         {/* profiles urls */}
         <Route path="/profile">
-          <Route path="/"></Route>
+          <Route path="/" component={ProfileDashboard}></Route>
+          <Route path="/calendar" component={Calendar}></Route>
           <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
         </Route>
 
