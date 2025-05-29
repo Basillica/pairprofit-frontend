@@ -3,7 +3,6 @@ import css_module from "./style.module.css";
 import { AddEditEventModal } from "./edit"; // Import the new modal component
 import { v4 as uuidv4 } from "uuid"; // For unique IDs, install if you haven't: npm install uuid @types/uuid
 
-// --- Interfaces for Event Data (keep this section) ---
 interface CalendarEvent {
   id: string; // Now always present after creation
   name: string;

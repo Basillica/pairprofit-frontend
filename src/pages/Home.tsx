@@ -1,4 +1,5 @@
 import { createSignal, JSX } from "solid-js";
+import logo from "./../assets/A.png";
 import "./styles.css";
 
 interface AuthCardProps {
@@ -118,7 +119,7 @@ export const Home = () => {
   return (
     <div class="container-auth">
       <div class="left-panel">
-        <img src="https://picsum.photos/400" alt="Company Logo" class="logo" />
+        <img src={logo} alt="Company Logo" class="logo" />
       </div>
       <div class="right-panel">
         <AuthCard
