@@ -4,7 +4,6 @@
     align-items: center;
     justify-content: center;
     min-height: 90vh;
-    width: 100vw;
 }
 .error_code {
     font-size: 9rem; /* Large font size for 404 */

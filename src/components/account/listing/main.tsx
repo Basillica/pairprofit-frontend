@@ -225,7 +225,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       </div>
 
       {openFilterBar() && (
-        <div style={"width: 94vw"}>
+        <div style={"width: 97vw;"}>
           <FilterBar
             categories={categories}
             subCategories={subCategories}

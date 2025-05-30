@@ -2,9 +2,7 @@ import { createSignal } from "solid-js";
 import { PersistentSidebar } from "../../../components/utils/menu";
 
 export const RootLayout = (props: any) => {
-  const [expanded, setExpanded] = createSignal(
-    window.innerWidth > 768 ? false : true
-  );
+  const [expanded, setExpanded] = createSignal(false);
 
   return (
     <>
@@ -15,13 +13,14 @@ export const RootLayout = (props: any) => {
         <div
           id="content"
           style={{
-            "overflow-x": "hidden",
             overflow: "scroll",
+            "overflow-x": "hidden",
             "scrollbar-width": "none",
             "flex-grow": 1,
             "min-height": "100vh",
-            // "margin-right": window.innerWidth > 768 ? "5px" : "0px",
-            // "margin-left": window.innerWidth > 768 ? "35px" : "0px",
+            width: window.innerWidth > 768 ? "97vw" : "98vw",
+            "margin-right": window.innerWidth > 768 ? "15px" : "",
+            "margin-left": window.innerWidth > 768 ? "40px" : "",
           }}
         >
           {props.children}

@@ -1,0 +1,36 @@
+  .slider_container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 0 1rem; /* Add some padding on the sides */
+  }
+
+  .slider_track {
+    display: flex;
+    animation: slideRightToLeft 20s linear infinite; /* Adjust duration for speed */
+  }
+
+  .slider_track:hover {
+    animation-play-state: paused; /* Pause on hover */
+  }
+
+  .slider_track > div {
+    margin-right: 2rem; /* Spacing between cards */
+  }
+
+  /* Define the animation */
+  @keyframes slideRightToLeft {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%); /* Move half the track's width to loop */
+    }
+  }
+
+  /* Adjust responsiveness for different screen sizes if needed */
+  @media (max-width: 768px) {
+    .slider_track > div {
+      width: 70vw; /* Make cards wider on smaller screens */
+    }
+  }

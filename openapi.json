@@ -1,18 +1,18 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "SkillConnect API",
-    "description": "API for SkillConnect, a platform for finding and offering services. Includes authentication, service listing and profile management, chat, and email notification functionalities.",
+    "title": "PairProfit API",
+    "description": "API for PairProfit, a platform for finding and offering services. Includes authentication, service listing and profile management, chat, and email notification functionalities.",
     "version": "1.0.0",
     "contact": {
-      "name": "SkillConnect Support",
-      "email": "support@skillconnect.com",
-      "url": "https://www.skillconnect.com/contact"
+      "name": "PairProfit Support",
+      "email": "support@PairProfit.com",
+      "url": "https://www.PairProfit.com/contact"
     }
   },
   "servers": [
     {
-      "url": "https://api.skillconnect.com/v1",
+      "url": "https://api.PairProfit.com/v1",
       "description": "Production server"
     },
     {

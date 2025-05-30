@@ -110,11 +110,6 @@
   }
 }
 
-/* Mobile toggle button */
-#filter-toggle {
-  /* Styles are applied directly in the component's JSX */
-}
-
 .filter-icon {
   width: 1.5rem;
   height: 1.5rem;

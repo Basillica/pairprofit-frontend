@@ -199,7 +199,7 @@
     }
 
     .chat_sidebar {
-        width: 100vw;
+        /* width: 100vw; */
         max-height: 100vh;
         overflow-y: auto;
         border-right: none;
@@ -221,8 +221,8 @@
     }
 
     .chat_messages_wrapper {
-        width: 100vw; /* Take full viewport width */
-        height: 100vh;
+        /* width: 100vw;
+        height: 100vh; */
         position: fixed;
         top: 0;
         left: 0;
