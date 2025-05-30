@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { PersistentSidebar } from "../components/utils/menu";
+import { PersistentSidebar } from "../../../components/utils/menu";
 
 export const RootLayout = (props: any) => {
   const [expanded, setExpanded] = createSignal(
@@ -12,16 +12,14 @@ export const RootLayout = (props: any) => {
         class="bg-gray-100 font-inter"
         style={{ "overflow-x": "hidden", "flex-grow": 1, width: "100vw" }}
       >
-        {/* ... */}
         <div
           id="content"
           style={{
-            // ...
             "overflow-x": "hidden",
             overflow: "scroll",
             "scrollbar-width": "none",
             "flex-grow": 1,
-            "min-height": "95vh",
+            "min-height": "100vh",
           }}
         >
           {props.children}
@@ -31,7 +29,6 @@ export const RootLayout = (props: any) => {
 
       <footer
         class="site-footer"
-        // Apply flex-shrink: 0 directly here for robustness, if not in CSS file
         style={{
           "flex-shrink": 0,
           "background-color": "#2c3e50",

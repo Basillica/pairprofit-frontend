@@ -2,7 +2,7 @@
 import { render } from "solid-js/web";
 import { Route, Router } from "@solidjs/router";
 import {
-  Home,
+  LoginPage,
   RootLayout,
   ServiceListings,
   ServiceProviderDashboard,
@@ -15,6 +15,7 @@ import {
 import "./App.css";
 import { EmailInbox, UserProfile } from "./components";
 import { ServiceProviderListings } from "./components/account";
+import { HomePage } from "./pages/profile";
 
 const root = document.getElementById("root");
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -27,7 +28,8 @@ render(
   () => (
     <Router root={RootLayout}>
       <Route path={"/"}>
-        <Route path="/" component={Home} />
+        <Route path="/" component={HomePage} />
+        <Route path="/login" component={LoginPage} />
         <Route path="/kanban" component={KanbanBoard} />
         <Route path="/inbox" component={EmailInbox}></Route>
         <Route path="/listings">

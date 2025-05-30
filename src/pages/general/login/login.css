@@ -1,37 +1,9 @@
-:root {
-  --primary-blue: #3b82f6;
-  --hover-blue: #2563eb;
-  --light-blue-bg: #e0f2fe;
-  --dark-gray-text: #1e293b;
-  --medium-gray-text: #6b7280;
-  --light-gray-border: #d1d5db;
-  --light-gray-divider: #e5e7eb;
-  --white: #fff;
-  --red-error: #ef4444;
-  --red-logout: #dc2626;
-  --red-logout-hover: #b80f0a;
-  --green-success: #10b981;
-  --google-blue: #4285f4;
-  --google-hover: #f8f9fa;
-  --linkedin-blue: #0077b5;
-  --linkedin-hover: #004182;
-  --github-bg: #cbe1b5; /* This seems like a non-standard GitHub color, typically it's black/dark gray */
-  --github-hover: #310173; /* This seems like a non-standard GitHub color */
-  --facebook-bg: #9fd8e9; /* This seems like a non-standard Facebook color, typically it's #1877F2 */
-  --facebook-hover: #8dc3dc; /* This seems like a non-standard Facebook color */
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif; /* Ensure a fallback font */
-}
-
 .container-auth {
   display: grid; /* Use grid for main layout */
   grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 .left-panel {

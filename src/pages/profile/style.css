@@ -1,8 +1,3 @@
-body {
-    background-color: #f0f2f5; /* WhatsApp background */
-    overflow: hidden; /* Prevent scrolling on the body when chat is fullscreen */
-}
-
 .chat-container {
     height: 100vh; /* Make the container fill the viewport height */
     margin: 0 auto; /* Center the container */

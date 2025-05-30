@@ -1,4 +1,4 @@
-export { RootLayout } from "./Layout";
+export { RootLayout } from "./utils/layout/Layout";
 export {
   LovelyChat,
   ServiceProviderDashboard,
@@ -6,6 +6,5 @@ export {
   ProfileDashboard,
 } from "./profile";
 export { ServiceListings } from "./listings";
-export { Page404 } from "./404";
-export { Home } from "./Home";
+export { Page404, LoginPage, HomePage } from "./general";
 export { Calendar } from "./utils";

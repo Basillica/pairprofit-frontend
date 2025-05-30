@@ -1,6 +1,6 @@
 import { createSignal, JSX } from "solid-js";
-import logo from "./../assets/A.png";
-import "./styles.css";
+import logo from "./../../../assets/A.png";
+import "./login.css";
 
 interface AuthCardProps {
   id: string;
@@ -58,7 +58,7 @@ const SocialButton = (props: SocialButtonProps) => {
   );
 };
 
-export const Home = () => {
+export const LoginPage = () => {
   const [currentPage, setCurrentPage] = createSignal("login-page");
   const [loginEmail, setLoginEmail] = createSignal("");
   const [loginPassword, setLoginPassword] = createSignal("");

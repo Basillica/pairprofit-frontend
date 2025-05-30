@@ -1,11 +1,3 @@
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6; /* Tailwind's gray-100 */
-    color: #1f2937; /* Tailwind's gray-800 */
-    margin: 0; /* Reset default body margin */
-    overflow-y: scroll;
-}
-
 .container {
     /* margin-left: auto;
     margin-right: auto; */

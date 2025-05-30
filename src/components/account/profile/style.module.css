@@ -1,9 +1,3 @@
-/* General Body Styles */
-body {
-    background-color: #f0f2f5; /* Light grey background for the whole page */
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Modern font stack */
-}
-
 /* Main Container Padding */
 .profile_page_container {
     padding-left: 15px; /* Ensure padding on very small screens */

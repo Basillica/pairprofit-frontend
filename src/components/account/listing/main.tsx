@@ -102,7 +102,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     },
   ];
   const [profiles, setProfiles] = createSignal<Profile[]>(mockProfiles);
-  const [openFilterBar, setOpenFilterBar] = createSignal(
+  const [openFilterBar, _] = createSignal(
     window.innerWidth > 768 ? true : false
   );
 
@@ -132,10 +132,6 @@ export const ServiceProviderListings = (): JSX.Element => {
     { value: "50-100", label: "$50 - $100" },
     { value: "100+", label: "$100+" },
   ];
-
-  const toggleFilterBar = () => {
-    setIsFilterBarExpanded(!isFilterBarExpanded());
-  };
 
   const handleApplyFilters = () => {
     const selectedCategory = category();
