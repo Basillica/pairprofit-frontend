@@ -21,7 +21,7 @@ interface Profile {
 export const ServiceProviderListings = (): JSX.Element => {
   const [category] = createSignal("");
   const [location] = createSignal("");
-  const [isFilterBarExpanded, setIsFilterBarExpanded] = createSignal(false);
+  const [_, setIsFilterBarExpanded] = createSignal(false);
   const mockProfiles = [
     {
       id: 1,
@@ -102,9 +102,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     },
   ];
   const [profiles, setProfiles] = createSignal<Profile[]>(mockProfiles);
-  const [openFilterBar, _] = createSignal(
-    window.innerWidth > 768 ? true : false
-  );
+  const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
 
   const categories: FilterOption[] = [
     { value: "electronics", label: "Electronics" },

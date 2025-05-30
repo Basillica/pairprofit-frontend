@@ -1,0 +1,1269 @@
+openapi: 3.0.3
+info:
+  title: SkillConnect API
+  description: API for SkillConnect, a platform for finding and offering services. Includes authentication, service listing and profile management, chat, and email notification functionalities.
+  version: 1.0.0
+  contact:
+    name: SkillConnect Support
+    email: support@skillconnect.com
+    url: https://www.skillconnect.com/contact
+servers:
+  - url: https://api.skillconnect.com/v1
+    description: Production server
+  - url: http://localhost:3000/v1
+    description: Local development server
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+    description: User registration, login, and session management
+  - name: User Profiles
+    description: Management of general user account information
+  - name: Service Profiles
+    description: Management of detailed profiles for service providers
+  - name: Service Listings
+    description: Creation, searching, and management of services offered
+  - name: Chat
+    description: Direct messaging between users
+  - name: Email Service
+    description: Sending transactional emails and notifications
+  - name: Reviews
+    description: Feedback and ratings for services and providers
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '400':
+          description: Bad request (e.g., validation errors, email already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '401':
+          description: Unauthorized (invalid credentials)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Invalidate user's session/token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+        '401':
+          description: Unauthorized
+  /users/{userId}:
+    get:
+      tags:
+        - User Profiles
+      summary: Get user profile by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the user to retrieve
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+    put:
+      tags:
+        - User Profiles
+      summary: Update user profile by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the user to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to update this user)
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - User Profiles
+      summary: Delete user account by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the user to delete
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: User deleted successfully (No Content)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to delete this user)
+        '404':
+          description: User not found
+  /service-profiles:
+    post:
+      tags:
+        - Service Profiles
+      summary: Create a new service provider profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceProfileCreateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Service profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceProfile'
+        '400':
+          description: Bad request (e.g., validation errors, profile already exists for user)
+        '401':
+          description: Unauthorized
+  /service-profiles/{profileId}:
+    get:
+      tags:
+        - Service Profiles
+      summary: Get service provider profile by ID
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service profile to retrieve
+      responses:
+        '200':
+          description: Service profile data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceProfile'
+        '404':
+          description: Service profile not found
+    put:
+      tags:
+        - Service Profiles
+      summary: Update a service provider profile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service profile to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceProfileUpdateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Service profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceProfile'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to update this profile)
+        '404':
+          description: Service profile not found
+    delete:
+      tags:
+        - Service Profiles
+      summary: Delete a service provider profile
+      parameters:
+        - name: profileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service profile to delete
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Service profile deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to delete this profile)
+        '404':
+          description: Service profile not found
+  /service-listings:
+    get:
+      tags:
+        - Service Listings
+      summary: Get all service listings (with filters)
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Filter by service category
+        - name: location
+          in: query
+          schema:
+            type: string
+          description: Filter by location
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            format: float
+          description: Minimum price
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            format: float
+          description: Maximum price
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search query for title or description
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Number of items per page
+      responses:
+        '200':
+          description: A list of service listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceListing'
+        '400':
+          description: Bad request (e.g., invalid query parameters)
+    post:
+      tags:
+        - Service Listings
+      summary: Create a new service listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceListingCreateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Service listing created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceListing'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (only providers can create listings)
+  /service-listings/{listingId}:
+    get:
+      tags:
+        - Service Listings
+      summary: Get service listing by ID
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service listing to retrieve
+      responses:
+        '200':
+          description: Service listing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceListing'
+        '404':
+          description: Service listing not found
+    put:
+      tags:
+        - Service Listings
+      summary: Update a service listing by ID
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service listing to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceListingUpdateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Service listing updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceListing'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to update this listing)
+        '404':
+          description: Service listing not found
+    delete:
+      tags:
+        - Service Listings
+      summary: Delete a service listing by ID
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service listing to delete
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Service listing deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not allowed to delete this listing)
+        '404':
+          description: Service listing not found
+  /chat/conversations:
+    get:
+      tags:
+        - Chat
+      summary: Get a list of user's conversations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+        '401':
+          description: Unauthorized
+  /chat/conversations/{conversationId}/messages:
+    get:
+      tags:
+        - Chat
+      summary: Get messages for a specific conversation
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the conversation
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Retrieve messages before this timestamp (for pagination)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+          description: Number of messages to retrieve
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of messages in the conversation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not a participant in this conversation)
+        '404':
+          description: Conversation not found
+    post:
+      tags:
+        - Chat
+      summary: Send a new message in a conversation
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Message sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not a participant in this conversation)
+        '404':
+          description: Conversation not found
+  /email/send-notification:
+    post:
+      tags:
+        - Email Service
+      summary: Send a general notification email (e.g., to administrator or specific user)
+      description: This endpoint could be used by internal systems or admin panel to send various notifications. For general users, specific notification triggers would be handled by the platform itself (e.g., new message, booking confirmation).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Email sent successfully
+        '400':
+          description: Bad request (e.g., invalid email address, missing required fields)
+        '401':
+          description: Unauthorized (requires admin/internal access)
+        '500':
+          description: Internal server error (email service failure)
+  /service-listings/{listingId}/reviews:
+    get:
+      tags:
+        - Reviews
+      summary: Get reviews for a specific service listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service listing
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        '404':
+          description: Service listing not found
+    post:
+      tags:
+        - Reviews
+      summary: Submit a review for a service listing
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the service listing being reviewed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Review submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad request (e.g., invalid rating, review already exists)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (e.g., only users who used the service can review)
+  /reviews/{reviewId}:
+    put:
+      tags:
+        - Reviews
+      summary: Update a review
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the review to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdateRequest'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Review updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (only the author can update)
+        '404':
+          description: Review not found
+    delete:
+      tags:
+        - Reviews
+      summary: Delete a review
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the review to delete
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Review deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (only the author or admin can delete)
+        '404':
+          description: Review not found
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        profilePictureUrl:
+          type: string
+          format: uri
+          nullable: true
+        bio:
+          type: string
+          maxLength: 500
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - email
+        - createdAt
+        - updatedAt
+    UserRegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          description: Unique username
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          minLength: 8
+          description: User's password
+      required:
+        - username
+        - email
+        - password
+    UserLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          description: User's password
+      required:
+        - email
+        - password
+    UserUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        profilePictureUrl:
+          type: string
+          format: uri
+          nullable: true
+        bio:
+          type: string
+          maxLength: 500
+          nullable: true
+    AuthSuccessResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT authentication token
+        expiresIn:
+          type: integer
+          description: Token expiry in seconds
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - token
+        - expiresIn
+        - user
+    ServiceProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the service profile
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user associated with this profile
+        headline:
+          type: string
+          minLength: 10
+          maxLength: 100
+          description: A short, catchy description of the provider's main service
+        description:
+          type: string
+          maxLength: 2000
+          description: Detailed description of services offered, experience, etc.
+        skills:
+          type: array
+          items:
+            type: string
+          description: List of skills possessed by the provider
+        hourlyRate:
+          type: number
+          format: float
+          nullable: true
+          description: Optional hourly rate in USD
+        portfolioUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+          description: Links to provider's portfolio or past work
+        avgRating:
+          type: number
+          format: float
+          nullable: true
+          description: Average review rating for the provider
+          readOnly: true
+        numReviews:
+          type: integer
+          nullable: true
+          description: Total number of reviews for the provider
+          readOnly: true
+        location:
+          type: string
+          nullable: true
+          description: Geographical location of the service provider
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - headline
+        - description
+        - skills
+        - createdAt
+        - updatedAt
+    ServiceProfileCreateRequest:
+      type: object
+      properties:
+        headline:
+          type: string
+          minLength: 10
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 2000
+        skills:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        hourlyRate:
+          type: number
+          format: float
+          nullable: true
+        portfolioUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        location:
+          type: string
+          nullable: true
+      required:
+        - headline
+        - description
+        - skills
+    ServiceProfileUpdateRequest:
+      type: object
+      properties:
+        headline:
+          type: string
+          minLength: 10
+          maxLength: 100
+          nullable: true
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        skills:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          nullable: true
+        hourlyRate:
+          type: number
+          format: float
+          nullable: true
+        portfolioUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        location:
+          type: string
+          nullable: true
+    ServiceListing:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        providerId:
+          type: string
+          format: uuid
+          description: ID of the user who is offering this service
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          type: string
+          enum:
+            - Home Services
+            - IT & Tech Support
+            - Creative & Design
+            - Tutoring & Education
+            - Health & Wellness
+            - Other
+          description: Category of the service
+        priceType:
+          type: string
+          enum:
+            - hourly
+            - fixed
+            - negotiable
+          description: How the service is priced
+        price:
+          type: number
+          format: float
+          nullable: true
+          description: Price value (e.g., hourly rate or fixed project price)
+        location:
+          type: string
+          nullable: true
+          description: Location where the service can be provided
+        isActive:
+          type: boolean
+          default: true
+          description: Whether the listing is currently active
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - providerId
+        - title
+        - description
+        - category
+        - priceType
+        - createdAt
+        - updatedAt
+    ServiceListingCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          type: string
+          enum:
+            - Home Services
+            - IT & Tech Support
+            - Creative & Design
+            - Tutoring & Education
+            - Health & Wellness
+            - Other
+        priceType:
+          type: string
+          enum:
+            - hourly
+            - fixed
+            - negotiable
+        price:
+          type: number
+          format: float
+          nullable: true
+        location:
+          type: string
+          nullable: true
+      required:
+        - title
+        - description
+        - category
+        - priceType
+    ServiceListingUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 100
+          nullable: true
+        description:
+          type: string
+          maxLength: 1000
+          nullable: true
+        category:
+          type: string
+          enum:
+            - Home Services
+            - IT & Tech Support
+            - Creative & Design
+            - Tutoring & Education
+            - Health & Wellness
+            - Other
+          nullable: true
+        priceType:
+          type: string
+          enum:
+            - hourly
+            - fixed
+            - negotiable
+          nullable: true
+        price:
+          type: number
+          format: float
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+          nullable: true
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        participants:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 2
+          maxItems: 2
+          description: IDs of the two participants in the conversation
+        lastMessagePreview:
+          type: string
+          nullable: true
+        lastMessageAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - participants
+        - createdAt
+        - updatedAt
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversationId:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        content:
+          type: string
+          maxLength: 500
+        sentAt:
+          type: string
+          format: date-time
+        readAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - conversationId
+        - senderId
+        - content
+        - sentAt
+    SendMessageRequest:
+      type: object
+      properties:
+        recipientId:
+          type: string
+          format: uuid
+          description: If starting a new conversation, the ID of the recipient. Otherwise, optional if conversationId is known.
+        content:
+          type: string
+          maxLength: 500
+          description: The message content
+      required:
+        - content
+    SendEmailRequest:
+      type: object
+      properties:
+        to:
+          type: string
+          format: email
+          description: Recipient email address
+        subject:
+          type: string
+          description: Subject of the email
+        bodyHtml:
+          type: string
+          description: HTML content of the email
+          nullable: true
+        bodyText:
+          type: string
+          description: Plain text content of the email
+          nullable: true
+        templateId:
+          type: string
+          description: 'Optional: ID of a pre-defined email template to use'
+          nullable: true
+        templateData:
+          type: object
+          description: 'Optional: Data to populate the email template'
+          additionalProperties: true
+          nullable: true
+      required:
+        - to
+        - subject
+      oneOf:
+        - required:
+            - bodyHtml
+        - required:
+            - bodyText
+        - required:
+            - templateId
+      description: Requires either bodyHtml, bodyText, or templateId
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        serviceListingId:
+          type: string
+          format: uuid
+        reviewerId:
+          type: string
+          format: uuid
+        providerId:
+          type: string
+          format: uuid
+          description: ID of the service provider being reviewed
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating out of 5 stars
+        comment:
+          type: string
+          maxLength: 1000
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - serviceListingId
+        - reviewerId
+        - providerId
+        - rating
+        - createdAt
+        - updatedAt
+    ReviewCreateRequest:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 1000
+          nullable: true
+      required:
+        - rating
+    ReviewUpdateRequest:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        comment:
+          type: string
+          maxLength: 1000
+          nullable: true
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: A human-readable error message
+        details:
+          type: array
+          items:
+            type: string
+          description: 'Optional: specific validation errors or other details'
+          nullable: true
+      required:
+        - status
+        - message
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT Authorization header using the Bearer scheme. Example: ''Authorization: Bearer {token}'''

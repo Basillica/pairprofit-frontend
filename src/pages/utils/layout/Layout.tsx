@@ -20,6 +20,8 @@ export const RootLayout = (props: any) => {
             "scrollbar-width": "none",
             "flex-grow": 1,
             "min-height": "100vh",
+            // "margin-right": window.innerWidth > 768 ? "5px" : "0px",
+            // "margin-left": window.innerWidth > 768 ? "35px" : "0px",
           }}
         >
           {props.children}
