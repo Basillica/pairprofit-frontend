@@ -7,7 +7,7 @@
 
   .slider_track {
     display: flex;
-    animation: slideRightToLeft 20s linear infinite; /* Adjust duration for speed */
+    animation: slideRightToLeft 15s linear infinite; /* Adjust duration for speed */
   }
 
   .slider_track:hover {
