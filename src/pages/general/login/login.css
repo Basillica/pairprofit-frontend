@@ -268,16 +268,6 @@
   }
 }
 
-
-/* Footer Variables (reusing some from previous examples) */
-:root {
-  --footer-bg-dark: #2c3e50; /* A dark, professional background */
-  --footer-text-light: #ecf0f1; /* Light text for contrast */
-  --footer-link-hover: #3498db; /* A vibrant blue for link hover */
-  --footer-heading-color: #f0f0f0; /* Slightly lighter heading */
-  --footer-icon-color: #bdc3c7; /* Lighter grey for icons */
-}
-
 .site-footer {
   background-color: var(--footer-bg-dark);
   color: var(--footer-text-light);

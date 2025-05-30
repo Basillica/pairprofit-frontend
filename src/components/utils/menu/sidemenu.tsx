@@ -6,20 +6,15 @@ import {
   Accessor,
   Setter,
 } from "solid-js";
-import { useNavigate } from "@solidjs/router";
 import "./menustyles.css";
+import { NavBar } from "./navbar";
 
 export const PersistentSidebar: Component<{
   expanded: Accessor<boolean>;
   setExpanded: Setter<boolean>;
 }> = (props) => {
-  const navigate = useNavigate();
   const [settingsExpanded, setSettingsExpanded] = createSignal(false);
   const [profileExpanded, setProfileExpanded] = createSignal(false);
-
-  const toggleSidebar = () => {
-    props.setExpanded(!props.expanded());
-  };
 
   const toggleSettingsSubmenu = () => {
     setSettingsExpanded(!settingsExpanded());
@@ -27,16 +22,6 @@ export const PersistentSidebar: Component<{
 
   const toggleProfileSubmenu = () => {
     setProfileExpanded(!profileExpanded());
-  };
-
-  const handleUserProfile = (
-    e: MouseEvent & {
-      currentTarget: HTMLButtonElement;
-      target: Element;
-    }
-  ) => {
-    e.stopPropagation();
-    navigate("/profile/dashboard");
   };
 
   createEffect(() => {
@@ -56,7 +41,7 @@ export const PersistentSidebar: Component<{
 
   return (
     <>
-      <div class="top-section">
+      {/* <nav class="top-section">
         <div class="top-section-left">
           <button id="sidebar-toggle-btn" onClick={toggleSidebar}>
             <i class="fas fa-bars"></i>
@@ -250,7 +235,8 @@ export const PersistentSidebar: Component<{
             <i class="fas fa-user"></i>
           </button>
         </div>
-      </div>
+      </nav> */}
+      <NavBar expanded={props.expanded} setExpanded={props.setExpanded} />
 
       {/* <div class="mobile-search-bar">
         <input type="text" placeholder="Search"/>
