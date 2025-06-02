@@ -1,8 +1,11 @@
 import { createSignal } from "solid-js";
 import { PersistentSidebar } from "../../../components/utils/menu";
+import { AppContextProvider } from "../../../state";
+import { OAuthContextProvider } from "../../../oauth";
 
 export const RootLayout = (props: any) => {
   const [expanded, setExpanded] = createSignal(false);
+  const [query] = createSignal("");
 
   return (
     <>
@@ -10,21 +13,25 @@ export const RootLayout = (props: any) => {
         class="bg-gray-100 font-inter"
         style={{ "overflow-x": "hidden", "flex-grow": 1, width: "100vw" }}
       >
-        <div
-          id="content"
-          style={{
-            overflow: "scroll",
-            "overflow-x": "hidden",
-            "scrollbar-width": "none",
-            "flex-grow": 1,
-            "min-height": "100vh",
-            width: window.innerWidth > 768 ? "97vw" : "100vw",
-            "margin-right": window.innerWidth > 768 ? "15px" : "",
-            "margin-left": window.innerWidth > 768 ? "40px" : "",
-          }}
-        >
-          {props.children}
-        </div>
+        <AppContextProvider url="" query={query}>
+          <OAuthContextProvider>
+            <div
+              id="content"
+              style={{
+                overflow: "scroll",
+                "overflow-x": "hidden",
+                "scrollbar-width": "none",
+                "flex-grow": 1,
+                "min-height": "100vh",
+                width: window.innerWidth > 768 ? "97vw" : "100vw",
+                "margin-right": window.innerWidth > 768 ? "15px" : "",
+                "margin-left": window.innerWidth > 768 ? "40px" : "",
+              }}
+            >
+              {props.children}
+            </div>
+          </OAuthContextProvider>
+        </AppContextProvider>
         <PersistentSidebar expanded={expanded} setExpanded={setExpanded} />
       </div>
 

@@ -1,11 +1,23 @@
-import { createSignal, Switch, Match } from "solid-js";
+import { createSignal, Switch, Match, onMount, createMemo } from "solid-js"; // Import createMemo
 import css_module from "./style.module.css";
 import { FilterBar } from "../../components/utils";
 import { ServiceListingA } from "./listings1";
 import { ServiceListingsB } from "./listings2";
 import { ServiceListingsC } from "./listings3";
 import { Service } from "./types";
+import { PublicHandler } from "../../api/public";
 
+// Define the structure of the data you get from your API
+interface ApiCategoriesResponse {
+  [key: string]: string[];
+}
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+// Your hardcoded service listings (keeping for context)
 const serviceListings: Service[] = [
   {
     title: "Plumbing Services",
@@ -122,12 +134,51 @@ const serviceListings: Service[] = [
   },
 ];
 
-interface FilterOption {
-  value: string;
-  label: string;
-}
-
 export const ServiceListings = () => {
+  // Signal to store the fetched categories data
+  const [apiCategories, setApiCategories] = createSignal<ApiCategoriesResponse>(
+    {}
+  );
+
+  // Signal to store the currently selected main category
+  const [selectedCategory, setSelectedCategory] = createSignal<string>(""); // Store the original label, or empty for "All"
+
+  // Derived signal for main categories (for the first dropdown)
+  const filterMainCategories = createMemo(() => {
+    if (!apiCategories()) return [];
+    return Object.keys(apiCategories()).map((key) => ({
+      value: key, // Use the original key as value for easier lookup later
+      label: key,
+    }));
+  });
+
+  // Derived signal for subcategories (dynamic based on selectedCategory)
+  const filterSubCategories = createMemo(() => {
+    const currentCategories = apiCategories();
+    const currentSelectedCategory = selectedCategory();
+
+    if (!currentCategories) return []; // No data yet
+
+    if (currentSelectedCategory) {
+      // If a category is selected, return only its subcategories
+      const subCats = currentCategories[currentSelectedCategory] || [];
+      return subCats.map((subCat) => ({
+        value: subCat.toLowerCase().replace(/ /g, "-"),
+        label: subCat,
+      }));
+    } else {
+      // If no category is selected, return all unique subcategories
+      const allSubCategories = new Set<string>();
+      for (const category of Object.values(currentCategories)) {
+        category.forEach((subCat) => allSubCategories.add(subCat));
+      }
+      return Array.from(allSubCategories).map((subCat) => ({
+        value: subCat.toLowerCase().replace(/ /g, "-"),
+        label: subCat,
+      }));
+    }
+  });
+
   const [ListingType, setListingType] = createSignal<string>("Type1");
   const [_, setFilters] = createSignal({
     category: "",
@@ -144,24 +195,27 @@ export const ServiceListings = () => {
   }) => {
     console.log("Applying filters in App:", newFilters);
     setFilters(newFilters);
-    // Perform your actual filtering logic here based on the 'newFilters'
+    setSelectedCategory(newFilters.category);
   };
 
-  const categories: FilterOption[] = [
-    { value: "electronics", label: "Electronics" },
-    { value: "clothing", label: "Clothing" },
-    { value: "home-garden", label: "Home & Garden" },
-  ];
+  onMount(async () => {
+    const api = new PublicHandler();
+    try {
+      const res = await api.fetchCategories();
+      console.log(res, "Fetched categories from API");
+      if (res.success) {
+        setApiCategories(res.data.categories);
+      } else {
+        console.error("API response for categories was not an object:", res);
+        setApiCategories({});
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setApiCategories({});
+    }
+  });
 
-  const subCategories: FilterOption[] = [
-    { value: "laptops", label: "Laptops" },
-    { value: "phones", label: "Phones" },
-    { value: "shirts", label: "Shirts" },
-    { value: "pants", label: "Pants" },
-    { value: "sofas", label: "Sofas" },
-    { value: "tables", label: "Tables" },
-  ];
-
+  // Hardcoded locations and prices (you can fetch these from API similarly if needed)
   const locations: FilterOption[] = [
     { value: "usa", label: "USA" },
     { value: "canada", label: "Canada" },
@@ -185,12 +239,7 @@ export const ServiceListings = () => {
           class="flex flex-nowrap justify-between items-center rounded-md"
           style={"padding-top: 4px"}
         >
-          {/* <div>
-            <h2 class={css_module.section_title}>Available Services</h2>
-          </div> */}
           <div class="space-x-2 flex-shrink-0">
-            {" "}
-            {/* Added flex-shrink-0 */}
             <button
               class={`${css_module.top_section_right_button} px-4 py-2 rounded focus:outline-none`}
               onClick={() => handleListingTypeToggle("Type1")}
@@ -214,16 +263,20 @@ export const ServiceListings = () => {
       )}
 
       <div style={"padding-bottom: 10px; margin-top: 5px"}>
-        <FilterBar
-          categories={categories}
-          subCategories={subCategories}
-          locations={locations}
-          prices={prices}
-          onApplyFilters={handleApplyFilters}
-        />
+        <Switch fallback={<p>Loading filters...</p>}>
+          <Match when={apiCategories()}>
+            <FilterBar
+              categories={filterMainCategories()} // Use the derived main categories
+              subCategories={filterSubCategories()} // Use the dynamically filtered subcategories
+              locations={locations}
+              prices={prices}
+              onApplyFilters={handleApplyFilters}
+            />
+          </Match>
+        </Switch>
       </div>
 
-      <Switch fallback={<p>Loading is between 5 and 10</p>}>
+      <Switch fallback={<p>Loading service listings...</p>}>
         <Match when={ListingType() === "Type1"}>
           <ServiceListingA listings={serviceListings} />
         </Match>

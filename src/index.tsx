@@ -27,9 +27,8 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <Router root={RootLayout}>
-      <Route path={"/"}>
-        <Route path="/" component={HomePage} />
-        <Route path="/login" component={LoginPage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/" component={HomePage}>
         <Route path="/kanban" component={KanbanBoard} />
         <Route path="/inbox" component={EmailInbox}></Route>
         <Route path="/listings">
@@ -48,12 +47,12 @@ render(
           <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
         </Route>
 
-        {/* public sharable profile */}
-        <Route path="/public/profile"></Route>
-
         {/* chat page */}
         <Route path="/chat" component={LovelyChat}></Route>
       </Route>
+
+      {/* public sharable profile */}
+      <Route path="/public/profile"></Route>
       <Route path="*404" component={Page404} />
     </Router>
   ),

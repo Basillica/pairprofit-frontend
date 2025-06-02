@@ -1,6 +1,8 @@
-import { createSignal, JSX } from "solid-js";
+import { createEffect, createSignal, JSX, onMount } from "solid-js";
 import logo from "./../../../assets/A.png";
 import "./login.css";
+import { useOAuth } from "../../../oauth";
+import { PublicHandler } from "../../../api/public";
 
 interface AuthCardProps {
   id: string;
@@ -26,6 +28,8 @@ const AuthCard = (props: AuthCardProps) => {
   );
 };
 
+type AuthProvider = "linkedin" | "google" | "facebook" | "github";
+
 interface AuthLinkProps {
   href: string;
   children: JSX.Element;
@@ -47,7 +51,6 @@ interface SocialButtonProps {
 }
 
 const SocialButton = (props: SocialButtonProps) => {
-  console.log(props, "the social button props");
   return (
     <button
       class={`social-btn ${props.children!.toString().toLowerCase()}-btn`}
@@ -68,6 +71,7 @@ export const LoginPage = () => {
   const [forgotEmail, setForgotEmail] = createSignal("");
   const [resetPassword, setResetPassword] = createSignal("");
   const [resetConfirmPassword, setResetConfirmPassword] = createSignal("");
+  const { getAuthorizationUrl } = useOAuth();
 
   const showPage = (pageId: string) => {
     setCurrentPage(pageId);
@@ -114,6 +118,52 @@ export const LoginPage = () => {
       confirmPassword: resetConfirmPassword(),
     });
     showPage("login-page");
+  };
+
+  onMount(async () => {
+    const urlParams = new URLSearchParams(location.search);
+    const code = urlParams.get("code");
+    const state = urlParams.get("state");
+    const error = urlParams.get("error"); // Check for OAuth errors from provider
+    const providerId = urlParams.get("provider"); // Assuming you can add 'provider' param to the redirect_uri too,
+
+    if (error) {
+      console.error("OAuth Provider Error:", error);
+      return;
+    }
+
+    if (code && state) {
+      // This means the OAuth provider has redirected back to our frontend
+      const provider = sessionStorage.getItem("oauth_provider");
+      if (!provider) {
+        console.log("no set provides fount");
+        return;
+      }
+
+      let api = new PublicHandler();
+      const params = new URLSearchParams({
+        code: code,
+        state: state,
+      });
+
+      let res = await api.loginByProvider(provider, params.toString());
+      if (!res.success) {
+        console.log("unable to login in user");
+        return;
+      }
+
+      console.log("logged in user. user: ", res.data);
+      console.log("OAuth callback received: code=", code, "state=", state);
+      const actualProviderId = providerId || "UNKNOWN_PROVIDER";
+      console.log(actualProviderId, ">>>>>>>>>>>>>>>>>>>>");
+    }
+  });
+
+  const handleProviderLogin = async (provider: string) => {
+    console.log(getAuthorizationUrl(provider));
+    const authUrl = getAuthorizationUrl(provider);
+    sessionStorage.setItem("oauth_provider", provider);
+    window.location.href = authUrl.toString();
   };
 
   return (
@@ -176,10 +226,30 @@ export const LoginPage = () => {
             <div class="divider-line"></div>
           </div>
           <div class="social-login">
-            <SocialButton iconClass="fab fa-google">Google</SocialButton>
-            <SocialButton iconClass="fab fa-linkedin">LinkedIn</SocialButton>
-            <SocialButton iconClass="fab fa-github">Github</SocialButton>
-            <SocialButton iconClass="fab fa-facebook">Facebook</SocialButton>
+            <SocialButton
+              iconClass="fab fa-google"
+              onClick={() => handleProviderLogin("google")}
+            >
+              Google
+            </SocialButton>
+            <SocialButton
+              iconClass="fab fa-linkedin"
+              onClick={() => handleProviderLogin("linkedin")}
+            >
+              LinkedIn
+            </SocialButton>
+            <SocialButton
+              iconClass="fab fa-github"
+              onClick={() => handleProviderLogin("github")}
+            >
+              Github
+            </SocialButton>
+            <SocialButton
+              iconClass="fab fa-facebook"
+              onClick={() => handleProviderLogin("facebook")}
+            >
+              Facebook
+            </SocialButton>
           </div>
           <AuthLink href="#register-page" onClick={handleNavigation}>
             Don't have an account? Register

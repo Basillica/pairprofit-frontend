@@ -1,11 +1,15 @@
-import { Component, createSignal, For } from "solid-js"; // Import createSignal and For
+import { Component, createSignal, For } from "solid-js";
 import home_styles from "./style.module.css";
 
+interface HeroItem {
+  image: string;
+  title: string;
+  description: string;
+}
+
 export const HomePage: Component = () => {
-  // State to manage which FAQ item is currently open
   const [openFAQ, setOpenFAQ] = createSignal<number | null>(null);
 
-  // Data for your FAQs
   const faqs = [
     {
       id: 1,
@@ -33,15 +37,55 @@ export const HomePage: Component = () => {
     },
   ];
 
-  // Toggle function for FAQ items
+  const heroItems: HeroItem[] = [
+    {
+      image: "https://picsum.photos/300?random=1",
+      title: "Home Services",
+      description: "Carpentry, Plumbing, Cleaning & more.",
+    },
+    {
+      image: "https://picsum.photos/300?random=2",
+      title: "IT & Tech Support",
+      description: "Web Design, Software, Network help.",
+    },
+    {
+      image: "https://picsum.photos/300?random=3",
+      title: "Creative & Design",
+      description: "Graphic Design, Writing, Photography.",
+    },
+    {
+      image: "https://picsum.photos/300?random=4",
+      title: "Tutoring & Education",
+      description: "Academic help, Skill developmen",
+    },
+    {
+      image: "https://picsum.photos/300?random=5",
+      title: "Home Services",
+      description: "Carpentry, Plumbing, Cleaning & more.",
+    },
+    {
+      image: "https://picsum.photos/300?random=6",
+      title: "IT & Tech Support",
+      description: "Web Design, Software, Network help.",
+    },
+    {
+      image: "https://picsum.photos/300?random=7",
+      title: "Creative & Design",
+      description: "Graphic Design, Writing, Photography.",
+    },
+    {
+      image: "https://picsum.photos/300?random=8",
+      title: "Tutoring & Education",
+      description: "Academic help, Skill developmen",
+    },
+  ];
+
   const toggleFAQ = (id: number) => {
     setOpenFAQ(openFAQ() === id ? null : id);
   };
 
   return (
     <main class="flex-grow container-fluid mx-auto">
-      {/* ... (Your existing sections: Hero, Popular Categories, How It Works, Featured Services, Benefits, Testimonials, CTA) ... */}
-
       <section class="text-center py-16 bg-blue-300 text-white rounded-lg shadow-lg mb-12">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
           Your Skills. Our Platform. Limitless Possibilities.
@@ -68,95 +112,9 @@ export const HomePage: Component = () => {
         </h2>
         <div class={home_styles.slider_container}>
           <div class={home_styles.slider_track}>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=1"
-                alt="Home Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Home Services
-              </h3>
-              <p class="text-gray-600">Carpentry, Plumbing, Cleaning & more.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=2"
-                alt="Tech Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                IT & Tech Support
-              </h3>
-              <p class="text-gray-600">Web Design, Software, Network help.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=3"
-                alt="Creative Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Creative & Design
-              </h3>
-              <p class="text-gray-600">Graphic Design, Writing, Photography.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=4"
-                alt="Tutoring Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Tutoring & Education
-              </h3>
-              <p class="text-gray-600">Academic help, Skill development.</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=1"
-                alt="Home Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Home Services
-              </h3>
-              <p class="text-gray-600">Carpentry, Plumbing, Cleaning & more.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=2"
-                alt="Tech Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                IT & Tech Support
-              </h3>
-              <p class="text-gray-600">Web Design, Software, Network help.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=3"
-                alt="Creative Services Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Creative & Design
-              </h3>
-              <p class="text-gray-600">Graphic Design, Writing, Photography.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
-              <img
-                src="https://picsum.photos/300?random=4"
-                alt="Tutoring Icon"
-                class="mx-auto mb-4 w-80 h-50 object-contain"
-              />
-              <h3 class="text-xl font-semibold text-gray-700 mb-2">
-                Tutoring & Education
-              </h3>
-              <p class="text-gray-600">Academic help, Skill development.</p>
-            </div>
+            <For each={heroItems} fallback={<div>Loading...</div>}>
+              {(item, index) => <HeroCard item={item} />}
+            </For>
           </div>
         </div>
       </section>
@@ -396,7 +354,7 @@ export const HomePage: Component = () => {
         </button>
       </section>
 
-      {/* UPDATED FAQ Section */}
+      {/* FAQ Section */}
       <section class="py-12 bg-gray-50 rounded-lg shadow-md mb-12 px-4">
         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
           Frequently Asked Questions
@@ -436,29 +394,24 @@ export const HomePage: Component = () => {
           </For>
         </div>
       </section>
-
-      {/* NEW SECTION: Footer
-      <footer class="bg-gray-800 text-white py-8 mt-12">
-        <div class="container mx-auto text-center px-4">
-          <div class="mb-4">
-            <a href="#" class="text-blue-300 hover:text-blue-100 mx-3">
-              About Us
-            </a>
-            <a href="#" class="text-blue-300 hover:text-blue-100 mx-3">
-              Contact
-            </a>
-            <a href="#" class="text-blue-300 hover:text-blue-100 mx-3">
-              Privacy Policy
-            </a>
-            <a href="#" class="text-blue-300 hover:text-blue-100 mx-3">
-              Terms of Service
-            </a>
-          </div>
-          <p>
-            &copy; {new Date().getFullYear()} PairProfit. All rights reserved.
-          </p>
-        </div>
-      </footer> */}
     </main>
+  );
+};
+
+const HeroCard: Component<{
+  item: HeroItem;
+}> = (props) => {
+  return (
+    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
+      <img
+        src={props.item.image}
+        alt="Home Services Icon"
+        class="mx-auto mb-4 w-120 h-50 object-contain"
+      />
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">
+        {props.item.title}
+      </h3>
+      <p class="text-gray-600">{props.item.description}</p>
+    </div>
   );
 };

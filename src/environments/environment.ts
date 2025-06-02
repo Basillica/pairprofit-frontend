@@ -6,7 +6,7 @@ export const environment = {
     hmr: true,
     title: "Myserv local",
     name: "local", // defines which configuration under /assets/config/ should be loaded during startup
-    BASE_URL: "http://localhost:80",
+    BASE_URL: "http://localhost:8080",
     REDIRECT_URL: "http://localhost:3000",
     WEB_SOCKET_URL: "ws://localhost:8082",
     WEB_SOCKET_API: "http://localhost:8082",

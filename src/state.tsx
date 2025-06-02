@@ -2,17 +2,16 @@ import {
   createContext,
   useContext,
   createSignal,
-  onMount,
   createEffect,
   JSX,
+  Accessor,
+  Setter,
 } from "solid-js";
-import type { Accessor, Setter } from "solid-js";
 
 interface AppContextType {
-  socket: Accessor<WebSocket | null>;
+  isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
   sendMessage: (data: string) => void;
   socketMessage: Accessor<MessageEvent<string>>;
-  setSocketMessage: Setter<MessageEvent<string>>;
   updateNotifWidget: Accessor<boolean>;
   setNotifWidget: Setter<boolean>;
   syncMode: Accessor<boolean>;
@@ -23,84 +22,156 @@ const AppContext = createContext<AppContextType | null>(null);
 
 export const AppContextProvider = (props: {
   url: string;
-  query: Accessor<string>;
+  query: Accessor<string>; // Query is a signal
   children: JSX.Element;
 }) => {
   const [socket, setSocket] = createSignal<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = createSignal<boolean>(false);
   const [socketMessage, setSocketMessage] = createSignal<MessageEvent<string>>(
-    new MessageEvent("")
+    new MessageEvent("") // Initial value - be mindful in consuming components
   );
   const [updateNotifWidget, setNotifWidget] = createSignal<boolean>(false);
   const [syncMode, setSyncMode] = createSignal(false);
+
   let retryCount = 0;
   const maxRetries = 4;
+  const retryInterval = 5000; // 5 seconds
 
-  function connectToWS() {
-    if (socket()) {
-      console.log("client is already connected");
+  const connectToWS = () => {
+    // Prevent reconnecting if already connected or if query is empty
+    if (socket() && socket()?.readyState === WebSocket.OPEN) {
+      console.log("Client is already connected.");
       return;
     }
-    retryCount++;
-    if (retryCount >= maxRetries) return;
-    const ws = new WebSocket(`${props.url}&${props.query()}`);
+    if (props.query() === "") {
+      console.log("Query is empty, not connecting to WebSocket.");
+      return;
+    }
 
-    setSocket(ws);
-    socket()!.onmessage = (event: MessageEvent<string>) => {
-      const ev = JSON.parse(event.data);
-      console.log(ev);
-      setSocketMessage(event);
-    };
-
-    ws.onclose = function (e) {
-      console.log(
-        "Socket is closed. Reconnection will be attempted in 5 second.",
-        e.reason
+    if (retryCount >= maxRetries) {
+      console.warn(
+        `Max reconnection attempts (${maxRetries}) reached. Not attempting further connections.`
       );
+      setIsConnected(false);
+      setSocket(null); // Ensure socket is null if retries exhausted
+      return;
+    }
+
+    console.log(
+      `Attempting to connect to WebSocket (attempt ${
+        retryCount + 1
+      }/${maxRetries})...`
+    );
+    // Increment retryCount *before* attempting connection
+    retryCount++;
+
+    const ws = new WebSocket(`${props.url}&${props.query()}`);
+    setSocket(ws);
+    setIsConnected(false); // Set to false initially, will be true on 'open'
+
+    ws.onopen = () => {
+      console.log("WebSocket connected!");
+      setIsConnected(true);
+      retryCount = 0; // Reset retry count on successful connection
     };
 
-    ws.onerror = function (err) {
-      console.error("Socket encountered error: ", err, "Closing socket");
-      if (ws) ws.close();
-      if (retryCount >= maxRetries) {
-        setTimeout(function () {
-          connectToWS();
-        }, 5000);
+    ws.onmessage = (event: MessageEvent<string>) => {
+      try {
+        const ev = JSON.parse(event.data);
+        console.log("Received WS message:", ev);
+        setSocketMessage(event); // Store the raw message event
+        // If you want to expose parsed data:
+        // setParsedMessage(ev);
+      } catch (e) {
+        console.error("Failed to parse WebSocket message:", e, event.data);
       }
     };
 
-    ws.close = () => {
-      setSocket(null);
+    ws.onclose = (event: CloseEvent) => {
+      console.log(
+        `WebSocket closed. Reason: ${
+          event.reason || "No reason provided"
+        }. Code: ${event.code}. Will attempt reconnection in ${
+          retryInterval / 1000
+        } seconds.`,
+        event
+      );
+      setIsConnected(false); // Update connection status
+      setSocket(null); // Clear the socket instance
+      // Only attempt reconnect if not explicitly closed by us (e.g., query change)
+      // and if max retries not reached
+      if (retryCount < maxRetries) {
+        setTimeout(() => connectToWS(), retryInterval);
+      } else {
+        console.warn(
+          "Max reconnection attempts reached, not trying again automatically."
+        );
+      }
     };
-  }
 
-  onMount(async () => {
-    if (!socket()) {
-      if (props.query() !== "") {
+    ws.onerror = (error: Event) => {
+      console.error("WebSocket encountered error:", error);
+      // errors often lead to a close event, so the reconnection logic should be in onclose
+      // Explicitly close the socket if an error occurs to trigger onclose
+      if (
+        ws.readyState === WebSocket.OPEN ||
+        ws.readyState === WebSocket.CONNECTING
+      ) {
+        ws.close();
+      }
+    };
+  };
+
+  // Effect to manage WebSocket connection based on props.query
+  createEffect(() => {
+    const currentQuery = props.query();
+    if (currentQuery !== "") {
+      // If there's an existing open socket and the query changes, close it first
+      if (socket() && socket()?.readyState === WebSocket.OPEN) {
+        console.log("Query changed, closing existing WebSocket...");
+        socket()?.close(1000, "Query changed"); // Clean close
+        // The onclose handler will then trigger a new connection attempt
+      } else {
+        // If no socket or not open, try to connect immediately
         connectToWS();
       }
+    } else {
+      // If query becomes empty, close any active socket
+      if (socket() && socket()?.readyState === WebSocket.OPEN) {
+        console.log("Query became empty, closing WebSocket.");
+        socket()?.close(1000, "Query empty");
+      }
+      setSocket(null);
+      setIsConnected(false);
+      retryCount = 0; // Reset retries if query becomes empty
     }
+
+    // Cleanup function for when the effect re-runs or component unmounts
+    return () => {
+      if (socket() && socket()?.readyState === WebSocket.OPEN) {
+        console.log("Effect cleanup: Closing WebSocket.");
+        socket()?.close(1000, "Component unmounted or effect re-ran");
+      }
+      setSocket(null);
+      setIsConnected(false);
+      retryCount = 0; // Reset retries on cleanup
+    };
   });
 
-  createEffect(() => {
-    if (props.query() !== "") {
-      connectToWS();
-    }
-    return () => {
-      if (socket()) socket()!.close();
-    };
-  }, [props.query]);
-
   const sendMessage = (data: string) => {
-    socket()?.send(data);
+    if (socket()?.readyState === WebSocket.OPEN) {
+      socket()!.send(data);
+    } else {
+      console.warn("WebSocket is not open. Message not sent:", data);
+    }
   };
 
   return (
     <AppContext.Provider
       value={{
-        socket,
+        isConnected, // Expose connection status
         sendMessage,
         socketMessage,
-        setSocketMessage,
         updateNotifWidget,
         setNotifWidget,
         syncMode,
