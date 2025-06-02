@@ -39,42 +39,42 @@ export const HomePage: Component = () => {
 
   const heroItems: HeroItem[] = [
     {
-      image: "https://picsum.photos/300?random=1",
+      image: "https://picsum.photos/880/400?random=1",
       title: "Home Services",
       description: "Carpentry, Plumbing, Cleaning & more.",
     },
     {
-      image: "https://picsum.photos/300?random=2",
+      image: "https://picsum.photos/880/400?random=2",
       title: "IT & Tech Support",
       description: "Web Design, Software, Network help.",
     },
     {
-      image: "https://picsum.photos/300?random=3",
+      image: "https://picsum.photos/880/400?random=3",
       title: "Creative & Design",
       description: "Graphic Design, Writing, Photography.",
     },
     {
-      image: "https://picsum.photos/300?random=4",
+      image: "https://picsum.photos/880/400?random=4",
       title: "Tutoring & Education",
       description: "Academic help, Skill developmen",
     },
     {
-      image: "https://picsum.photos/300?random=5",
+      image: "https://picsum.photos/880/400?random=5",
       title: "Home Services",
       description: "Carpentry, Plumbing, Cleaning & more.",
     },
     {
-      image: "https://picsum.photos/300?random=6",
+      image: "https://picsum.photos/880/400?random=6",
       title: "IT & Tech Support",
       description: "Web Design, Software, Network help.",
     },
     {
-      image: "https://picsum.photos/300?random=7",
+      image: "https://picsum.photos/880/400?random=7",
       title: "Creative & Design",
       description: "Graphic Design, Writing, Photography.",
     },
     {
-      image: "https://picsum.photos/300?random=8",
+      image: "https://picsum.photos/880/400?random=8",
       title: "Tutoring & Education",
       description: "Academic help, Skill developmen",
     },
