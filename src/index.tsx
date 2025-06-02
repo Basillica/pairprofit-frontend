@@ -27,28 +27,28 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <Router root={RootLayout}>
-      <Route path="/" component={HomePage}>
-        <Route path="/kanban" component={KanbanBoard} />
-        <Route path="/inbox" component={EmailInbox}></Route>
-        <Route path="/listings">
-          <Route path="/" component={ServiceListings}></Route>
-          <Route path="/:id"></Route>
-          <Route path="/profiles" component={ServiceProviderListings}></Route>
-          <Route path="/profiles/:id" component={UserProfile}></Route>
-          <Route path="/create"></Route>
-          <Route path="/profiles/create"></Route>
-        </Route>
-
-        {/* profiles urls */}
-        <Route path="/profile">
-          <Route path="/" component={ProfileDashboard}></Route>
-          <Route path="/calendar" component={Calendar}></Route>
-          <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
-        </Route>
-
-        {/* chat page */}
-        <Route path="/chat" component={LovelyChat}></Route>
+      <Route path="/" component={HomePage} />
+      <Route path="/kanban" component={KanbanBoard} />
+      <Route path="/inbox" component={EmailInbox}></Route>
+      <Route path="/listings">
+        <Route path="/" component={ServiceListings}></Route>
+        <Route path="/:id"></Route>
+        <Route path="/profiles" component={ServiceProviderListings}></Route>
+        <Route path="/profiles/:id" component={UserProfile}></Route>
+        <Route path="/create"></Route>
+        <Route path="/profiles/create"></Route>
       </Route>
+
+      {/* profiles urls */}
+      <Route path="/profile">
+        <Route path="/" component={ProfileDashboard}></Route>
+        <Route path="/calendar" component={Calendar}></Route>
+        <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
+      </Route>
+
+      {/* chat page */}
+      <Route path="/chat" component={LovelyChat}></Route>
+      {/* </Route> */}
 
       {/* public sharable profile */}
       <Route path="/login" component={LoginPage} />
