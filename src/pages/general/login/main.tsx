@@ -1,4 +1,4 @@
-import { createEffect, createSignal, JSX, onMount } from "solid-js";
+import { createSignal, JSX, onMount } from "solid-js";
 import logo from "./../../../assets/A.png";
 import "./login.css";
 import { useOAuth } from "../../../oauth";
@@ -27,8 +27,6 @@ const AuthCard = (props: AuthCardProps) => {
     </div>
   );
 };
-
-type AuthProvider = "linkedin" | "google" | "facebook" | "github";
 
 interface AuthLinkProps {
   href: string;
@@ -125,7 +123,6 @@ export const LoginPage = () => {
     const code = urlParams.get("code");
     const state = urlParams.get("state");
     const error = urlParams.get("error"); // Check for OAuth errors from provider
-    const providerId = urlParams.get("provider"); // Assuming you can add 'provider' param to the redirect_uri too,
 
     if (error) {
       console.error("OAuth Provider Error:", error);
@@ -154,7 +151,7 @@ export const LoginPage = () => {
 
       console.log("logged in user. user: ", res.data);
       console.log("OAuth callback received: code=", code, "state=", state);
-      const actualProviderId = providerId || "UNKNOWN_PROVIDER";
+      const actualProviderId = provider || "UNKNOWN_PROVIDER";
       console.log(actualProviderId, ">>>>>>>>>>>>>>>>>>>>");
     }
   });
