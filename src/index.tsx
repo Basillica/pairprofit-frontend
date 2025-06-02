@@ -51,8 +51,8 @@ render(
       </Route>
 
       {/* public sharable profile */}
-      <Route path="/public/profile"></Route>
       <Route path="/login" component={LoginPage} />
+      <Route path="/public/profile"></Route>
       <Route path="*404" component={Page404} />
     </Router>
   ),
