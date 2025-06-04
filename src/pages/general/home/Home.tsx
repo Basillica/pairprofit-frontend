@@ -1,4 +1,4 @@
-import { Component, createSignal, For } from "solid-js";
+import { Accessor, Component, createSignal, For } from "solid-js";
 import home_styles from "./style.module.css";
 
 interface HeroItem {
@@ -113,7 +113,7 @@ export const HomePage: Component = () => {
         <div class={home_styles.slider_container}>
           <div class={home_styles.slider_track}>
             <For each={heroItems} fallback={<div>Loading...</div>}>
-              {(item, index) => <HeroCard item={item} />}
+              {(item, index) => <HeroCard item={item} index={index} />}
             </For>
           </div>
         </div>
@@ -400,9 +400,13 @@ export const HomePage: Component = () => {
 
 const HeroCard: Component<{
   item: HeroItem;
+  index: Accessor<number>;
 }> = (props) => {
   return (
-    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80">
+    <div
+      class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300 flex-shrink-0 w-120 h-80"
+      id={props.index().toString()}
+    >
       <img
         src={props.item.image}
         alt="Home Services Icon"

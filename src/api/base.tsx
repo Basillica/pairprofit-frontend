@@ -48,16 +48,16 @@ export class ApiHandler {
     this.axiosInstance.interceptors.request.use((config) => {
       config.baseURL = this.base_url;
 
-      let credentials = localStorage.getItem("credentials") ?? "";
-      let access_token = localStorage.getItem("access_token") ?? "";
-      let verify_otp = localStorage.getItem("verify_otp") ?? "false";
-      let appenv = localStorage.getItem("appenv") ?? "";
+      //   let credentials = localStorage.getItem("credentials") ?? "";
+      //   let access_token = localStorage.getItem("access_token") ?? "";
+      //   let verify_otp = localStorage.getItem("verify_otp") ?? "false";
+      //   let appenv = localStorage.getItem("appenv") ?? "";
       // set headers
-      config.headers.setAuthorization(`Bearer ${access_token}`);
-      config.headers.set("X-Access-Token", access_token);
-      config.headers.set("X-User-Creds", credentials);
-      config.headers.set("X-Verify-OTP", verify_otp);
-      config.headers.set("X-App-Env", appenv);
+      //   config.headers.setAuthorization(`Bearer ${access_token}`);
+      //   config.headers.set("X-Access-Token", access_token);
+      //   config.headers.set("X-User-Creds", credentials);
+      //   config.headers.set("X-Verify-OTP", verify_otp);
+      //   config.headers.set("X-App-Env", appenv);
 
       config.withCredentials = true;
       return config;
