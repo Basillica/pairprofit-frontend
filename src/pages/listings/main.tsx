@@ -6,6 +6,8 @@ import { ServiceListingsB } from "./listings2";
 import { ServiceListingsC } from "./listings3";
 import { Service } from "./types";
 import { PublicHandler } from "../../api/public";
+import { useNavigate } from "@solidjs/router";
+import { authService } from "../../oauth/manager";
 
 // Define the structure of the data you get from your API
 interface ApiCategoriesResponse {
@@ -139,6 +141,7 @@ export const ServiceListings = () => {
   const [apiCategories, setApiCategories] = createSignal<ApiCategoriesResponse>(
     {}
   );
+  const navigate = useNavigate();
 
   // Signal to store the currently selected main category
   const [selectedCategory, setSelectedCategory] = createSignal<string>(""); // Store the original label, or empty for "All"
@@ -199,6 +202,11 @@ export const ServiceListings = () => {
   };
 
   onMount(async () => {
+    if (!authService.checkAuth()) {
+      navigate("/login");
+      return;
+    }
+
     const api = new PublicHandler();
     try {
       const res = await api.fetchCategories();

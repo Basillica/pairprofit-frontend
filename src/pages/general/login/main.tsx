@@ -4,9 +4,10 @@ import "./login.css";
 import { useOAuth } from "../../../oauth";
 import { PublicHandler } from "../../../api/public";
 import { UserModel } from "../../../models/auth";
-import { NotificationBar } from "../../../components/utils/Notification";
 import { PrimaryButton } from "../../../components/utils/button";
-import { LoadingOverlay } from "../../../components/utils";
+import { LoadingOverlay, NotificationBar } from "../../../components/utils";
+import { useNavigate } from "@solidjs/router";
+import { authService } from "../../../oauth/manager";
 
 interface AuthCardProps {
   id: string;
@@ -70,7 +71,6 @@ const SocialButton = (props: SocialButtonProps) => {
 };
 
 export const LoginPage = () => {
-  const [loginPassword, setLoginPassword] = createSignal("");
   const [newUser, setNewUser] = createSignal<UserModel>({
     firstname: "",
     lastname: "",
@@ -88,9 +88,7 @@ export const LoginPage = () => {
     updated_at: "",
     id: "",
   });
-  const [forgotEmail, setForgotEmail] = createSignal("");
-  const [resetPassword, setResetPassword] = createSignal("");
-  const [resetConfirmPassword, setResetConfirmPassword] = createSignal("");
+  const navigate = useNavigate();
   const { getAuthorizationUrl } = useOAuth();
   const [notificationType, setNotificationType] = createSignal<
     "success" | "warning" | "error" | null
@@ -102,8 +100,21 @@ export const LoginPage = () => {
   const [currentProcess, setCurrentProcess] =
     createSignal<ProcessType>("LoginCard");
   const [isLoading, setIsLoading] = createSignal(false);
-  const [otpValue, setOtpValue] = createSignal(0);
-  const [userEmail, setUserEmail] = createSignal("");
+  const [confirmPasswordReset, setConfirmPasswordReset] = createSignal<{
+    otp: number;
+    password: string;
+    confirm_password: string;
+    token: string;
+  }>({ otp: 0, password: "", confirm_password: "", token: "" });
+  const [confirmSignUp, setConfirmSignUp] = createSignal<{
+    otp: number;
+    email: string;
+    token: string;
+  }>({ otp: 0, email: "", token: "" });
+  const [loginCredentials, setLoginCredentials] = createSignal<{
+    username: string;
+    password: string;
+  }>({ username: "", password: "" });
 
   const showAppNotification = (
     type: "success" | "warning" | "error",
@@ -113,8 +124,26 @@ export const LoginPage = () => {
     setNotificationMessage(message);
   };
 
-  const handleLoginSubmit = (e: Event) => {
+  const handleLoginSubmit = async (e: Event) => {
     e.preventDefault();
+    if (!isValidEmail(loginCredentials().username)) {
+      showAppNotification("error", `the provided email is not valid`);
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await publiApiHandler.login({ ...loginCredentials() });
+    if (!result.success) {
+      showAppNotification("error", "wrong user credentials");
+      setIsLoading(false);
+      return;
+    }
+
+    showAppNotification("success", "successfully logged in");
+    authService.setAuthToken(result.data.token, result.data.tokenAge);
+    authService.setAuthUser(result.data.user);
+    setIsLoading(false);
+    navigate("/listings");
   };
 
   const handleRegisterSubmit = async (e: Event) => {
@@ -138,15 +167,39 @@ export const LoginPage = () => {
       return;
     }
 
-    console.log(result, "the frigging result");
     showAppNotification("success", "Your data has been saved successfully!");
-    localStorage.setItem("currentProcess", "OTPCard");
+    setConfirmSignUp({ ...confirmSignUp(), token: result.data.token });
     setCurrentProcess("OTPCard");
+    authService.confirmLogin("OTPCard", result.data.token);
     setIsLoading(false);
   };
 
-  const handleForgotPasswordSubmit = (e: Event) => {
+  const handleForgotPasswordSubmit = async (e: Event) => {
     e.preventDefault();
+    if (!isValidEmail(loginCredentials().username)) {
+      showAppNotification("error", `the provided email is not valid`);
+      return;
+    }
+
+    setIsLoading(true);
+    let result = await publiApiHandler.forgotPassword({
+      email: loginCredentials().username,
+    });
+    setIsLoading(false);
+
+    if (!result.success) {
+      showAppNotification("error", "the provided user does not exist");
+      return;
+    }
+
+    showAppNotification("success", "email sent with further instructions");
+    setCurrentProcess("ResetPassword");
+    authService.setAuthProcessToken(result.data.token);
+    setConfirmPasswordReset({
+      ...confirmPasswordReset(),
+      token: result.data.token,
+    });
+    authService.setAuthProcess("ResetPassword");
   };
 
   const onInputChange = (
@@ -162,8 +215,31 @@ export const LoginPage = () => {
     });
   };
 
-  const handleResetPasswordSubmit = (e: Event) => {
+  const handleResetPasswordSubmit = async (e: Event) => {
     e.preventDefault();
+    if (!isValidEmail(loginCredentials().username)) {
+      showAppNotification("error", `the provided email is not valid`);
+      return;
+    }
+
+    setIsLoading(true);
+    let result = await publiApiHandler.confirmForgotPassword({
+      token: confirmPasswordReset().token,
+      otp: confirmPasswordReset().otp,
+      password: confirmPasswordReset().password,
+    });
+
+    if (!result.success) {
+      showAppNotification("error", "unable to login user");
+      setIsLoading(false);
+      return;
+    }
+
+    showAppNotification("success", "successfully logged in");
+    authService.setAuthToken(result.data.token, result.data.tokenAge);
+    authService.setAuthUser(result.data.user);
+    setIsLoading(false);
+    navigate("/listings");
   };
 
   const isValidEmail = (email: string): boolean => {
@@ -174,9 +250,28 @@ export const LoginPage = () => {
   };
 
   onMount(async () => {
-    const process = localStorage.getItem("currentProcess")!;
+    if (authService.checkAuthOnLogin()) {
+      navigate("/listings");
+      return;
+    }
+
+    const process = authService.getCurrentProcess()!;
+    setConfirmSignUp({
+      ...confirmSignUp(),
+      token: authService.getUserAuthToken()!,
+    });
+
     if (process && process !== "") {
       setCurrentProcess(process as ProcessType);
+      if (process === "ResetPassword") {
+        let token = authService.getAuthProcessToken();
+        if (token) {
+          setConfirmPasswordReset({
+            ...confirmPasswordReset(),
+            token: token,
+          });
+        }
+      }
       if (process !== "LoginCard") return;
     }
 
@@ -192,7 +287,7 @@ export const LoginPage = () => {
 
     if (code && state) {
       // This means the OAuth provider has redirected back to our frontend
-      const provider = sessionStorage.getItem("oauth_provider");
+      const provider = authService.getAuthProvider();
       if (!provider) {
         console.log("no set provides fount");
         return;
@@ -209,34 +304,45 @@ export const LoginPage = () => {
         console.log("unable to login in user");
         return;
       }
-
-      console.log("logged in user. user: ", res.data);
-      console.log("OAuth callback received: code=", code, "state=", state);
-      const actualProviderId = provider || "UNKNOWN_PROVIDER";
-      console.log(actualProviderId, ">>>>>>>>>>>>>>>>>>>>");
     }
   });
 
   const handleProviderLogin = async (provider: string) => {
     console.log(getAuthorizationUrl(provider));
     const authUrl = getAuthorizationUrl(provider);
-    sessionStorage.setItem("oauth_provider", provider);
+    authService.setAuthProvider(provider);
     window.location.href = authUrl.toString();
   };
 
-  const handleSubmitOTP = (
+  const handleSubmitOTP = async (
     e: MouseEvent & {
       currentTarget: HTMLButtonElement;
       target: Element;
     }
   ) => {
     e.preventDefault();
-    if (otpValue() === 0 || otpValue() < 99999) {
+    if (!isValidEmail(confirmSignUp().email)) {
+      showAppNotification("error", `the provided email is not valid`);
+      return;
+    }
+
+    if (confirmSignUp().otp === 0 || confirmSignUp().otp < 99999) {
       showAppNotification("error", "the provided OTP is wrong");
       return;
     }
 
-    console.log(otpValue());
+    setIsLoading(true);
+    let result = await publiApiHandler.confirmSignup({ ...confirmSignUp() });
+    if (!result.success) {
+      showAppNotification("error", "unable to confirm user signup");
+      setIsLoading(false);
+      return;
+    }
+
+    authService.setAuthToken(result.data.token, result.data.tokenAge);
+    setIsLoading(false);
+    showAppNotification("success", "successfully logged in");
+    navigate("/listings");
   };
 
   return (
@@ -244,7 +350,7 @@ export const LoginPage = () => {
       <NotificationBar
         type={notificationType}
         message={notificationMessage}
-        duration={5000} // Optional: Pass duration in milliseconds
+        duration={4000}
       />
       <LoadingOverlay isLoading={isLoading()} />
       <div class="left-panel">
@@ -273,12 +379,14 @@ export const LoginPage = () => {
                     name="username"
                     class="form-control"
                     placeholder="Enter your username"
+                    autocomplete="username"
                     required
-                    value={loginPassword()}
+                    value={loginCredentials().username}
                     onInput={(e) =>
-                      setLoginPassword(
-                        (e.currentTarget as HTMLInputElement).value
-                      )
+                      setLoginCredentials({
+                        ...loginCredentials(),
+                        username: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -296,12 +404,14 @@ export const LoginPage = () => {
                     name="password"
                     class="form-control"
                     placeholder="Enter your password"
+                    autocomplete="current-password"
                     required
-                    value={loginPassword()}
+                    value={loginCredentials().password}
                     onInput={(e) =>
-                      setLoginPassword(
-                        (e.currentTarget as HTMLInputElement).value
-                      )
+                      setLoginCredentials({
+                        ...loginCredentials(),
+                        password: e.currentTarget.value,
+                      })
                     }
                   />
                 </div>
@@ -414,6 +524,7 @@ export const LoginPage = () => {
                       type="password"
                       value={newUser()?.password}
                       onInput={(e) => onInputChange(e)}
+                      autocomplete="current-password"
                       required
                       placeholder="Enter password"
                       id="password"
@@ -434,6 +545,7 @@ export const LoginPage = () => {
                       onInput={(e) => onInputChange(e)}
                       required
                       placeholder="Repeat password"
+                      autocomplete="current-password"
                       id="passwordRepeat"
                       name="passwordRepeat"
                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -454,6 +566,7 @@ export const LoginPage = () => {
                     name="username"
                     class="form-control"
                     placeholder="Enter your username"
+                    autocomplete="username"
                     required
                     value={newUser()?.username}
                     onInput={(e) => onInputChange(e)}
@@ -525,11 +638,12 @@ export const LoginPage = () => {
                     class="form-control"
                     placeholder="Enter your email"
                     required
-                    value={forgotEmail()}
+                    value={loginCredentials().username}
                     onInput={(e) =>
-                      setForgotEmail(
-                        (e.currentTarget as HTMLInputElement).value
-                      )
+                      setLoginCredentials({
+                        ...loginCredentials(),
+                        username: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -563,12 +677,15 @@ export const LoginPage = () => {
                     name="password"
                     class="form-control"
                     placeholder="Enter your new password"
+                    autocomplete="current-password"
+                    hidden={false}
                     required
-                    value={resetPassword()}
+                    value={confirmPasswordReset().password}
                     onInput={(e) =>
-                      setResetPassword(
-                        (e.currentTarget as HTMLInputElement).value
-                      )
+                      setConfirmPasswordReset({
+                        ...confirmPasswordReset(),
+                        password: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -582,13 +699,56 @@ export const LoginPage = () => {
                     name="confirm-password"
                     class="form-control"
                     placeholder="Confirm your new password"
+                    autocomplete="current-password"
+                    hidden={false}
                     required
-                    value={resetConfirmPassword()}
+                    value={confirmPasswordReset().confirm_password}
                     onInput={(e) =>
-                      setResetConfirmPassword(
-                        (e.currentTarget as HTMLInputElement).value
-                      )
+                      setConfirmPasswordReset({
+                        ...confirmPasswordReset(),
+                        confirm_password: e.target.value,
+                      })
                     }
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    for="otp"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    OTP
+                  </label>
+                  <input
+                    type="number"
+                    id="otp"
+                    name="otp"
+                    class="form-control"
+                    placeholder="Please enter the OTP in your email"
+                    required
+                    value={confirmPasswordReset().otp}
+                    onInput={(e) =>
+                      setConfirmPasswordReset({
+                        ...confirmPasswordReset(),
+                        otp: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    for="otp"
+                    class="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Token
+                  </label>
+                  <input
+                    type="text"
+                    id="token"
+                    name="token"
+                    class="form-control"
+                    placeholder="Please enter the OTP in your email"
+                    disabled
+                    value={confirmPasswordReset().token}
                   />
                 </div>
                 <button type="submit" class="btn-primary">
@@ -606,6 +766,30 @@ export const LoginPage = () => {
             >
               <div class="form-group">
                 <label
+                  for="token"
+                  class="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Validation Token
+                </label>
+                <input
+                  type="text"
+                  id="token"
+                  name="token"
+                  class="form-control"
+                  placeholder="Please enter your email"
+                  required
+                  value={confirmSignUp().token}
+                  onInput={(e) =>
+                    setConfirmSignUp({
+                      ...confirmSignUp(),
+                      token: e.currentTarget.value,
+                    })
+                  }
+                  disabled
+                />
+              </div>
+              <div class="form-group">
+                <label
                   for="otp"
                   class="block text-gray-700 text-sm font-bold mb-2"
                 >
@@ -618,9 +802,12 @@ export const LoginPage = () => {
                   class="form-control"
                   placeholder="Please enter the OTP in your email"
                   required
-                  value={otpValue()}
+                  value={confirmSignUp().otp}
                   onInput={(e) =>
-                    setOtpValue(e.currentTarget.value as unknown as number)
+                    setConfirmSignUp({
+                      ...confirmSignUp(),
+                      otp: Number(e.currentTarget.value),
+                    })
                   }
                 />
               </div>
@@ -638,8 +825,13 @@ export const LoginPage = () => {
                   class="form-control"
                   placeholder="Please enter your email"
                   required
-                  value={userEmail()}
-                  onInput={(e) => setUserEmail(e.currentTarget.value)}
+                  value={confirmSignUp().email}
+                  onInput={(e) =>
+                    setConfirmSignUp({
+                      ...confirmSignUp(),
+                      email: e.currentTarget.value,
+                    })
+                  }
                 />
               </div>
               <AuthLink onClick={() => setCurrentProcess("OTPCard")}>

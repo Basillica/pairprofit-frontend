@@ -14,19 +14,23 @@ export class PublicHandler extends ApiHandler {
     return await this.post(`/public/signup`, body);
   }
 
-  async confirmSignup(body: UserModel) {
+  async confirmSignup(body: { token: string; otp: number; email: string }) {
     return await this.post(`/public/confirm-signup`, body);
   }
 
-  async forgotPassword(body: UserModel) {
+  async forgotPassword(body: { email: string }) {
     return await this.post(`/public/forgot-password`, body);
   }
 
-  async confirmForgotPassword(body: UserModel) {
+  async confirmForgotPassword(body: {
+    token: string;
+    otp: number;
+    password: string;
+  }) {
     return await this.post(`/public/confirm-forgot-password`, body);
   }
 
-  async login(body: UserModel) {
+  async login(body: { username: string; password: string }) {
     return await this.post(`/public/login`, body);
   }
 }
