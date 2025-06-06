@@ -14,6 +14,7 @@ import {
   ProfileDashboard,
   ProviderProfileComponent,
   CreateProviderProfileComponent,
+  ManageServiceProfiles,
   Calendar,
 } from "./pages";
 import "./App.css";
@@ -37,16 +38,15 @@ render(
       <Route path="/listings">
         <Route path="/" component={ServiceListings}></Route>
         <Route path="/:id" component={ServiceDetailsComponent}></Route>
-        <Route path="/profiles" component={ServiceProviderListings}></Route>
-        <Route path="/profiles/:id" component={UserProfile}></Route>
-        <Route path="/create"></Route>
-        <Route path="/profiles/create"></Route>
       </Route>
 
       {/* profiles urls */}
-      <Route path="/profile">
-        <Route path="/" component={ProfileDashboard}></Route>
+      <Route path="/profiles">
+        <Route path="/" component={ServiceProviderListings}></Route>
         <Route path={"/:id"} component={ProviderProfileComponent}></Route>
+        <Route path="/:id/dashboard" component={ProfileDashboard}></Route>
+        <Route path={"/manage"} component={ManageServiceProfiles}></Route>
+        {/* <Route path="/profiles/:id" component={UserProfile}></Route> */}
         <Route
           path={"/create"}
           component={CreateProviderProfileComponent}

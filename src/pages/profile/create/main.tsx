@@ -38,9 +38,7 @@ export const CreateProviderProfileComponent = () => {
       reader.readAsDataURL(file);
       setProfilePictureFile(file);
     } else {
-      setProfilePicturePreview(
-        "https://via.placeholder.com/100/E0E0E0/808080?text=Profile"
-      );
+      setProfilePicturePreview("https://picsum.photos/200?random=3");
       setProfilePictureFile(null);
     }
   };
@@ -324,7 +322,7 @@ export const CreateProviderProfileComponent = () => {
                           i() === 0 ? "e.g., Fürth" : "e.g., Another City"
                         }
                         value={area}
-                        onInput={(e) => updateServiceArea(i(), e.target.value)}
+                        // onInput={(e) => updateServiceArea(i(), e.target.value)}
                       />
                       <Show when={serviceAreas().length > 1}>
                         <button

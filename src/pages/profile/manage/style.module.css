@@ -1,0 +1,70 @@
+.stars {
+    display: flex;
+    align-items: center;
+}
+.star {
+    color: #ffd700; /* Gold color for stars */
+    font-size: 1rem; /* Smaller stars for card overview */
+    margin-right: 0.1rem;
+}
+.star.empty {
+    color: #d1d5db; /* Gray for empty stars */
+}
+
+/* Modal specific styles */
+.modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0; /* Start hidden for transition */
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal_overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.modal_content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+    max-width: 900px; /* Wider modal for more content */
+    width: 95%; /* Take more width on smaller screens */
+    max-height: 90vh; /* Max height to prevent overflow on small screens */
+    overflow-y: auto; /* Enable scrolling for long forms */
+    position: relative;
+    transform: translateY(-20px); /* Start slightly above for animation */
+    transition: transform 0.3s ease;
+}
+.modal_overlay.active .modal_content {
+    transform: translateY(0); /* Slide into place */
+}
+.modal_close_button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.8rem; /* Larger close button */
+    line-height: 1;
+    cursor: pointer;
+    color: #6b7280; /* gray-500 */
+    transition: color 0.2s ease;
+}
+.modal_close_button:hover {
+    color: #ef4444; /* red-500 */
+}
+
+/* Styles for dynamic input fields (service areas, skills) */
+.dynamic_input_group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}

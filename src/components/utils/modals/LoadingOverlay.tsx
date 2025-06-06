@@ -1,5 +1,5 @@
 import { Show, Component } from "solid-js";
-import { Portal } from "solid-js/web"; // Correct import for createPortal
+import { Portal } from "solid-js/web";
 
 interface LoadingOverlayProps {
   isLoading: boolean;

@@ -1,4 +1,4 @@
-import { createSignal, onMount, For, Show, Component } from "solid-js";
+import { createSignal, For, Show, Component } from "solid-js";
 
 // Define types for better readability and type-checking (optional, remove if not using TypeScript)
 /**
@@ -334,8 +334,11 @@ export const ProviderProfileComponent = () => {
                       totalReviews() > 0 ? (count / totalReviews()) * 100 : 0;
                     return (
                       <div class="flex items-center space-x-2">
-                        <span class="text-sm font-medium text-gray-700 w-8 text-right">
-                          {star} star
+                        <span
+                          class="text-sm font-medium text-gray-700 w-6 text-right"
+                          style={"width: 50px"}
+                        >
+                          {`${star} star`}
                         </span>
                         <div class="rating-bar-container flex-grow">
                           <div

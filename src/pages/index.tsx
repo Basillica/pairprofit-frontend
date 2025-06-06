@@ -6,6 +6,7 @@ export {
   ProfileDashboard,
   ProviderProfileComponent,
   CreateProviderProfileComponent,
+  ManageServiceProfiles,
 } from "./profile";
 export {
   ServiceListings,
