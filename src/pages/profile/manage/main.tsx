@@ -170,7 +170,6 @@ export const ManageServiceProfiles: Component<{}> = () => {
       </p>
 
       <div class="mb-8 text-center">
-        {/* In a real SolidJS app, you'd use a router link instead of a plain <a> tag if navigating within the SPA */}
         <a
           href="/create_provider_profile"
           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -194,7 +193,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
       </div>
 
       <section class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">
           Your Existing Profiles
         </h2>
         <div
