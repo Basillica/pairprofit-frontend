@@ -1,0 +1,1 @@
+export { ProviderProfileComponent } from "./main";

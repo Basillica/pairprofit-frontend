@@ -5,11 +5,15 @@ import {
   LoginPage,
   RootLayout,
   ServiceListings,
+  ListingDetailPage,
+  ServiceDetailsComponent,
   ServiceProviderDashboard,
   KanbanBoard,
   LovelyChat,
   Page404,
   ProfileDashboard,
+  ProviderProfileComponent,
+  CreateProviderProfileComponent,
   Calendar,
 } from "./pages";
 import "./App.css";
@@ -32,7 +36,7 @@ render(
       <Route path="/inbox" component={EmailInbox}></Route>
       <Route path="/listings">
         <Route path="/" component={ServiceListings}></Route>
-        <Route path="/:id"></Route>
+        <Route path="/:id" component={ServiceDetailsComponent}></Route>
         <Route path="/profiles" component={ServiceProviderListings}></Route>
         <Route path="/profiles/:id" component={UserProfile}></Route>
         <Route path="/create"></Route>
@@ -42,6 +46,11 @@ render(
       {/* profiles urls */}
       <Route path="/profile">
         <Route path="/" component={ProfileDashboard}></Route>
+        <Route path={"/:id"} component={ProviderProfileComponent}></Route>
+        <Route
+          path={"/create"}
+          component={CreateProviderProfileComponent}
+        ></Route>
         <Route path="/calendar" component={Calendar}></Route>
         <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
       </Route>

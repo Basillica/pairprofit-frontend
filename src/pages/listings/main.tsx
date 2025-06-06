@@ -363,5 +363,3 @@ export const ServiceListings = () => {
     </div>
   );
 };
-
-export default ServiceListings;
