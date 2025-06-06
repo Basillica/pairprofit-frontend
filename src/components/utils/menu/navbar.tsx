@@ -1,5 +1,6 @@
 import { Accessor, Component, createEffect, Setter } from "solid-js";
 import { useNavigate } from "@solidjs/router";
+import { authService } from "../../../oauth/manager";
 
 export const NavBar: Component<{
   expanded: Accessor<boolean>;
@@ -30,6 +31,10 @@ export const NavBar: Component<{
     }
   ) => {
     e.stopPropagation();
+    // the logout dialog will not be opened if you are not already logged in
+    if (!authService.getUserAuthToken()) {
+      return;
+    }
     props.setOpenLogout(true);
   };
 

@@ -46,7 +46,7 @@ export const PersistentSidebar: Component<{
 
   const handleLogout = () => {
     authService.clearAuthToken();
-    setOpenLogout(true);
+    setOpenLogout(false);
     navigate("/login");
   };
 

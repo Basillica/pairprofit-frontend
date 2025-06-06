@@ -93,7 +93,7 @@ export const LoginPage = () => {
   const [notificationType, setNotificationType] = createSignal<
     "success" | "warning" | "error" | null
   >(null);
-  const publiApiHandler = new PublicHandler();
+  const publicApiHandler = new PublicHandler();
   const [notificationMessage, setNotificationMessage] = createSignal<
     string | null
   >(null);
@@ -132,7 +132,7 @@ export const LoginPage = () => {
     }
 
     setIsLoading(true);
-    const result = await publiApiHandler.login({ ...loginCredentials() });
+    const result = await publicApiHandler.login({ ...loginCredentials() });
     if (!result.success) {
       showAppNotification("error", "wrong user credentials");
       setIsLoading(false);
@@ -159,7 +159,7 @@ export const LoginPage = () => {
     }
 
     setIsLoading(true);
-    let result = await publiApiHandler.signUp(newUser());
+    let result = await publicApiHandler.signUp(newUser());
     if (!result.success) {
       console.log(result, "the frigging result");
       setIsLoading(false);
@@ -182,7 +182,7 @@ export const LoginPage = () => {
     }
 
     setIsLoading(true);
-    let result = await publiApiHandler.forgotPassword({
+    let result = await publicApiHandler.forgotPassword({
       email: loginCredentials().username,
     });
     setIsLoading(false);
@@ -223,7 +223,7 @@ export const LoginPage = () => {
     }
 
     setIsLoading(true);
-    let result = await publiApiHandler.confirmForgotPassword({
+    let result = await publicApiHandler.confirmForgotPassword({
       token: confirmPasswordReset().token,
       otp: confirmPasswordReset().otp,
       password: confirmPasswordReset().password,
@@ -299,16 +299,21 @@ export const LoginPage = () => {
         state: state,
       });
 
-      let res = await api.loginByProvider(provider, params.toString());
-      if (!res.success) {
-        console.log("unable to login in user");
+      let result = await api.loginByProvider(provider, params.toString());
+      if (!result.success) {
+        showAppNotification("error", "unable to log in user");
         return;
       }
+
+      showAppNotification("success", "successfully logged in");
+      authService.setAuthToken(result.data.token, result.data.tokenAge);
+      authService.setAuthUser(result.data.user);
+      setIsLoading(false);
+      navigate("/listings");
     }
   });
 
   const handleProviderLogin = async (provider: string) => {
-    console.log(getAuthorizationUrl(provider));
     const authUrl = getAuthorizationUrl(provider);
     authService.setAuthProvider(provider);
     window.location.href = authUrl.toString();
@@ -332,7 +337,7 @@ export const LoginPage = () => {
     }
 
     setIsLoading(true);
-    let result = await publiApiHandler.confirmSignup({ ...confirmSignUp() });
+    let result = await publicApiHandler.confirmSignup({ ...confirmSignUp() });
     if (!result.success) {
       showAppNotification("error", "unable to confirm user signup");
       setIsLoading(false);
@@ -447,10 +452,7 @@ export const LoginPage = () => {
                 >
                   Github
                 </SocialButton>
-                <SocialButton
-                  iconClass="fab fa-facebook"
-                  onClick={() => handleProviderLogin("facebook")}
-                >
+                <SocialButton iconClass="fab fa-facebook">
                   Facebook
                 </SocialButton>
               </div>
@@ -605,11 +607,24 @@ export const LoginPage = () => {
                 <div class="divider-line"></div>
               </div>
               <div class="social-login">
-                <SocialButton iconClass="fab fa-google">Google</SocialButton>
-                <SocialButton iconClass="fab fa-linkedin">
+                <SocialButton
+                  iconClass="fab fa-google"
+                  onClick={() => handleProviderLogin("google")}
+                >
+                  Google
+                </SocialButton>
+                <SocialButton
+                  iconClass="fab fa-linkedin"
+                  onClick={() => handleProviderLogin("linkedin")}
+                >
                   LinkedIn
                 </SocialButton>
-                <SocialButton iconClass="fab fa-github">Github</SocialButton>
+                <SocialButton
+                  iconClass="fab fa-github"
+                  onClick={() => handleProviderLogin("github")}
+                >
+                  Github
+                </SocialButton>
                 <SocialButton iconClass="fab fa-facebook">
                   Facebook
                 </SocialButton>
