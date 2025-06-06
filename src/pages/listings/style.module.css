@@ -134,6 +134,37 @@
     margin: 4px;
 }
 
+.filter_toggle {
+    position: fixed;
+    top: 20rem;
+    right: 1rem;
+    background-color: #3b82f6;
+    color: #fff;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+    display: flex; /* Use flexbox for centering */
+    align-items: center;
+    justify-content: center;
+}
+
+.filter_toggle:hover {
+    background-color: #2563eb;
+}
+
+.filter_icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke-width: 2;
+    color: #fff;
+  }
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .section_title {
