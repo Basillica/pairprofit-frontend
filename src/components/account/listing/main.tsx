@@ -32,7 +32,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 10,
       description:
         "Experienced carpenter specializing in custom woodwork and furniture.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=1",
     },
     {
       id: 2,
@@ -43,7 +43,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 8,
       description:
         "Certified teacher with a passion for helping students achieve their full potential.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=2",
     },
     {
       id: 3,
@@ -54,7 +54,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 12,
       description:
         "Professional engineer specializing in structural design and project management.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=3",
     },
     {
       id: 4,
@@ -65,7 +65,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 7,
       description:
         "Licensed electrician providing residential and commercial electrical services.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=4",
     },
     {
       id: 5,
@@ -76,7 +76,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 15,
       description:
         "Master plumber specializing in complex plumbing installations and repairs.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=5",
     },
     {
       id: 6,
@@ -87,7 +87,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 9,
       description:
         "Experienced chef offering catering services and private cooking lessons.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=6",
     },
     {
       id: 7,
@@ -98,7 +98,7 @@ export const ServiceProviderListings = (): JSX.Element => {
       yearsOfExperience: 9,
       description:
         "Experienced chef offering catering services and private cooking lessons.",
-      imageUrl: "https://picsum.photos/200",
+      imageUrl: "https://picsum.photos/200?random=7",
     },
   ];
   const [profiles, setProfiles] = createSignal<Profile[]>(mockProfiles);
@@ -270,6 +270,23 @@ export const ServiceProviderListings = (): JSX.Element => {
                 >
                   {profile.description}
                 </p>
+                <button class="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-300 hover:bg-grey-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  View Details
+                  <svg
+                    class="ml-2 -mr-0.5 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
           )}

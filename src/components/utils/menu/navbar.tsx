@@ -1,6 +1,13 @@
-import { Accessor, Component, createEffect, Setter } from "solid-js";
+import {
+  Accessor,
+  Component,
+  createEffect,
+  createSignal,
+  Setter,
+} from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { authService } from "../../../oauth/manager";
+import { PostServiceRequestForm } from "../modals";
 
 export const NavBar: Component<{
   expanded: Accessor<boolean>;
@@ -9,6 +16,7 @@ export const NavBar: Component<{
   openLogout: Accessor<boolean>;
 }> = (props) => {
   const navigate = useNavigate();
+  const [addRequest, setAddRequest] = createSignal<boolean>(false);
 
   const toggleSidebar = () => {
     props.setExpanded(!props.expanded());
@@ -50,6 +58,7 @@ export const NavBar: Component<{
 
   return (
     <nav class="top-section">
+      <PostServiceRequestForm isOpen={addRequest} closeModal={setAddRequest} />
       <div class="top-section-left">
         <button id="sidebar-toggle-btn" onClick={toggleSidebar}>
           <i class="fas fa-bars"></i>
@@ -59,7 +68,7 @@ export const NavBar: Component<{
       <div class="top-section-right">
         <button
           class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full"
-          onClick={() => navigate("")}
+          onClick={() => setAddRequest(true)}
         >
           <i class="fas fa-plus"></i>
         </button>
