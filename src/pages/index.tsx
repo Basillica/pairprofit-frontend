@@ -4,7 +4,6 @@ export {
   ServiceProviderDashboard,
   KanbanBoard,
   ProfileDashboard,
-  ProviderProfileComponent,
   CreateProviderProfileComponent,
   ManageServiceProfiles,
 } from "./profile";

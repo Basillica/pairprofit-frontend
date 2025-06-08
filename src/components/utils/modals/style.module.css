@@ -68,3 +68,28 @@
     gap: 0.5rem;
     margin-bottom: 0.5rem;
 }
+
+.stars {
+    display: flex;
+    align-items: center;
+}
+.star {
+    color: #FFD700; /* Gold color for stars */
+    font-size: 1.25rem; /* Equivalent to text-xl in Tailwind */
+    margin-right: 0.125rem; /* Small spacing between stars */
+}
+.star.empty {
+    color: #D1D5DB; /* Gray for empty stars */
+}
+.rating_bar_container {
+    width: 100%;
+    background-color: #E5E7EB; /* gray-200 */
+    border-radius: 9999px; /* full rounded */
+    height: 0.75rem; /* h-3 */
+    overflow: hidden;
+}
+.rating_bar_fill {
+    background-color: #2563EB; /* blue-600 */
+    height: 100%;
+    border-radius: 9999px; /* full rounded */
+}

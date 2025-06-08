@@ -40,7 +40,7 @@ export const PostServiceRequestForm: Component<{
   // Effect to show/hide specific date/time input based on desiredTimeline
   createEffect(() => {
     if (formData().desiredTimeline !== "specific_date") {
-      setFormData((prev) => ({ ...prev, specificDateTime: "" })); // Clear value if not specific date
+      //   setFormData((prev) => ({ ...prev, specificDateTime: "" }));
     }
   });
 

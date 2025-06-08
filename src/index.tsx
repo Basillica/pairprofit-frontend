@@ -12,7 +12,6 @@ import {
   LovelyChat,
   Page404,
   ProfileDashboard,
-  ProviderProfileComponent,
   CreateProviderProfileComponent,
   ManageServiceProfiles,
   Calendar,
@@ -38,12 +37,12 @@ render(
       <Route path="/listings">
         <Route path="/" component={ServiceListings}></Route>
         <Route path="/:id" component={ServiceDetailsComponent}></Route>
+        {/* ListingDetailPage */}
       </Route>
 
       {/* profiles urls */}
       <Route path="/profiles">
         <Route path="/" component={ServiceProviderListings}></Route>
-        <Route path={"/:id"} component={ProviderProfileComponent}></Route>
         <Route path="/:id/dashboard" component={ProfileDashboard}></Route>
         <Route path={"/manage"} component={ManageServiceProfiles}></Route>
         {/* <Route path="/profiles/:id" component={UserProfile}></Route> */}

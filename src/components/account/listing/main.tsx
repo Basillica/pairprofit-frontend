@@ -1,108 +1,256 @@
 import { createSignal, For, JSX } from "solid-js";
 import css_class from "./style.module.css";
 import { FilterBar } from "../../utils";
+import { ServiceProviderModel } from "../../../models/profile";
+import { ProviderProfileDetail } from "../../utils/modals";
 
 interface FilterOption {
   value: string;
   label: string;
 }
 
-interface Profile {
-  id: number;
-  name: string;
-  category: string;
-  location: string;
-  rating: number;
-  yearsOfExperience: number;
-  description: string;
-  imageUrl: string;
-}
+const generateProviders = (count: number): ServiceProviderModel[] => {
+  const providers: ServiceProviderModel[] = [];
+
+  const firstNames = [
+    "John",
+    "Maria",
+    "Paul",
+    "Anna",
+    "David",
+    "Sophia",
+    "Michael",
+    "Emma",
+  ];
+  const lastNames = [
+    "Doe",
+    "Schmidt",
+    "Müller",
+    "Fischer",
+    "Weber",
+    "Meyer",
+    "Wagner",
+    "Becker",
+  ];
+
+  // Updated to include categories/subcategories for generation
+  const serviceDetails = [
+    {
+      specialization: "Expert Woodworker & Custom Furniture Maker",
+      category: "Home Improvement",
+      subCategory: "Carpentry",
+    },
+    {
+      specialization: "Certified Electrician & Smart Home Integrator",
+      category: "Home Improvement",
+      subCategory: "Electrical",
+    },
+    {
+      specialization: "Professional Gardener & Landscape Designer",
+      category: "Home & Garden",
+      subCategory: "Landscaping",
+    },
+    {
+      specialization: "Full-Stack Web Developer & Consultant",
+      category: "Professional Services",
+      subCategory: "IT & Software",
+    },
+    {
+      specialization: "Experienced Plumber & Heating Technician",
+      category: "Home Improvement",
+      subCategory: "Plumbing",
+    },
+    {
+      specialization: "Interior Designer & Home Stager",
+      category: "Home & Garden",
+      subCategory: "Interior Design",
+    },
+    {
+      specialization: "Automotive Mechanic & Diagnostic Specialist",
+      category: "Automotive & Mechanics",
+      subCategory: "Vehicle Repair",
+    },
+    {
+      specialization: "Roofing Expert & Building Contractor",
+      category: "Home Improvement",
+      subCategory: "Construction",
+    },
+    {
+      specialization: "Certified Personal Trainer & Fitness Coach",
+      category: "Health & Wellness",
+      subCategory: "Fitness Training",
+    },
+    {
+      specialization: "Professional Photographer (Events & Portraits)",
+      category: "Arts & Entertainment",
+      subCategory: "Photography",
+    },
+    {
+      specialization: "House Cleaning & Maid Services",
+      category: "Cleaning & Maintenance",
+      subCategory: "Residential Cleaning",
+    },
+    {
+      specialization: "Tutor for Math & Science (High School)",
+      category: "Education & Learning",
+      subCategory: "Academic Tutoring",
+    },
+  ];
+
+  const cities = [
+    { name: "Nuremberg", coords: [49.452, 11.077], postalCode: "90402" },
+    { name: "Berlin", coords: [52.52, 13.405], postalCode: "10115" },
+    { name: "Munich", coords: [48.137, 11.575], postalCode: "80331" },
+    { name: "Hamburg", coords: [53.55, 9.992], postalCode: "20095" },
+    { name: "Frankfurt", coords: [50.11, 8.682], postalCode: "60313" },
+    { name: "Cologne", coords: [50.938, 6.957], postalCode: "50667" },
+    { name: "Stuttgart", coords: [48.775, 9.183], postalCode: "70173" },
+    { name: "Düsseldorf", coords: [51.22, 6.77], postalCode: "40212" },
+    { name: "Leipzig", coords: [51.34, 12.37], postalCode: "04109" },
+    { name: "Dresden", coords: [51.05, 13.73], postalCode: "01067" },
+    { name: "Erfurt", coords: [50.979, 11.033], postalCode: "99084" },
+  ];
+  //   const profilePictures = [
+  //     "https://images.unsplash.com/photo-1549068106-b024baf5062d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //     "https://images.unsplash.com/photo-1557862596-f947b198305f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //     "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //     "https://images.unsplash.com/photo-1507003211169-e69adba4c2d9?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //   ];
+
+  for (let i = 1; i <= count; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const randomServiceDetail =
+      serviceDetails[Math.floor(Math.random() * serviceDetails.length)];
+    const city = cities[Math.floor(Math.random() * cities.length)];
+    const overallRating = parseFloat(
+      (Math.random() * (5 - 3.5) + 3.5).toFixed(1)
+    ); // 3.5 to 5.0
+    const totalReviews = Math.floor(Math.random() * 200) + 50; // 50 to 250 reviews
+    const yearsInBusiness = `${Math.floor(Math.random() * 20) + 3}+`; // 3 to 22+ years
+    const businessName = `${firstName}'s ${randomServiceDetail.subCategory} Solutions`;
+
+    // Calculate rating breakdown
+    const fiveStar = Math.floor(totalReviews * (overallRating / 5 - 0.1));
+    const fourStar = Math.floor(totalReviews * (Math.random() * 0.2 + 0.1)); // 10-30% of reviews
+    const remaining = totalReviews - fiveStar - fourStar;
+    const threeStar = Math.floor(remaining * 0.6);
+    const twoStar = Math.floor(remaining * 0.3);
+    const oneStar = remaining - threeStar - twoStar;
+
+    const provider: ServiceProviderModel = {
+      id: `provider${1000 + i}`,
+      name: `${firstName} ${lastName}`,
+      profilePicture: `https://picsum.photos/200?random=${Math.random()}`,
+      // profilePictures[Math.floor(Math.random() * profilePictures.length)],
+      specialization: randomServiceDetail.specialization,
+      bio: `With over ${yearsInBusiness} years of dedicated craftsmanship in ${randomServiceDetail.subCategory}, I transform raw ideas into bespoke solutions. Based in ${city.name}, I serve clients across Germany, bringing durability and quality to every project.`,
+      overallRating: overallRating,
+      totalReviews: totalReviews,
+      location: `${city.name}, Germany`,
+      yearsInBusiness: yearsInBusiness,
+      businessName: businessName,
+      businessRegistration: `DE${
+        Math.floor(Math.random() * 900000000) + 100000000
+      }`, // Random 9-digit number
+      contactPreferences: ["Platform Chat (Recommended)", "Email", "Phone"],
+      ratingBreakdown: {
+        "5": fiveStar,
+        "4": fourStar,
+        "3": threeStar,
+        "2": twoStar,
+        "1": oneStar < 0 ? 0 : oneStar, // Ensure no negative 1-star reviews
+      },
+      testimonials: [
+        {
+          id: 1,
+          reviewer: `${
+            firstNames[Math.floor(Math.random() * firstNames.length)]
+          } S.`,
+          rating: 5,
+          date: new Date(
+            new Date().setMonth(
+              new Date().getMonth() - Math.floor(Math.random() * 6)
+            )
+          )
+            .toISOString()
+            .slice(0, 10),
+          comment: `Absolutely phenomenal work! ${firstName} was great. Highly recommend!`,
+          serviceTitle: `${randomServiceDetail.subCategory} Project`,
+        },
+        {
+          id: 2,
+          reviewer: `${
+            firstNames[Math.floor(Math.random() * firstNames.length)]
+          } K.`,
+          rating: 4,
+          date: new Date(
+            new Date().setMonth(
+              new Date().getMonth() - Math.floor(Math.random() * 12)
+            )
+          )
+            .toISOString()
+            .slice(0, 10),
+          comment: `Good work. Took a bit longer than expected, but the result is solid.`,
+          serviceTitle: `Complex ${randomServiceDetail.subCategory} Task`,
+        },
+      ],
+      servicesOffered: [
+        {
+          id: `srv${i}01`,
+          title: `${randomServiceDetail.subCategory} Consultation`,
+          category: randomServiceDetail.category,
+          price: "Hourly Rate",
+          link: `service_detail.html?id=srv${i}01`,
+        },
+        {
+          id: `srv${i}02`,
+          title: `Custom ${randomServiceDetail.subCategory} Solutions`,
+          category: randomServiceDetail.category,
+          price: "Project-based",
+          link: `service_detail.html?id=srv${i}02`,
+        },
+      ],
+      publicUpdates: [
+        {
+          id: `upd${i}01`,
+          date: new Date(
+            new Date().setDate(
+              new Date().getDate() - Math.floor(Math.random() * 30)
+            )
+          )
+            .toISOString()
+            .slice(0, 10),
+          type: "Project Spotlight",
+          title: `Completed ${randomServiceDetail.subCategory} Project in ${city.name}`,
+          content: `Just finished a rewarding project for a client in ${city.name}. It involved intricate work on a new installation.`,
+          image:
+            Math.random() > 0.5
+              ? `https://picsum.photos/200?random=${Math.random()}`
+              : null,
+        },
+      ],
+      // Assigning the new fields
+      category: randomServiceDetail.category,
+      subCategory: randomServiceDetail.subCategory,
+    };
+    providers.push(provider);
+  }
+
+  return providers;
+};
 
 export const ServiceProviderListings = (): JSX.Element => {
   const [category] = createSignal("");
   const [location] = createSignal("");
   const [_, setIsFilterBarExpanded] = createSignal(false);
-  const mockProfiles = [
-    {
-      id: 1,
-      name: "John Smith",
-      category: "Carpenter",
-      location: "USA",
-      rating: 4.5,
-      yearsOfExperience: 10,
-      description:
-        "Experienced carpenter specializing in custom woodwork and furniture.",
-      imageUrl: "https://picsum.photos/200?random=1",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      category: "Teacher",
-      location: "Canada",
-      rating: 4.8,
-      yearsOfExperience: 8,
-      description:
-        "Certified teacher with a passion for helping students achieve their full potential.",
-      imageUrl: "https://picsum.photos/200?random=2",
-    },
-    {
-      id: 3,
-      name: "David Lee",
-      category: "Engineer",
-      location: "UK",
-      rating: 4.2,
-      yearsOfExperience: 12,
-      description:
-        "Professional engineer specializing in structural design and project management.",
-      imageUrl: "https://picsum.photos/200?random=3",
-    },
-    {
-      id: 4,
-      name: "Sarah Williams",
-      category: "Electrician",
-      location: "USA",
-      rating: 4.7,
-      yearsOfExperience: 7,
-      description:
-        "Licensed electrician providing residential and commercial electrical services.",
-      imageUrl: "https://picsum.photos/200?random=4",
-    },
-    {
-      id: 5,
-      name: "Michael Brown",
-      category: "Plumber",
-      location: "Australia",
-      rating: 4.9,
-      yearsOfExperience: 15,
-      description:
-        "Master plumber specializing in complex plumbing installations and repairs.",
-      imageUrl: "https://picsum.photos/200?random=5",
-    },
-    {
-      id: 6,
-      name: "Maria Garcia",
-      category: "Chef",
-      location: "Spain",
-      rating: 4.6,
-      yearsOfExperience: 9,
-      description:
-        "Experienced chef offering catering services and private cooking lessons.",
-      imageUrl: "https://picsum.photos/200?random=6",
-    },
-    {
-      id: 7,
-      name: "Anthony Etienne",
-      category: "Chef",
-      location: "Basillia",
-      rating: 4.6,
-      yearsOfExperience: 9,
-      description:
-        "Experienced chef offering catering services and private cooking lessons.",
-      imageUrl: "https://picsum.photos/200?random=7",
-    },
-  ];
-  const [profiles, setProfiles] = createSignal<Profile[]>(mockProfiles);
+  const [profiles, setProfiles] = createSignal<ServiceProviderModel[]>(
+    generateProviders(15)
+  );
   const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
+  const [viewProfile, setViewProfile] = createSignal(false);
+  const [currentListing, setCurrentListing] =
+    createSignal<ServiceProviderModel>();
 
   const categories: FilterOption[] = [
     { value: "electronics", label: "Electronics" },
@@ -144,7 +292,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     Category: ${selectedCategory || "All"}
     Location: ${selectedLocation || "All"}`);
 
-    const filteredProfiles = mockProfiles.filter((profile) => {
+    const filteredProfiles = profiles().filter((profile) => {
       const categoryMatch =
         !selectedCategory ||
         profile.category.toLowerCase().includes(selectedCategory.toLowerCase());
@@ -176,8 +324,18 @@ export const ServiceProviderListings = (): JSX.Element => {
     }, 300);
   }
 
+  const handleProfileDetails = (profileID: string) => {
+    setCurrentListing(profiles().find((el) => el.id === profileID));
+    setViewProfile(true);
+  };
+
   return (
     <div class="flex flex-wrap">
+      <ProviderProfileDetail
+        isOpen={viewProfile}
+        closeModal={setViewProfile}
+        listing={currentListing}
+      />
       {window.innerWidth < 768 && (
         <button
           id="filter_toggle"
@@ -242,7 +400,7 @@ export const ServiceProviderListings = (): JSX.Element => {
               <div class={css_class.profile_card}>
                 <div class={css_class.profile_header}>
                   <img
-                    src={profile.imageUrl}
+                    src={profile.profilePicture}
                     alt={profile.name}
                     class={css_class.profile_picture}
                   />
@@ -259,8 +417,8 @@ export const ServiceProviderListings = (): JSX.Element => {
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                       <span>
-                        {profile.rating} ({profile.yearsOfExperience} years of
-                        experience)
+                        {profile.overallRating} ({profile.yearsInBusiness} years
+                        of experience)
                       </span>
                     </div>
                   </div>
@@ -268,9 +426,12 @@ export const ServiceProviderListings = (): JSX.Element => {
                 <p
                   class={`${css_class.profile_details} ${css_class.text_truncate}`}
                 >
-                  {profile.description}
+                  {profile.bio}
                 </p>
-                <button class="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-300 hover:bg-grey-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <button
+                  onClick={() => handleProfileDetails(profile.id)}
+                  class="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-300 hover:bg-grey-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
                   View Details
                   <svg
                     class="ml-2 -mr-0.5 h-4 w-4"

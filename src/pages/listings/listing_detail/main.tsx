@@ -2,7 +2,7 @@ import { createSignal, onMount, For, Show, Component } from "solid-js";
 
 export const ListingDetailPage: Component = () => {
   // Simulated Service Data (replace with actual fetch from backend)
-  const [serviceData, setServiceData] = createSignal({
+  const [serviceData, _] = createSignal({
     serviceTitle: "Professional House Cleaning",
     serviceDescription:
       "Offering top-notch house cleaning services for homes of all sizes. Experienced and reliable, ensuring a spotless and healthy living environment. Services include dusting, vacuuming, mopping, kitchen and bathroom cleaning, and more. Customizable plans available for weekly, bi-weekly, or monthly cleaning.",
