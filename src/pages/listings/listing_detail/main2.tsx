@@ -23,7 +23,7 @@ import { createSignal, onMount, Show, For } from "solid-js";
 export const ServiceDetailsComponent = () => {
   // Simulated Service Data (replace with actual fetch from backend)
   // @type {ServiceData}
-  const [serviceData, setServiceData] = createSignal({
+  const [serviceData, _] = createSignal({
     id: "123",
     title: "Expert Home Cleaning Service",
     description:

@@ -1,4 +1,4 @@
-export { EmailInbox, UserProfile, ServiceProviderListings } from "./account";
+export { EmailInbox, ServiceProviderListings } from "./account";
 export {
   FilterBar,
   NavBar,

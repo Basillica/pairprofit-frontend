@@ -2,6 +2,7 @@ import { createSignal, createEffect, For, Show, Component } from "solid-js";
 import { StarRating } from "./rating";
 import { EditProfileModal } from "./edit";
 import { ListingProfile } from "./type";
+import { CreateProviderProfileComponent } from "../../../components/utils/modals";
 
 // Main Component
 export const ManageServiceProfiles: Component<{}> = () => {
@@ -82,6 +83,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
     localStorage.getItem("activeProviderProfileId")
   );
   const [showEditModal, setShowEditModal] = createSignal(false);
+  const [showCreateModal, setShowCreateModal] = createSignal(false);
   const [editingProfile, setEditingProfile] = createSignal<ListingProfile>();
 
   // Initialize active profile if none is set, or if an existing active one is deleted
@@ -159,6 +161,11 @@ export const ManageServiceProfiles: Component<{}> = () => {
         onSave={saveProfileChanges}
       />
 
+      <CreateProviderProfileComponent
+        isOpen={showCreateModal}
+        closeModal={setShowCreateModal}
+      />
+
       {/* <div class="flex flex-wrap">
     <div class="bg-gray-100 min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8"> */}
       <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-8">
@@ -170,8 +177,8 @@ export const ManageServiceProfiles: Component<{}> = () => {
       </p>
 
       <div class="mb-8 text-center">
-        <a
-          href="/create_provider_profile"
+        <button
+          onClick={() => setShowCreateModal(true)}
           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <svg
@@ -189,7 +196,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
             ></path>
           </svg>
           Create New Service Profile
-        </a>
+        </button>
       </div>
 
       <section class="mb-8">

@@ -1,0 +1,53 @@
+/* Optional: Style for the FAQ accordion to make it look a bit cleaner */
+.faqItem {
+  /* You might add some specific Tailwind classes to the <details> itself,
+     but these CSS properties are usually better here for precise control */
+  padding-top: 0.5rem; /* py-2 equivalent */
+  padding-bottom: 0.5rem; /* py-2 equivalent */
+}
+
+.faqSummary {
+  cursor: pointer;
+  list-style: none; /* Hide default arrow */
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0; /* gray-200 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600; /* font-semibold equivalent */
+  color: #1a202c; /* gray-800 equivalent */
+}
+
+.faqSummary::-webkit-details-marker {
+  display: none; /* Hide default arrow for Webkit browsers */
+}
+
+details[open] .faqSummary {
+  background-color: #f8fafc; /* gray-50 equivalent */
+}
+
+.faqSummary:hover {
+  background-color: #f0f4f8; /* gray-100 equivalent */
+}
+
+.icon {
+  transform: rotate(0deg);
+  transition: transform 0.2s ease-in-out;
+}
+
+details[open] .icon {
+  transform: rotate(90deg);
+}
+
+.faqContent {
+  padding: 1rem;
+  padding-top: 0.5rem;
+  border-bottom: 1px solid #e2e8f0; /* gray-200 */
+  color: #4a5568; /* gray-700 equivalent */
+}
+
+/* Any specific Tailwind classes you want to add to individual elements
+   can still be added directly in the JSX.
+   E.g., for the <p> inside faqContent:
+   <p class="py-2">
+*/

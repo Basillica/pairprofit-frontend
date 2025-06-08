@@ -1,4 +1,4 @@
-import { For, Show, Component, Accessor, Setter } from "solid-js";
+import { For, Show, Component, Accessor, Setter, createSignal } from "solid-js";
 import { Portal } from "solid-js/web";
 import { ServiceProviderModel } from "../../../models/profile";
 import modal_styles from "./style.module.css";
@@ -94,9 +94,94 @@ export const ProviderProfileDetail: Component<{
 }> = (props) => {
   // Calculate total reviews for percentage calculation in rating breakdown
   const totalReviews = () => props.listing()?.totalReviews;
+  // State for form inputs
+  const [chatMessage, setChatMessage] = createSignal("");
+  const [callbackName, setCallbackName] = createSignal("");
+  const [callbackPhone, setCallbackPhone] = createSignal("");
+  const [callbackTime, setCallbackTime] = createSignal("");
+  const [callbackMessage, setCallbackMessage] = createSignal("");
+  const [emailSenderName, setEmailSenderName] = createSignal("");
+  const [emailSenderEmail, setEmailSenderEmail] = createSignal("");
+  const [emailSubject, setEmailSubject] = createSignal("");
+  const [emailMessage, setEmailMessage] = createSignal("");
+  const [activeTab, setActiveTab] = createSignal("chat"); // 'chat', 'callback', 'email'
 
   const handleClose = () => {
     props.closeModal(false);
+  };
+
+  // Handler for tab clicks
+  const handleTabClick = (tabName: string) => {
+    setActiveTab(tabName);
+  };
+
+  // Form submission handlers
+  const handleSendMessage = () => {
+    const message = chatMessage().trim();
+    if (message) {
+      console.log("Sending message:", message);
+      alert("Message sent to provider! (Check console)");
+      setChatMessage(""); // Clear input
+    } else {
+      alert("Please type a message.");
+    }
+  };
+
+  const handleSubmitCallback = (
+    event: SubmitEvent & {
+      currentTarget: HTMLFormElement;
+      target: Element;
+    }
+  ) => {
+    event.preventDefault();
+    const name = callbackName().trim();
+    const phone = callbackPhone().trim();
+    const time = callbackTime();
+    const message = callbackMessage().trim();
+
+    if (name && phone && time) {
+      console.log("Callback Request:", { name, phone, time, message });
+      alert("Callback request submitted! (Check console)");
+      // Clear form inputs
+      setCallbackName("");
+      setCallbackPhone("");
+      setCallbackTime("");
+      setCallbackMessage("");
+    } else {
+      alert(
+        "Please fill in your Name, Phone Number, and Preferred Callback Time."
+      );
+    }
+  };
+
+  const handleSubmitEmail = (
+    event: SubmitEvent & {
+      currentTarget: HTMLFormElement;
+      target: Element;
+    }
+  ) => {
+    event.preventDefault();
+    const senderName = emailSenderName().trim();
+    const senderEmail = emailSenderEmail().trim();
+    const subject = emailSubject().trim();
+    const message = emailMessage().trim();
+
+    if (senderName && senderEmail && subject && message) {
+      console.log("Email Request:", {
+        senderName,
+        senderEmail,
+        subject,
+        message,
+      });
+      alert("Email sent to provider! (Check console)");
+      // Clear form inputs
+      setEmailSenderName("");
+      setEmailSenderEmail("");
+      setEmailSubject("");
+      setEmailMessage("");
+    } else {
+      alert("Please fill in all email fields.");
+    }
   };
 
   return (
@@ -156,9 +241,9 @@ export const ProviderProfileDetail: Component<{
                     ({props.listing()?.totalReviews} Reviews)
                   </span>
                 </div>
-                <button class="w-full sm:w-auto bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-lg font-medium shadow-md">
+                {/* <button class="w-full sm:w-auto bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-lg font-medium shadow-md">
                   Chat with Provider
-                </button>
+                </button> */}
               </div>
             </header>
 
@@ -371,6 +456,250 @@ export const ProviderProfileDetail: Component<{
               </div>
             </section>
             {/* </div> */}
+
+            <section class="p-6 bg-blue-50 border border-blue-200 rounded-lg shadow-lg mt-5">
+              <h2 class="text-2xl font-bold text-blue-800 mb-4">
+                Contact the Provider
+              </h2>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <button
+                  type="button"
+                  onClick={() => handleTabClick("chat")}
+                  class={`${
+                    activeTab() === "chat"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }
+                                              py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                >
+                  <span class="block text-xl">💬</span> Send a Message
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabClick("callback")}
+                  class={`${
+                    activeTab() === "callback"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }
+                                              py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                >
+                  <span class="block text-xl">📞</span> Request a Callback
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabClick("email")}
+                  class={`${
+                    activeTab() === "email"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }
+                                              py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                >
+                  <span class="block text-xl">📧</span> Send an Email
+                </button>
+              </div>
+
+              <Show when={activeTab() === "chat"}>
+                <div class="p-4 border border-blue-300 rounded-md bg-white">
+                  <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                    Direct Message
+                  </h3>
+                  <p class="text-gray-600 mb-4">
+                    Start a private chat with the service provider on our
+                    platform.
+                  </p>
+                  <textarea
+                    rows="4"
+                    class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="Type your message here..."
+                    value={chatMessage()}
+                    onInput={(e) => setChatMessage(e.currentTarget.value)}
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={handleSendMessage}
+                    class="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </Show>
+
+              <Show when={activeTab() === "callback"}>
+                <div class="p-4 border border-blue-300 rounded-md bg-white">
+                  <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                    Request a Callback
+                  </h3>
+                  <p class="text-gray-600 mb-4">
+                    Fill out the form below and the provider will call you back
+                    at your preferred time.
+                  </p>
+                  <form
+                    onSubmit={(e) => handleSubmitCallback(e)}
+                    class="space-y-4"
+                  >
+                    <div>
+                      <label
+                        for="callbackName"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Your Name
+                      </label>
+                      <input
+                        type="text"
+                        id="callbackName"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        value={callbackName()}
+                        onInput={(e) => setCallbackName(e.currentTarget.value)}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="callbackPhone"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Your Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        id="callbackPhone"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="+49 123 456789"
+                        value={callbackPhone()}
+                        onInput={(e) => setCallbackPhone(e.currentTarget.value)}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="callbackTime"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Preferred Callback Time
+                      </label>
+                      <input
+                        type="datetime-local"
+                        id="callbackTime"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        value={callbackTime()}
+                        onInput={(e) => setCallbackTime(e.currentTarget.value)}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="callbackMessage"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Brief Message
+                      </label>
+                      <textarea
+                        id="callbackMessage"
+                        rows="3"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="e.g., I'm interested in your cleaning service for a large apartment."
+                        value={callbackMessage()}
+                        onInput={(e) =>
+                          setCallbackMessage(e.currentTarget.value)
+                        }
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Submit Callback Request
+                    </button>
+                  </form>
+                </div>
+              </Show>
+
+              <Show when={activeTab() === "email"}>
+                <div class="p-4 border border-blue-300 rounded-md bg-white">
+                  <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                    Send an Email
+                  </h3>
+                  <p class="text-gray-600 mb-4">
+                    Send a direct email to the service provider.
+                  </p>
+                  <form onSubmit={handleSubmitEmail} class="space-y-4">
+                    <div>
+                      <label
+                        for="emailSenderName"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Your Name
+                      </label>
+                      <input
+                        type="text"
+                        id="emailSenderName"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        value={emailSenderName()}
+                        onInput={(e) =>
+                          setEmailSenderName(e.currentTarget.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="emailSenderEmail"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Your Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="emailSenderEmail"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="your.email@example.com"
+                        value={emailSenderEmail()}
+                        onInput={(e) =>
+                          setEmailSenderEmail(e.currentTarget.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="emailSubject"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Subject
+                      </label>
+                      <input
+                        type="text"
+                        id="emailSubject"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Inquiry about your service"
+                        value={emailSubject()}
+                        onInput={(e) => setEmailSubject(e.currentTarget.value)}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        for="emailMessage"
+                        class="block text-sm font-medium text-gray-700"
+                      >
+                        Message
+                      </label>
+                      <textarea
+                        id="emailMessage"
+                        rows="6"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Write your detailed message here..."
+                        value={emailMessage()}
+                        onInput={(e) => setEmailMessage(e.currentTarget.value)}
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Send Email
+                    </button>
+                  </form>
+                </div>
+              </Show>
+            </section>
           </div>
         </div>
       </Show>

@@ -1,1 +1,0 @@
-export { CreateProviderProfileComponent } from "./main";

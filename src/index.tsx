@@ -12,12 +12,13 @@ import {
   LovelyChat,
   Page404,
   ProfileDashboard,
-  CreateProviderProfileComponent,
   ManageServiceProfiles,
   Calendar,
+  ContactList,
+  AboutUs,
 } from "./pages";
 import "./App.css";
-import { EmailInbox, UserProfile } from "./components";
+import { EmailInbox } from "./components";
 import { ServiceProviderListings } from "./components/account";
 import { HomePage } from "./pages/profile";
 
@@ -34,22 +35,17 @@ render(
       <Route path="/" component={HomePage} />
       <Route path="/kanban" component={KanbanBoard} />
       <Route path="/inbox" component={EmailInbox}></Route>
-      <Route path="/listings">
-        <Route path="/" component={ServiceListings}></Route>
-        <Route path="/:id" component={ServiceDetailsComponent}></Route>
-        {/* ListingDetailPage */}
-      </Route>
+      <Route path="/listings" component={ServiceListings} />
+      {/* <Route path="/:id" component={ServiceDetailsComponent}></Route> */}
+      {/* ListingDetailPage */}
 
       {/* profiles urls */}
+      <Route path={"/about"} component={AboutUs} />
+      <Route path={"/contact"} component={ContactList} />
       <Route path="/profiles">
         <Route path="/" component={ServiceProviderListings}></Route>
         <Route path="/:id/dashboard" component={ProfileDashboard}></Route>
         <Route path={"/manage"} component={ManageServiceProfiles}></Route>
-        {/* <Route path="/profiles/:id" component={UserProfile}></Route> */}
-        <Route
-          path={"/create"}
-          component={CreateProviderProfileComponent}
-        ></Route>
         <Route path="/calendar" component={Calendar}></Route>
         <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
       </Route>

@@ -69,10 +69,10 @@ export const PersistentSidebar: Component<{
         onMouseOver={() => window.innerWidth > 768 && props.setExpanded(true)}
         onMouseLeave={() => window.innerWidth > 768 && props.setExpanded(false)}
       >
-        <a href="#">
+        <a href="/">
           <i class="fas fa-home"></i> <span>Home</span>
         </a>
-        <a href="#">
+        <a href="/about">
           <i class="fas fa-book"></i> <span>About</span>
         </a>
         <div class="submenu-wrapper">
@@ -90,7 +90,7 @@ export const PersistentSidebar: Component<{
             <a href="#">Sub-Setting 3</a>
           </div>
         </div>
-        <a href="#">
+        <a href="/contact">
           <i class="fas fa-envelope"></i> <span>Contact</span>
         </a>
         <div class="submenu-wrapper">

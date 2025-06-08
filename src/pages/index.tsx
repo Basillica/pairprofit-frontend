@@ -4,8 +4,8 @@ export {
   ServiceProviderDashboard,
   KanbanBoard,
   ProfileDashboard,
-  CreateProviderProfileComponent,
   ManageServiceProfiles,
+  ContactList,
 } from "./profile";
 export {
   ServiceListings,
@@ -13,4 +13,4 @@ export {
   ServiceDetailsComponent,
 } from "./listings";
 export { Page404, LoginPage, HomePage } from "./general";
-export { Calendar } from "./utils";
+export { Calendar, AboutUs } from "./utils";
