@@ -5,3 +5,4 @@ export { ProfileDashboard } from "./profile_dashboard";
 export { HomePage } from "../general/home";
 export { ManageServiceProfiles } from "./manage";
 export { ContactList } from "./contact";
+export { AccountSettings } from "./setting";

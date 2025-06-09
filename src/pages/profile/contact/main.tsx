@@ -1,5 +1,6 @@
 import { createSignal, createMemo, For, Show } from "solid-js";
 import contact_styles from "./style.module.css";
+import { Pagination } from "../../../components";
 
 // Dummy Data for User Contacts (unchanged)
 const initialUserContacts = [
@@ -61,6 +62,14 @@ export const ContactList = () => {
   const [searchTerm, setSearchTerm] = createSignal("");
   const [filterRole, setFilterRole] = createSignal("all");
   const [filterStatus, setFilterStatus] = createSignal("all");
+  const ITEMS_PER_PAGE = 10;
+  const TOTAL_ITEMS = 53;
+
+  const [_, setCurrentPageData] = createSignal(1); // State to hold the current page in the parent
+  const handlePageChange = (newPage: number) => {
+    console.log(`Parent received page change to: ${newPage}`);
+    setCurrentPageData(newPage);
+  };
 
   const formatRelativeDate = (date: Date) => {
     const now = new Date();
@@ -284,9 +293,16 @@ export const ContactList = () => {
         </For>
       </div>
 
+      <Pagination
+        itemsPerPage={ITEMS_PER_PAGE}
+        totalItems={TOTAL_ITEMS}
+        onPageChange={handlePageChange}
+        initialPage={1} // Optional: start on a specific page
+        maxPagesToShow={5} // Optional: control how many page numbers are visible
+      />
       <p class="text-gray-500 text-sm mt-8 text-center">
-        Note: "Message", "View Profile", "Favorite", and "Block" actions are
-        simulated with alerts for this demo.
+        Note: Customers that you have either provided for or accepted service
+        from, will show up here as contacts.
       </p>
     </div>
   );

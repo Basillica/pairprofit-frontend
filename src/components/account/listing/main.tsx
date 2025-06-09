@@ -1,6 +1,6 @@
 import { createSignal, For, JSX, Show } from "solid-js";
 import css_class from "./style.module.css";
-import { FilterBar } from "../../utils";
+import { FilterBar, Pagination } from "../../utils";
 import { ServiceProviderModel } from "../../../models/profile";
 import { ProviderProfileDetail } from "../../utils/modals";
 
@@ -251,6 +251,14 @@ export const ServiceProviderListings = (): JSX.Element => {
   const [viewProfile, setViewProfile] = createSignal(false);
   const [currentListing, setCurrentListing] =
     createSignal<ServiceProviderModel>();
+  const ITEMS_PER_PAGE = 10;
+  const TOTAL_ITEMS = 53;
+
+  const [currentPage, setCurrentPageData] = createSignal(1); // State to hold the current page in the parent
+  const handlePageChange = (newPage: number) => {
+    console.log(`Parent received page change to: ${newPage}`);
+    setCurrentPageData(newPage);
+  };
 
   const categories: FilterOption[] = [
     { value: "electronics", label: "Electronics" },
@@ -330,129 +338,140 @@ export const ServiceProviderListings = (): JSX.Element => {
   };
 
   return (
-    <div class="flex flex-wrap">
-      <ProviderProfileDetail
-        isOpen={viewProfile}
-        closeModal={setViewProfile}
-        listing={currentListing}
-      />
-      {window.innerWidth < 768 && (
-        <button
-          id="filter_toggle"
-          class={`${css_class.filter_toggle} md:hidden fixed bottom-4 right-4 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-colors duration-200 hover:bg-blue-700 z-10`}
-          //   onClick={toggleFilterBar}
-          onClick={() => showModal()}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class={css_class.filter_icon}
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M12 10.2a2.4 2.4 0 012.4-2.4c.666 0 1.297.253 1.76.707L19.5 10.2l-4.94 4.94a3.42 3.42 0 01-1.76.707 2.4 2.4 0 01-2.4-2.4v-1.8z"
-            />
-          </svg>
-        </button>
-      )}
-
-      <div
-        class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-300 bg-opacity-50 hidden"
-        id="filterModal"
-      >
-        <div class="bg-white p-2 rounded-lg shadow-lg w-7/8 h-3/4 transition-all duration-300">
-          <FilterBar
-            categories={categories}
-            subCategories={subCategories}
-            locations={locations}
-            prices={prices}
-            onApplyFilters={handleApplyFilters}
-          />
+    <>
+      <div class="flex flex-wrap">
+        <ProviderProfileDetail
+          isOpen={viewProfile}
+          closeModal={setViewProfile}
+          listing={currentListing}
+        />
+        {window.innerWidth < 768 && (
           <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => hideModal()}
+            id="filter_toggle"
+            class={`${css_class.filter_toggle} md:hidden fixed bottom-4 right-4 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-colors duration-200 hover:bg-blue-700 z-10`}
+            //   onClick={toggleFilterBar}
+            onClick={() => showModal()}
           >
-            Close
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class={css_class.filter_icon}
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M12 10.2a2.4 2.4 0 012.4-2.4c.666 0 1.297.253 1.76.707L19.5 10.2l-4.94 4.94a3.42 3.42 0 01-1.76.707 2.4 2.4 0 01-2.4-2.4v-1.8z"
+              />
+            </svg>
           </button>
-        </div>
-      </div>
+        )}
 
-      {openFilterBar() && (
-        <div style={"width: 97vw;"}>
-          <FilterBar
-            categories={categories}
-            subCategories={subCategories}
-            locations={locations}
-            prices={prices}
-            onApplyFilters={handleApplyFilters}
-          />
+        <div
+          class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-300 bg-opacity-50 hidden"
+          id="filterModal"
+        >
+          <div class="bg-white p-2 rounded-lg shadow-lg w-7/8 h-3/4 transition-all duration-300">
+            <FilterBar
+              categories={categories}
+              subCategories={subCategories}
+              locations={locations}
+              prices={prices}
+              onApplyFilters={handleApplyFilters}
+            />
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => hideModal()}
+            >
+              Close
+            </button>
+          </div>
         </div>
-      )}
 
-      <div class="flex flex-wrap" style={"margin-top: 20px;"}>
-        <For each={profiles()}>
-          {(profile) => (
-            <div class="md:w-6/12 px-2 lg:w-3/12 px-2 mb-2">
-              <div class={css_class.profile_card}>
-                <div class={css_class.profile_header}>
-                  <img
-                    src={profile.profilePicture}
-                    alt={profile.name}
-                    class={css_class.profile_picture}
-                  />
-                  <div>
-                    <h2 class={css_class.profile_name}>{profile.name}</h2>
-                    <p class={css_class.profile_category}>{profile.category}</p>
-                    <div class="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class={css_class.profile_info_icon}
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                      <span>
-                        {profile.overallRating} ({profile.yearsInBusiness} years
-                        of experience)
-                      </span>
+        {openFilterBar() && (
+          <div style={"width: 97vw;"}>
+            <FilterBar
+              categories={categories}
+              subCategories={subCategories}
+              locations={locations}
+              prices={prices}
+              onApplyFilters={handleApplyFilters}
+            />
+          </div>
+        )}
+
+        <div class="flex flex-wrap" style={"margin-top: 20px;"}>
+          <For each={profiles()}>
+            {(profile) => (
+              <div class="md:w-6/12 px-2 lg:w-3/12 px-2 mb-2">
+                <div class={css_class.profile_card}>
+                  <div class={css_class.profile_header}>
+                    <img
+                      src={profile.profilePicture}
+                      alt={profile.name}
+                      class={css_class.profile_picture}
+                    />
+                    <div>
+                      <h2 class={css_class.profile_name}>{profile.name}</h2>
+                      <p class={css_class.profile_category}>
+                        {profile.category}
+                      </p>
+                      <div class="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          class={css_class.profile_info_icon}
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span>
+                          {profile.overallRating} ({profile.yearsInBusiness}{" "}
+                          years of experience)
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p
-                  class={`${css_class.profile_details} ${css_class.text_truncate}`}
-                >
-                  {profile.bio}
-                </p>
-                <button
-                  onClick={() => handleProfileDetails(profile.id)}
-                  class="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-300 hover:bg-grey-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                >
-                  View Details
-                  <svg
-                    class="ml-2 -mr-0.5 h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <p
+                    class={`${css_class.profile_details} ${css_class.text_truncate}`}
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    ></path>
-                  </svg>
-                </button>
+                    {profile.bio}
+                  </p>
+                  <button
+                    onClick={() => handleProfileDetails(profile.id)}
+                    class="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-300 hover:bg-grey-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  >
+                    View Details
+                    <svg
+                      class="ml-2 -mr-0.5 h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </For>
+            )}
+          </For>
+        </div>
       </div>
-    </div>
+      <Pagination
+        itemsPerPage={ITEMS_PER_PAGE}
+        totalItems={TOTAL_ITEMS}
+        onPageChange={handlePageChange}
+        initialPage={1} // Optional: start on a specific page
+        maxPagesToShow={5} // Optional: control how many page numbers are visible
+      />
+    </>
   );
 };

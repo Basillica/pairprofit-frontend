@@ -2,7 +2,7 @@ import about_styles from "./style.module.css"; // We'll put the custom CSS here
 
 export const AboutUs = () => {
   // You might want to replace "[Your App Name]" with a prop or a context value
-  const appName = "ArtisanConnect"; // Example app name
+  const appName = "PariProfit"; // Example app name
 
   // Although <details> elements manage their own open/close state natively,
   // if you needed to control them programmatically or react to their state,

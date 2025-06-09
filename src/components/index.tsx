@@ -9,4 +9,5 @@ export {
   PostServiceRequestForm,
   LogoutModal,
   ServiceRequestDetails,
+  Pagination,
 } from "./utils";

@@ -5,8 +5,8 @@ import {
   LoginPage,
   RootLayout,
   ServiceListings,
-  ListingDetailPage,
-  ServiceDetailsComponent,
+  //   ListingDetailPage,
+  //   ServiceDetailsComponent,
   ServiceProviderDashboard,
   KanbanBoard,
   LovelyChat,
@@ -16,6 +16,9 @@ import {
   Calendar,
   ContactList,
   AboutUs,
+  AccountSettings,
+  NotificationsPage,
+  ChatApp,
 } from "./pages";
 import "./App.css";
 import { EmailInbox } from "./components";
@@ -33,28 +36,28 @@ render(
   () => (
     <Router root={RootLayout}>
       <Route path="/" component={HomePage} />
-      <Route path="/kanban" component={KanbanBoard} />
-      <Route path="/inbox" component={EmailInbox}></Route>
       <Route path="/listings" component={ServiceListings} />
-      {/* <Route path="/:id" component={ServiceDetailsComponent}></Route> */}
-      {/* ListingDetailPage */}
+      <Route path="/notifications" component={NotificationsPage} />
 
-      {/* profiles urls */}
       <Route path={"/about"} component={AboutUs} />
       <Route path={"/contact"} component={ContactList} />
-      <Route path="/profiles">
-        <Route path="/" component={ServiceProviderListings}></Route>
-        <Route path="/:id/dashboard" component={ProfileDashboard}></Route>
-        <Route path={"/manage"} component={ManageServiceProfiles}></Route>
-        <Route path="/calendar" component={Calendar}></Route>
-        <Route path="/dashboard" component={ServiceProviderDashboard}></Route>
+      <Route path={"/chat"} component={ChatApp} />
+
+      <Route path="/profile">
+        <Route path="/setting" component={AccountSettings} />
+        <Route path="/dashboard" component={ServiceProviderDashboard} />
+        <Route path="/message" component={LovelyChat} />
+        <Route path="/inbox" component={EmailInbox} />
       </Route>
 
-      {/* chat page */}
-      <Route path="/chat" component={LovelyChat}></Route>
-      {/* </Route> */}
+      <Route path="/profiles">
+        <Route path="/" component={ServiceProviderListings} />
+        <Route path={"/manage"} component={ManageServiceProfiles} />
+        <Route path="/kanban" component={KanbanBoard} />
+        <Route path="/dashboard" component={ProfileDashboard} />
+        <Route path="/calendar" component={Calendar} />
+      </Route>
 
-      {/* public sharable profile */}
       <Route path="/login" component={LoginPage} />
       <Route path="/public/profile"></Route>
       <Route path="*404" component={Page404} />

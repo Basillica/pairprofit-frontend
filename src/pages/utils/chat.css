@@ -1,0 +1,166 @@
+/* Main layout - mimic the image's structure */
+.chat-container {
+    display: flex;
+    height: 100vh;
+    overflow-y: scroll;
+    background-color: #f0f2f5; /* Light gray background */
+}
+
+/* Sidebar custom scrollbar */
+.chat-sidebar-list {
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f0f2f5;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.chat-sidebar-list::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-sidebar-list::-webkit-scrollbar-track {
+    background: #f0f2f5;
+}
+.chat-sidebar-list::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+/* Message area custom scrollbar */
+.chat-messages-area {
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #eef2f5; /* Different scrollbar for chat area */
+    padding: 20px;
+    /* Ensure it can scroll even if content is less than height */
+    min-height: 0;
+}
+.chat-messages-area::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-messages-area::-webkit-scrollbar-track {
+    background: #eef2f5;
+}
+.chat-messages-area::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+/* Message bubble styles - custom to match image */
+.message-bubble {
+    max-width: 70%; /* Similar to image */
+    padding: 8px 12px;
+    border-radius: 8px; /* Slightly rounded corners */
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message-bubble.sent {
+    background-color: #e0f2fe; /* Light blue, similar to image */
+    color: #1a202c; /* Dark text */
+    border-bottom-right-radius: 2px; /* Pointed corner towards sender */
+}
+
+.message-bubble.received {
+    background-color: #ffffff; /* White background for received */
+    color: #1a202c;
+    border: 1px solid #e2e8f0; /* Light border */
+    border-bottom-left-radius: 2px; /* Pointed corner towards receiver */
+}
+
+/* Image message styling */
+.message-bubble.image-message {
+    padding: 0;
+    background: none;
+    border: none;
+}
+.image-message img {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+    margin-bottom: 4px; /* Space for timestamp */
+}
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 5px;
+}
+.image-gallery img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+
+/* Timestamp for messages */
+.message-timestamp {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 2px;
+    text-align: right;
+}
+
+/* Date divider */
+.date-divider {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 0.8rem;
+    color: #888;
+}
+.date-divider::before,
+.date-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+.date-divider::before { left: 0; }
+.date-divider::after { right: 0; }
+.date-divider span {
+    background-color: #f0f2f5;
+    padding: 0 10px;
+    z-index: 1;
+    position: relative;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+    .chat-sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 20;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    .chat-sidebar.open {
+        transform: translateX(0%);
+    }
+    .chat-main {
+        width: 100%;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+    .chat-header .flex-grow {
+        text-align: center;
+    }
+}
+
+/* Hide mobile toggle on desktop */
+.sidebar-toggle {
+    display: none;
+}
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: block;
+    }
+}

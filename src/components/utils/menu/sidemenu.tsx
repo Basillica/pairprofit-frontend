@@ -77,7 +77,7 @@ export const PersistentSidebar: Component<{
         </a>
         <div class="submenu-wrapper">
           <a href="#" class="has-submenu" onClick={toggleSettingsSubmenu}>
-            <i class="fas fa-cog"></i> <span>Settings</span>{" "}
+            <i class="fas fa-cog"></i> <span>Service Provider</span>{" "}
             <i
               class={`fas fa-chevron-${
                 settingsExpanded() ? "down" : "right"
@@ -85,9 +85,10 @@ export const PersistentSidebar: Component<{
             ></i>
           </a>
           <div class={`submenu ${settingsExpanded() ? "expanded" : ""}`}>
-            <a href="#">Sub-Setting 1</a>
-            <a href="#">Sub-Setting 2</a>
-            <a href="#">Sub-Setting 3</a>
+            <a href="/profiles/manage">Manage Profiles</a>
+            <a href="/profiles/kanban">Manage Tasks</a>
+            <a href="/profiles/dashboard">Account Overview</a>
+            <a href="/profiles/calendar">Manage Calendar</a>
           </div>
         </div>
         <a href="/contact">
@@ -103,9 +104,10 @@ export const PersistentSidebar: Component<{
             ></i>
           </a>
           <div class={`submenu ${profileExpanded() ? "expanded" : ""}`}>
-            <a href="#">Edit Profile</a>
-            <a href="#">View Activity</a>
-            <a href="#">Logout</a>
+            <a href="/profile/setting">Edit Profile</a>
+            <a href="/profile/dashboard">View Activity</a>
+            <a href="/profile/message">Messages</a>
+            <a href="/profile/inbox">Manage Inbox</a>
           </div>
         </div>
       </div>
