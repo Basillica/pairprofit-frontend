@@ -58,6 +58,8 @@ render(
         <Route path="/calendar" component={Calendar} />
       </Route>
 
+      <Route path={"/sw.js"} />
+      <Route path={"/brevo-frame.html"} />
       <Route path="/login" component={LoginPage} />
       <Route path="/public/profile"></Route>
       <Route path="*404" component={Page404} />
