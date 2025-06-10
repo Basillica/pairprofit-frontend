@@ -349,9 +349,12 @@ export const HomePage: Component = () => {
           expertise. Take control of your work, set your own rates, and expand
           your reach.
         </p>
-        <button class="bg-white text-blue-800 px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 font-bold text-lg shadow-md">
+        <a
+          class="bg-white text-blue-800 px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 font-bold text-lg shadow-md"
+          href="/login"
+        >
           List Your Service Today!
-        </button>
+        </a>
       </section>
 
       {/* FAQ Section */}
