@@ -1,5 +1,19 @@
 import { Accessor, Component, createSignal, For } from "solid-js";
 import home_styles from "./style.module.css";
+import baker from "../../../assets/profiles/baker.jpg";
+import bodyguard from "../../../assets/profiles/bodyguard.jpg";
+import bricklayer from "../../../assets/profiles/bricklayer.jpg";
+import carpentar from "../../../assets/profiles/carpentar.jpg";
+import chef from "../../../assets/profiles/chef.jpg";
+import driver from "../../../assets/profiles/driver.jpg";
+import event from "../../../assets/profiles/event.jpg";
+import expert from "../../../assets/profiles/expert.jpg";
+import itandtech from "../../../assets/profiles/itandtech.jpg";
+import more from "../../../assets/profiles/more.jpg";
+import plumber from "../../../assets/profiles/plumber.jpg";
+import security from "../../../assets/profiles/security.jpg";
+import tutor from "../../../assets/profiles/tutor.jpg";
+import wedding from "../../../assets/profiles/wedding.jpg";
 
 interface HeroItem {
   image: string;
@@ -39,44 +53,74 @@ export const HomePage: Component = () => {
 
   const heroItems: HeroItem[] = [
     {
-      image: "https://picsum.photos/880/400?random=1",
-      title: "Home Services",
-      description: "Carpentry, Plumbing, Cleaning & more.",
+      image: plumber,
+      title: "Plumbing Services",
+      description: "Emergency repairs, installations, and maintenance.",
     },
     {
-      image: "https://picsum.photos/880/400?random=2",
+      image: carpentar,
+      title: "Carpentry",
+      description: "Custom furniture, home repairs, and construction.",
+    },
+    {
+      image: itandtech,
       title: "IT & Tech Support",
-      description: "Web Design, Software, Network help.",
+      description: "Web design, software, and network help.",
     },
     {
-      image: "https://picsum.photos/880/400?random=3",
-      title: "Creative & Design",
-      description: "Graphic Design, Writing, Photography.",
-    },
-    {
-      image: "https://picsum.photos/880/400?random=4",
+      image: tutor,
       title: "Tutoring & Education",
-      description: "Academic help, Skill developmen",
+      description: "Academic help, test prep, and skill development.",
     },
     {
-      image: "https://picsum.photos/880/400?random=5",
-      title: "Home Services",
-      description: "Carpentry, Plumbing, Cleaning & more.",
+      image: event,
+      title: "Event Planning & Coordination",
+      description: "Expert help for parties, corporate events, and gatherings.",
     },
     {
-      image: "https://picsum.photos/880/400?random=6",
-      title: "IT & Tech Support",
-      description: "Web Design, Software, Network help.",
+      image: baker,
+      title: "Baking & Confectionery",
+      description: "Custom cakes, pastries, and baked goods for all occasions.",
     },
     {
-      image: "https://picsum.photos/880/400?random=7",
-      title: "Creative & Design",
-      description: "Graphic Design, Writing, Photography.",
+      image: bodyguard,
+      title: "Personal Security Services",
+      description: "Professional bodyguards and close protection specialists.",
     },
     {
-      image: "https://picsum.photos/880/400?random=8",
-      title: "Tutoring & Education",
-      description: "Academic help, Skill developmen",
+      image: chef,
+      title: "Private Chefs & Bakers",
+      description: "Hire culinary experts for events and personal meals.",
+    },
+    {
+      image: driver,
+      title: "Driving & Chauffeur",
+      description: "Personal drivers, airport transfers, and delivery.",
+    },
+    {
+      image: wedding,
+      title: "Wedding & Event Planning",
+      description: "Full-service planning for your special occasions.",
+    },
+    {
+      image: security,
+      title: "Security Services",
+      description: "Event security, bodyguards, and surveillance.",
+    },
+    {
+      image: bricklayer,
+      title: "Construction & Masonry",
+      description: "Find skilled bricklayers and construction workers.",
+    },
+    {
+      image: expert,
+      title: "Consulting & Experts",
+      description: "Business, finance, and other professional advice.",
+    },
+    {
+      image: more,
+      title: "Explore More",
+      description: "Discover a wide range of other skilled professionals.",
     },
   ];
 
@@ -164,60 +208,70 @@ export const HomePage: Component = () => {
 
       <section class="py-12 mb-12">
         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
-          Featured Services
+          Popular Services Near You
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
           <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
             <img
-              src="https://picsum.photos/400/250?random=5"
-              alt="Web Development Service"
+              src={itandtech}
+              alt="IT & Tech Support Service"
               class="rounded-md mb-4 w-full h-auto object-cover"
             />
             <h3 class="text-xl font-semibold text-gray-700 mb-2">
-              Custom Web Development
+              Expert IT & Tech Support
             </h3>
             <p class="text-gray-600 mb-4">
-              From personal portfolios to complex e-commerce sites, get a
-              website tailored to your needs.
+              Need help with web design, software, or network issues? Find
+              skilled tech professionals.
             </p>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm">
-              Learn More
-            </button>
+            <a
+              href="/login"
+              class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm"
+            >
+              Find Tech Experts
+            </a>
           </div>
 
           <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
             <img
-              src="https://picsum.photos/400/250?random=6"
-              alt="Professional Photography Service"
+              src={plumber}
+              alt="Home Services - Plumbing"
               class="rounded-md mb-4 w-full h-auto object-cover"
             />
             <h3 class="text-xl font-semibold text-gray-700 mb-2">
-              Professional Photography
+              Reliable Home Services
             </h3>
             <p class="text-gray-600 mb-4">
-              Capture your special moments or products with stunning,
-              high-quality photographs.
+              From emergency plumbing to skilled carpentry, get your home needs
+              sorted efficiently.
             </p>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm">
-              Learn More
-            </button>
+            <a
+              href="/login"
+              class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm"
+            >
+              Book Home Services
+            </a>
           </div>
 
           <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
             <img
-              src="https://picsum.photos/400/250?random=7"
-              alt="Home Cleaning Service"
+              src={chef}
+              alt="Chefs & Catering Service"
               class="rounded-md mb-4 w-full h-auto object-cover"
             />
             <h3 class="text-xl font-semibold text-gray-700 mb-2">
-              Deep Home Cleaning
+              Private Chefs & Catering
             </h3>
             <p class="text-gray-600 mb-4">
-              Expert cleaners to make your home sparkling clean and organized.
+              Elevate your events with gourmet meals and professional catering
+              services.
             </p>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm">
-              Learn More
-            </button>
+            <a
+              href="/login"
+              class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm"
+            >
+              Hire a Chef
+            </a>
           </div>
         </div>
       </section>

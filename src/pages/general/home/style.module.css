@@ -1,36 +1,89 @@
-  .slider_container {
+/* .slider_container {
     width: 100%;
     overflow: hidden;
     position: relative;
-    padding: 0 1rem; /* Add some padding on the sides */
-  }
+    padding: 0 1rem;
+}
 
-  .slider_track {
+.slider_track {
     display: flex;
-    animation: slideRightToLeft 15s linear infinite; /* Adjust duration for speed */
-  }
+    animation: slideRightToLeft 15s linear infinite;
+}
 
-  .slider_track:hover {
-    animation-play-state: paused; /* Pause on hover */
-  }
+.slider_track:hover {
+    animation-play-state: paused;
+}
 
-  .slider_track > div {
-    margin-right: 2rem; /* Spacing between cards */
-  }
+.slider_track > div {
+    margin-right: 2rem;
+}
 
-  /* Define the animation */
-  @keyframes slideRightToLeft {
+@keyframes slideRightToLeft {
     0% {
-      transform: translateX(0);
+        transform: translateX(0);
     }
     100% {
-      transform: translateX(-50%); /* Move half the track's width to loop */
+        transform: translateX(-50%);
     }
-  }
+    }
 
-  /* Adjust responsiveness for different screen sizes if needed */
-  @media (max-width: 768px) {
+    @media (max-width: 768px) {
     .slider_track > div {
-      width: 70vw; /* Make cards wider on smaller screens */
+        width: 70vw;
     }
-  }
+} */
+
+/* home.module.css */
+
+.slider_container {
+    width: 100%;
+    overflow: hidden; /* Hides the content that's outside the view */
+    position: relative;
+    padding: 0 1rem;
+}
+
+.slider_track {
+    display: flex;
+    animation: slideRightToLeft 15s linear infinite;
+}
+
+.slider_track:hover {
+    animation-play-state: paused;
+}
+
+.slider_track > div {
+    flex-shrink: 0;
+    width: 400px;
+    margin-right: 2rem;
+}
+
+/* Define the animation */
+@keyframes slideRightToLeft {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-2500px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .slider_track > div {
+        width: 70vw;
+    }
+
+    @keyframes slideRightToLeft {
+        0% {
+            transform: translateX(0);
+        }
+        50% {
+            transform: translateX(calc(-8 * (70vw + 2rem)));
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+}
