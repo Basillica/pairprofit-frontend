@@ -1,0 +1,30 @@
+$ keytool -genkey -v -keystore upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+Keystore-Kennwort eingeben:  
+
+Neues Kennwort erneut eingeben: 
+
+Geben Sie den Distinguished Name ein. Geben Sie einen einzelnen Punkt (.) an, um eine Unterkomponente leer zu lassen, oder drücken Sie die Eingabetaste, um den Standardwert in Klammern zu verwenden.
+Wie lautet Ihr Vor- und Nachname?
+  [Unknown]:  Ezeabasili, Anthony
+Wie lautet der Name Ihrer organisatorischen Einheit?
+  [Unknown]:  Bytewelle
+Wie lautet der Name Ihrer Organisation?
+  [Unknown]:  Bytewelle
+Wie lautet der Name Ihrer Stadt oder Gemeinde?
+  [Unknown]:  Nürnberg 
+Wie lautet der Name Ihres Bundeslands?
+  [Unknown]:  Bayern
+Wie lautet der Ländercode (zwei Buchstaben) für diese Einheit?
+  [Unknown]:  49
+Ist CN="Ezeabasili, Anthony", OU=Bytewelle, O=Bytewelle, L=N?rnberg, ST=Bayern, C=49 richtig?
+  [Nein]:  Ja
+
+Generieren von Schlüsselpaar (Typ RSA, 2.048 Bit) und selbst signiertem Zertifikat (SHA384withRSA) mit einer Gültigkeit von 10.000 Tagen
+        für: CN="Ezeabasili, Anthony", OU=Bytewelle, O=Bytewelle, L=N?rnberg, ST=Bayern, C=49
+Schlüsselkennwort für <upload> eingeben
+        (RETURN, wenn identisch mit Keystore-Kennwort):  
+
+[upload-keystore.jks wird gesichert]
+
+Warning:
+Der JKS-Keystore verwendet ein proprietäres Format. Es wird empfohlen, auf PKCS12 zu migrieren, das ein Industriestandardformat mit "keytool -importkeystore -srckeystore upload-keystore.jks -destkeystore upload-keystore.jks -deststoretype pkcs12" ist.
