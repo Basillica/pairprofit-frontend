@@ -23,3 +23,8 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+[profile.release]
+opt-level = 3     # Optimize for speed
+lto = "thin"      # Enable link-time optimization
+codegen-units = 1 # Optimize for binary size
+panic = "abort"   # Recommended for production
