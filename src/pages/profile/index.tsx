@@ -6,3 +6,5 @@ export { HomePage } from "../general/home";
 export { ManageServiceProfiles } from "./manage";
 export { ContactList } from "./contact";
 export { AccountSettings } from "./setting";
+export { MailApp } from "./mail";
+export { ComposeMailApp } from "./mailer";

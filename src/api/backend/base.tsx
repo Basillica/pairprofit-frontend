@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosInstance } from "axios";
-import { GetEnvConfig } from "../environments";
+import { GetEnvConfig } from "../../environments";
 
 export type HttpResponse = {
   success: boolean;

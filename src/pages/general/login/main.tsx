@@ -2,7 +2,7 @@ import { createSignal, JSX, onMount, Switch, Match } from "solid-js";
 import logo from "./../../../assets/A.png";
 import "./login.css";
 import { useOAuth } from "../../../oauth";
-import { PublicHandler } from "../../../api/public";
+import { PublicHandler } from "../../../api";
 import { UserModel } from "../../../models/auth";
 import { PrimaryButton } from "../../../components/utils/button";
 import { LoadingOverlay, NotificationBar } from "../../../components/utils";

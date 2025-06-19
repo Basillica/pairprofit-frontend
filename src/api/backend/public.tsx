@@ -1,4 +1,4 @@
-import { UserModel } from "../models/auth";
+import { UserModel } from "../../models/auth";
 import { ApiHandler } from "./base";
 
 export class PublicHandler extends ApiHandler {

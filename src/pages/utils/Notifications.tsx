@@ -243,8 +243,7 @@ export function NotificationsPage() {
         </div>
 
         <p class="text-gray-500 text-sm mt-8 text-center">
-          Note: Clicking notifications and marking as read/unread are simulated
-          for this demo.
+          Note: Clicking notifications can mark it as read/unread
         </p>
       </div>
 

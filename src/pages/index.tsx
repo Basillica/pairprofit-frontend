@@ -7,6 +7,8 @@ export {
   ManageServiceProfiles,
   ContactList,
   AccountSettings,
+  MailApp,
+  ComposeMailApp,
 } from "./profile";
 export {
   ServiceListings,

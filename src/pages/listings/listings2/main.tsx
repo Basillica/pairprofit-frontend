@@ -124,7 +124,7 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
         `${randomCategory.split(" ")[0]} repair`,
         `${randomCategory.split(" ")[0]} consultation`,
       ],
-      price: Math.random() > 0.5 ? "€50/hour" : "Quote based on project",
+      price: Math.random() > 0.5 ? "€50/hour" : "Negotiable",
       isNegotiable: Math.random() > 0.5,
       coordinates: randomCity.coords, // Using city coordinates for providers
     };

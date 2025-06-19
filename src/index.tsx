@@ -19,6 +19,8 @@ import {
   AccountSettings,
   NotificationsPage,
   ChatApp,
+  MailApp,
+  ComposeMailApp,
 } from "./pages";
 import "./App.css";
 import { EmailInbox } from "./components";
@@ -58,6 +60,8 @@ render(
         <Route path="/calendar" component={Calendar} />
       </Route>
 
+      <Route path={"/mail"} component={MailApp} />
+      <Route path={"/mailer"} component={ComposeMailApp} />
       <Route path={"/sw.js"} />
       <Route path={"/brevo-frame.html"} />
       <Route path="/login" component={LoginPage} />

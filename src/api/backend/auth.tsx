@@ -1,6 +1,6 @@
 import { ApiHandler } from "./base";
 
-export class ComponentApiHandler extends ApiHandler {
+export class AuthApiHandler extends ApiHandler {
   async fetchComponent(id: string) {
     return await this.get(`/v1/components/component/${id}`);
   }

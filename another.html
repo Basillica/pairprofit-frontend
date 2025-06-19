@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Resize</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        #preview { max-width: 300px; max-height: 300px; margin-top: 20px; border: 1px solid #ccc; display: block; }
+        button { margin-top: 10px; padding: 10px 15px; cursor: pointer; }
+    </style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const uploadButton = document.getElementById('uploadButton');
+
+    let resizedImageBlob = null; // To store the resized image as a Blob
+
+    imageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+
+        if (file) {
+            // Log original file size
+            const originalSizeKB = (file.size / 1024).toFixed(2);
+            console.log(`Original image size: ${originalSizeKB} KB`);
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const MAX_WIDTH = 200; // Desired maximum width for the resized image
+                    const MAX_HEIGHT = 200; // Desired maximum height for the resized image
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions to maintain aspect ratio
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Display the resized image preview
+                    preview.src = canvas.toDataURL('image/jpeg'); // or 'image/png'
+                    preview.style.display = 'block';
+                    uploadButton.style.display = 'block';
+
+                    // Convert canvas content to a Blob for potential upload
+                    canvas.toBlob((blob) => {
+                        resizedImageBlob = blob;
+
+                        // Log resized image size
+                        if (resizedImageBlob) {
+                            const resizedSizeKB = (resizedImageBlob.size / 1024).toFixed(2);
+                            console.log(`Resized image size: ${resizedSizeKB} KB`);
+                        }
+                    }, 'image/jpeg', 0.9); // 0.9 is the quality for JPEG
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            uploadButton.style.display = 'none';
+            resizedImageBlob = null;
+            console.log('No file selected.'); // Clear previous logs if no file is selected
+        }
+    });
+
+    uploadButton.addEventListener('click', () => {
+        if (resizedImageBlob) {
+            // Example using Fetch API for upload
+            const formData = new FormData();
+            formData.append('resizedImage', resizedImageBlob, 'resized_image.jpg');
+
+            // Replace 'YOUR_UPLOAD_SERVER_ENDPOINT' with the actual URL of your backend server
+            fetch('YOUR_UPLOAD_SERVER_ENDPOINT', { // Remember to change this!
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Upload successful:', data);
+                alert('Image uploaded successfully!');
+            })
+            .catch(error => {
+                console.error('Upload failed:', error);
+                alert('Image upload failed. Please check the console for details.');
+            });
+
+        } else {
+            alert('No resized image available for upload.');
+        }
+    });
+});
+</script>
+</head>
+<body>
+    <h1>Upload and Resize Image</h1>
+
+    <form id="imageUploadForm" enctype="multipart/form-data">
+        <label for="imageInput">Choose an image:</label>
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <img id="preview" src="#" alt="Image Preview" style="display: none;">
+        <button type="button" id="uploadButton" style="display: none;">Upload Resized Image</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>

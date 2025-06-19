@@ -4,7 +4,7 @@ import { FilterBar } from "../../components/utils";
 import { ServiceListingA } from "./listings1";
 import { ServiceListingsB } from "./listings2";
 import { ServiceListingsC } from "./listings3";
-import { PublicHandler } from "../../api/public";
+import { PublicHandler } from "../../api";
 import { useNavigate } from "@solidjs/router";
 import { authService } from "../../oauth/manager";
 
@@ -104,10 +104,10 @@ export const ServiceListings = () => {
   }
 
   onMount(async () => {
-    if (!authService.checkAuth()) {
-      navigate("/login");
-      return;
-    }
+    // if (!authService.checkAuth()) {
+    //   navigate("/login");
+    //   return;
+    // }
 
     const api = new PublicHandler();
     try {
