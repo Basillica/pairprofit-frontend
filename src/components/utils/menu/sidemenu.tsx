@@ -70,14 +70,15 @@ export const PersistentSidebar: Component<{
         onMouseLeave={() => window.innerWidth > 768 && props.setExpanded(false)}
       >
         <a href="/">
-          <i class="fas fa-home"></i> <span>Home</span>
+          <i style="color: blue" class="fas fa-home"></i> <span>Home</span>
         </a>
         <a href="/about">
-          <i class="fas fa-book"></i> <span>About</span>
+          <i style="color: blue" class="fas fa-book"></i> <span>About</span>
         </a>
         <div class="submenu-wrapper">
           <a href="#" class="has-submenu" onClick={toggleSettingsSubmenu}>
-            <i class="fas fa-cog"></i> <span>Service Provider</span>{" "}
+            <i style="color: blue" class="fas fa-cog"></i>{" "}
+            <span>Service Provider</span>{" "}
             <i
               class={`fas fa-chevron-${
                 settingsExpanded() ? "down" : "right"
@@ -92,11 +93,12 @@ export const PersistentSidebar: Component<{
           </div>
         </div>
         <a href="/contact">
-          <i class="fas fa-envelope"></i> <span>Contact</span>
+          <i style="color: blue" class="fas fa-envelope"></i>{" "}
+          <span>Contact</span>
         </a>
         <div class="submenu-wrapper">
           <a href="#" class="has-submenu" onClick={toggleProfileSubmenu}>
-            <i class="fas fa-user"></i> <span>Profile</span>{" "}
+            <i style="color: blue" class="fas fa-user"></i> <span>Profile</span>{" "}
             <i
               class={`fas fa-chevron-${
                 profileExpanded() ? "down" : "right"

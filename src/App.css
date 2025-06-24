@@ -81,3 +81,9 @@ body {
   overflow-x: hidden;
   font-family: sans-serif; /* Ensure a fallback font */
 }
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 0px;
+    }
+}

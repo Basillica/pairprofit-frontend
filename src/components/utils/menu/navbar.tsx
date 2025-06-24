@@ -61,16 +61,16 @@ export const NavBar: Component<{
       <PostServiceRequestForm isOpen={addRequest} closeModal={setAddRequest} />
       <div class="top-section-left">
         <button id="sidebar-toggle-btn" onClick={toggleSidebar}>
-          <i class="fas fa-bars"></i>
+          <i style="color: blue" class="fas fa-bars"></i>
         </button>
-        <input type="text" placeholder="Search" class="desktop-search-bar" />
+        {/* <input type="text" placeholder="Search" class="desktop-search-bar" /> */}
       </div>
       <div class="top-section-right">
         <button
           class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full"
           onClick={() => setAddRequest(true)}
         >
-          <i class="fas fa-plus"></i>
+          <i style="color: blue" class="fas fa-plus"></i>
         </button>
 
         <div class="relative inline-flex">
@@ -93,7 +93,7 @@ export const NavBar: Component<{
             }}
           >
             <div class="relative inline-block">
-              <i class="fas fa-bell"></i>
+              <i style="color: blue" class="fas fa-bell"></i>
               <div class="absolute top-0 right-0 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
                 9+
               </div>
@@ -249,13 +249,13 @@ export const NavBar: Component<{
           class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full"
           onClick={(e) => handleUserProfile(e)}
         >
-          <i class="fas fa-user"></i>
+          <i style="color: blue" class="fas fa-user"></i>
         </button>
         <button
           class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-2 rounded-full"
           onClick={(e) => handleLogout(e)}
         >
-          <i class="fas fa-right-from-bracket"></i>
+          <i style="color: blue" class="fas fa-right-from-bracket"></i>
         </button>
       </div>
     </nav>

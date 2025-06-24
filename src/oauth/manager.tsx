@@ -1,3 +1,4 @@
+import { SecureLocalStorage } from "../lib/localstore";
 import { UserModel } from "../models/auth";
 
 class AuthService {
@@ -11,22 +12,22 @@ class AuthService {
   constructor() {}
 
   public setAuthToken(token: string, expiration: number): void {
-    localStorage.setItem(this.USER_AUTH_TOKEN, token);
-    localStorage.setItem(this.TOKEN_EXP_KEY, String(expiration));
+    SecureLocalStorage.storeItem(this.USER_AUTH_TOKEN, token);
+    SecureLocalStorage.storeItem(this.TOKEN_EXP_KEY, String(expiration));
   }
 
   public confirmLogin(process: string, token: string): void {
-    localStorage.setItem(this.CURRENT_AUTH_PROCESS, process);
-    localStorage.setItem(this.AUTH_PROCESS_TOKEN, token);
+    SecureLocalStorage.storeItem(this.CURRENT_AUTH_PROCESS, process);
+    SecureLocalStorage.storeItem(this.AUTH_PROCESS_TOKEN, token);
   }
 
   public getAuthToken(): string | null {
-    return localStorage.getItem(this.USER_AUTH_TOKEN);
+    return SecureLocalStorage.getItem(this.USER_AUTH_TOKEN);
   }
 
   public checkAuthOnLogin(): boolean {
     const now = Math.floor(Date.now() / 1000);
-    const tokenExp = localStorage.getItem(this.TOKEN_EXP_KEY);
+    const tokenExp = SecureLocalStorage.getItem(this.TOKEN_EXP_KEY);
 
     if (tokenExp && Number(tokenExp) > now) {
       return true;
@@ -38,7 +39,7 @@ class AuthService {
 
   public checkAuth(): boolean {
     const now = Math.floor(Date.now() / 1000);
-    const tokenExp = localStorage.getItem(this.TOKEN_EXP_KEY);
+    const tokenExp = SecureLocalStorage.getItem(this.TOKEN_EXP_KEY);
 
     if (!tokenExp || now >= Number(tokenExp)) {
       this.clearAuthToken();
@@ -48,50 +49,50 @@ class AuthService {
   }
 
   public clearAuthToken(): void {
-    localStorage.removeItem(this.USER_AUTH_TOKEN);
-    localStorage.removeItem(this.TOKEN_EXP_KEY);
-    localStorage.removeItem(this.CURRENT_AUTH_PROCESS);
-    localStorage.removeItem(this.AUTH_PROCESS_TOKEN);
-    localStorage.removeItem(this.AUTH_USER_MODEL);
+    SecureLocalStorage.removeItem(this.USER_AUTH_TOKEN);
+    SecureLocalStorage.removeItem(this.TOKEN_EXP_KEY);
+    SecureLocalStorage.removeItem(this.CURRENT_AUTH_PROCESS);
+    SecureLocalStorage.removeItem(this.AUTH_PROCESS_TOKEN);
+    SecureLocalStorage.removeItem(this.AUTH_USER_MODEL);
   }
 
   public getCurrentProcess(): string | null {
-    return localStorage.getItem(this.CURRENT_AUTH_PROCESS);
+    return SecureLocalStorage.getItem(this.CURRENT_AUTH_PROCESS);
   }
 
   public getUserAuthToken(): string | null {
-    return localStorage.getItem(this.USER_AUTH_TOKEN);
+    return SecureLocalStorage.getItem(this.USER_AUTH_TOKEN);
   }
 
   public getAuthUser(): UserModel | null {
-    const user = localStorage.getItem(this.AUTH_USER_MODEL);
+    const user = SecureLocalStorage.getItem(this.AUTH_USER_MODEL);
     if (user) return JSON.parse(user);
     return null;
   }
 
   public setAuthUser(user: UserModel) {
     user.password = "";
-    localStorage.setItem(this.AUTH_USER_MODEL, JSON.stringify(user));
+    SecureLocalStorage.storeItem(this.AUTH_USER_MODEL, user);
   }
 
   public setAuthProcess(value: string) {
-    localStorage.setItem(this.CURRENT_AUTH_PROCESS, value);
+    SecureLocalStorage.storeItem(this.CURRENT_AUTH_PROCESS, value);
   }
 
   public setAuthProcessToken(value: string) {
-    localStorage.setItem(this.AUTH_PROCESS_TOKEN, value);
+    SecureLocalStorage.storeItem(this.AUTH_PROCESS_TOKEN, value);
   }
 
   public getAuthProcessToken(): string | null {
-    return localStorage.getItem(this.AUTH_PROCESS_TOKEN);
+    return SecureLocalStorage.getItem(this.AUTH_PROCESS_TOKEN);
   }
 
   public getAuthProvider(): string | null {
-    return localStorage.getItem(this.AUTH_PROVIDER);
+    return SecureLocalStorage.getItem(this.AUTH_PROVIDER);
   }
 
   public setAuthProvider(value: string) {
-    localStorage.setItem(this.AUTH_PROVIDER, value);
+    SecureLocalStorage.storeItem(this.AUTH_PROVIDER, value);
   }
 }
 

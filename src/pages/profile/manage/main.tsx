@@ -3,6 +3,7 @@ import { StarRating } from "./rating";
 import { EditProfileModal } from "./edit";
 import { ListingProfile } from "./type";
 import { CreateProviderProfileComponent } from "../../../components/utils/modals";
+import { SecureLocalStorage } from "../../../lib/localstore";
 
 // Main Component
 export const ManageServiceProfiles: Component<{}> = () => {
@@ -80,7 +81,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
   ]);
 
   const [activeProfileId, setActiveProfileIdInternal] = createSignal(
-    localStorage.getItem("activeProviderProfileId")
+    SecureLocalStorage.getItem("x-pairprofit-active-profile")
   );
   const [showEditModal, setShowEditModal] = createSignal(false);
   const [showCreateModal, setShowCreateModal] = createSignal(false);
@@ -97,13 +98,13 @@ export const ManageServiceProfiles: Component<{}> = () => {
         setActiveProfileIdInternal(profiles[0].id); // Default to first if current active is gone or none set
       }
     } else {
-      localStorage.removeItem("activeProviderProfileId"); // Clear if no profiles exist
+      SecureLocalStorage.removeItem("x-pairprofit-active-profile"); // Clear if no profiles exist
       setActiveProfileIdInternal(null);
     }
   });
 
   const setActiveProfile = (id: string) => {
-    localStorage.setItem("activeProviderProfileId", id);
+    SecureLocalStorage.storeItem("x-pairprofit-active-profile", id);
     setActiveProfileIdInternal(id);
     const activeProfile = userProfiles().find((p) => p.id === id);
     if (activeProfile) {

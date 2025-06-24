@@ -30,7 +30,7 @@ export const LogoutModal: Component<LogoutModalProps> = (props) => {
     <Portal>
       <Show when={props.isOpen()}>
         <div
-          class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
+          class="fixed inset-0 bg-gray-400 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
           // Optional: Close modal if clicking on the overlay (outside the content)
           onClick={props.onCancel}
         >

@@ -1,4 +1,4 @@
-import { createSignal, For } from "solid-js";
+import { Accessor, Component, createSignal, For } from "solid-js";
 import css_module from "./style.module.css";
 import { ListingPayload } from "../../../models/listing";
 import { ServiceRequestDetails } from "../../../components";
@@ -77,24 +77,25 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
 
     const request: ListingPayload = {
       id: `req${i}`,
-      customerName: randomCustomer,
-      requestTitle: `${randomCategory} Request`,
-      serviceCategory: randomCategory,
-      requestDescription: `This is a sample request for ${randomCategory} services in ${randomCity.name}. The client needs assistance with various tasks related to this category.`,
-      locationStreet: `Sample Street ${i}`,
-      locationCity: randomCity.name,
-      locationPostalCode: randomCity.postalCode,
-      locationCountry: "Germany",
-      specificLocationDetails: `Details for specific location ${i}.`,
-      desiredTimeline: randomTimeline as
+      customer_name: randomCustomer,
+      request_title: `${randomCategory} Request`,
+      category: randomCategory,
+      sub_category: randomCategory,
+      request_description: `This is a sample request for ${randomCategory} services in ${randomCity.name}. The client needs assistance with various tasks related to this category.`,
+      location_street: `Sample Street ${i}`,
+      location_city: randomCity.name,
+      location_postal_code: randomCity.postalCode,
+      location_country: "Germany",
+      specific_location_details: `Details for specific location ${i}.`,
+      desired_timeline: randomTimeline as
         | "IMMEDIATE"
         | "FLEXIBLE"
         | "SPECIFIC_DATE",
-      specificDateTime: specificDateTime,
-      estimatedBudget: estimatedBudget,
-      additionalNotes:
+      specific_date_time: specificDateTime,
+      estimated_budget: estimatedBudget,
+      additional_notes:
         Math.random() > 0.7 ? "Client has some specific requirements." : "",
-      contactMethod: randomContact as "Platform Chat" | "Phone" | "Email",
+      contact_method: randomContact as "Platform Chat" | "Phone" | "Email",
       postedDate: new Date(
         baseDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000
       ), // Posted up to 7 days ago
@@ -113,20 +114,14 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
 
       // Provider details (simplified for random generation)
       title: `${randomCategory} Provider`,
-      provider: `Provider ${String.fromCharCode(
-        65 + Math.floor(Math.random() * 26)
-      )}${i}`, // A-Z for provider names
       description: `Experienced provider offering top-notch ${randomCategory} services.`,
       location: `Serving: ${randomCity.name} and nearby regions`,
-      availability:
-        Math.random() > 0.5 ? "Availability: Mon-Fri" : "Availability: 24/7",
-      servicesOffered: [
-        `${randomCategory.split(" ")[0]} repair`,
-        `${randomCategory.split(" ")[0]} consultation`,
-      ],
-      price: Math.random() > 0.5 ? "€50/hour" : "Negotiable",
-      isNegotiable: Math.random() > 0.5,
-      coordinates: randomCity.coords, // Using city coordinates for providers
+      price: Math.random() > 0.5 ? 50 : 0.0,
+      is_negotiable: Math.random() > 0.5,
+      longitude: randomCity.coords[0], // Using city coordinates for providers
+      latitude: randomCity.coords[1],
+      scope: "",
+      creator_id: "",
     };
     requests.push(request);
   }
@@ -134,7 +129,11 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
   return requests;
 };
 
-export const ServiceListingA = () => {
+export const ServiceListingA: Component<{
+  categories: Accessor<{
+    [key: string]: string[];
+  }>;
+}> = () => {
   const [serviceListings] = createSignal<ListingPayload[]>(
     generateServiceRequests(15)
   );
@@ -160,7 +159,7 @@ export const ServiceListingA = () => {
               <div class={css_module.listing_header}>
                 <h3 class={css_module.listing_title}>{service.title}</h3>
                 <p class={css_module.listing_provider}>
-                  Provided by: {service.provider}
+                  Provided by: {service.customer_name}
                 </p>
               </div>
               <div class={css_module.listing_body}>
@@ -176,7 +175,7 @@ export const ServiceListingA = () => {
                       {service.location}
                     </span>
                   </div>
-                  <div class={css_module.detail_item}>
+                  {/* <div class={css_module.detail_item}>
                     <i class={`fas fa-clock ${css_module.detail_icon}`}></i>
                     <span class={css_module.detail_text}>
                       {service.availability}
@@ -187,22 +186,31 @@ export const ServiceListingA = () => {
                     <span class={css_module.detail_text}>
                       Services: {service.servicesOffered.join(", ")}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div class={css_module.listing_footer}>
-                <span class={css_module.listing_price}>{service.price}</span>
-                {/* {service.isNegotiable && <span class={css_module.negotiable}>Negotiable</span>} */}
-                {/* {service.urgency && (
-                <span class={`${css_module.urgency_badge} ${service.urgency === "high" && css_module.urgency_high} ${service.urgency === "medium" && css_module.urgency_medium} ${service.urgency === "low" && css_module.urgency_low}`}>
-                  {service.urgency.charAt(0).toUpperCase() + service.urgency.slice(1)} Urgency
+                <span class={css_module.listing_price}>
+                  {service.price < 1 ? `Negotiable` : `${service.price}/Hour`}
                 </span>
-              )} */}
+                {service.urgency && (
+                  <span
+                    class={`${css_module.urgency_badge} ${
+                      service.urgency === "high" && css_module.urgency_high
+                    } ${
+                      service.urgency === "medium" && css_module.urgency_medium
+                    } ${service.urgency === "low" && css_module.urgency_low}`}
+                  >
+                    {service.urgency.charAt(0).toUpperCase() +
+                      service.urgency.slice(1)}{" "}
+                    {/* Urgency */}
+                  </span>
+                )}
                 <button
                   class={css_module.contact_button}
                   onClick={() => openListing(service.id)}
                 >
-                  View Details
+                  Details
                 </button>
               </div>
             </div>

@@ -7,6 +7,7 @@ import { ServiceListingsC } from "./listings3";
 import { PublicHandler } from "../../api";
 import { useNavigate } from "@solidjs/router";
 import { authService } from "../../oauth/manager";
+import { SecureLocalStorage } from "../../lib/localstore";
 
 // Define the structure of the data you get from your API
 interface ApiCategoriesResponse {
@@ -24,6 +25,7 @@ export const ServiceListings = () => {
     {}
   );
   const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
+
   const navigate = useNavigate();
 
   // Signal to store the currently selected main category
@@ -66,7 +68,7 @@ export const ServiceListings = () => {
   });
 
   const [ListingType] = createSignal<string>(
-    window.innerWidth > 768 ? "Type3" : "Type1"
+    window.innerWidth > 768 ? "Type1" : "Type1"
   );
 
   const [_, setFilters] = createSignal({
@@ -104,17 +106,29 @@ export const ServiceListings = () => {
   }
 
   onMount(async () => {
-    // if (!authService.checkAuth()) {
-    //   navigate("/login");
-    //   return;
-    // }
+    if (!authService.checkAuth()) {
+      navigate("/login");
+      return;
+    }
+
+    let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
+      "x-pairprofit-categories"
+    );
+    if (cachedCategores) {
+      setApiCategories(cachedCategores);
+      return;
+    }
 
     const api = new PublicHandler();
     try {
       const res = await api.fetchCategories();
-      console.log(res, "Fetched categories from API");
       if (res.success) {
         setApiCategories(res.data.categories);
+        SecureLocalStorage.storeItem(
+          "x-pairprofit-categories",
+          res.data.categories
+        );
+        console.log(res.data.categories);
       } else {
         console.error("API response for categories was not an object:", res);
         setApiCategories({});
@@ -212,6 +226,7 @@ export const ServiceListings = () => {
           </button>
         </div>
       </div>
+
       {openFilterBar() && (
         <div style={"padding-bottom: 10px; margin-top: 5px"}>
           <Switch fallback={<p>Loading filters...</p>}>
@@ -230,7 +245,7 @@ export const ServiceListings = () => {
 
       <Switch fallback={<p>Loading service listings...</p>}>
         <Match when={ListingType() === "Type1"}>
-          <ServiceListingA />
+          <ServiceListingA categories={apiCategories} />
         </Match>
         <Match when={ListingType() === "Type2"}>
           <ServiceListingsB />

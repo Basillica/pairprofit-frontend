@@ -4,29 +4,8 @@
 export const environment = {
     production: false,
     hmr: true,
-    title: "Myserv local",
+    title: "PairProfit local",
     name: "local", // defines which configuration under /assets/config/ should be loaded during startup
     BASE_URL: "http://127.0.0.1:8080",
-    REDIRECT_URL: "http://localhost:3000",
-    WEB_SOCKET_URL: "ws://localhost:8082",
-    WEB_SOCKET_API: "http://localhost:8082",
-    HTML_PAGES: {
-        DE: {
-            DataPrivacy: "https://myservfrontenddev.blob.core.windows.net/myservassets/datenschutz.html",
-            FAQs: "https://myservfrontenddev.blob.core.windows.net/myservassets/faq_de.html"
-        },
-        EN: {
-            DataPrivacy: "https://myservfrontenddev.blob.core.windows.net/myservassets/data_privacy.html",
-            FAQs: "https://myservfrontenddev.blob.core.windows.net/myservassets/faq_en.html"
-        }
-    }
+    EncryptionKey: import.meta.env.VITE_STORE_ENCRYPTION_KEY || 'my_super_secret_key_123!',
 };
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
