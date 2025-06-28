@@ -8,6 +8,17 @@ import {
   Setter,
 } from "solid-js";
 
+interface NotificationType {
+  showAppNotification: (
+    type: "success" | "warning" | "error",
+    message: string
+  ) => void;
+  notificationType: Accessor<"success" | "warning" | "error" | null>;
+  setNotificationType: Setter<"success" | "warning" | "error" | null>;
+  notificationMessage: Accessor<string | null>;
+  setNotificationMessage: Setter<string | null>;
+}
+
 interface AppContextType {
   isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
   sendMessage: (data: string) => void;
@@ -16,6 +27,7 @@ interface AppContextType {
   setNotifWidget: Setter<boolean>;
   syncMode: Accessor<boolean>;
   setSyncMode: Setter<boolean>;
+  notification: NotificationType;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -27,6 +39,12 @@ export const AppContextProvider = (props: {
 }) => {
   const [socket, setSocket] = createSignal<WebSocket | null>(null);
   const [isConnected, setIsConnected] = createSignal<boolean>(false);
+  const [notificationType, setNotificationType] = createSignal<
+    "success" | "warning" | "error" | null
+  >(null);
+  const [notificationMessage, setNotificationMessage] = createSignal<
+    string | null
+  >(null);
   const [socketMessage, setSocketMessage] = createSignal<MessageEvent<string>>(
     new MessageEvent("") // Initial value - be mindful in consuming components
   );
@@ -122,6 +140,14 @@ export const AppContextProvider = (props: {
     };
   };
 
+  const showAppNotification = (
+    type: "success" | "warning" | "error",
+    message: string
+  ) => {
+    setNotificationType(type);
+    setNotificationMessage(message);
+  };
+
   // Effect to manage WebSocket connection based on props.query
   createEffect(() => {
     const currentQuery = props.query();
@@ -176,6 +202,13 @@ export const AppContextProvider = (props: {
         setNotifWidget,
         syncMode,
         setSyncMode,
+        notification: {
+          showAppNotification,
+          notificationMessage,
+          setNotificationMessage,
+          notificationType,
+          setNotificationType,
+        },
       }}
     >
       {props.children}

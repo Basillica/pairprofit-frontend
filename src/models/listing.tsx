@@ -9,8 +9,9 @@ export type UrgencyType =
 export type ListingPayload = {
   id: string;
   title: string;
-  location: string;
   description: string;
+  category: string;
+  sub_category: string;
   price: number;
   latitude: number;
   longitude: number;
@@ -18,8 +19,6 @@ export type ListingPayload = {
   urgency: string;
   customer_name: string;
   request_title: string;
-  category: string;
-  sub_category: string;
   request_description: string;
   location_street: string;
   location_city: string;
@@ -31,7 +30,6 @@ export type ListingPayload = {
   estimated_budget: number;
   additional_notes: string;
   contact_method: string;
-  postedDate: Date;
   creator_id: string;
   created_at?: string;
   updated_at?: string;

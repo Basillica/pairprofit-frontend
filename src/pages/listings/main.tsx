@@ -24,14 +24,10 @@ export const ServiceListings = () => {
   const [apiCategories, setApiCategories] = createSignal<ApiCategoriesResponse>(
     {}
   );
+
   const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
-
   const navigate = useNavigate();
-
-  // Signal to store the currently selected main category
-  const [selectedCategory, setSelectedCategory] = createSignal<string>(""); // Store the original label, or empty for "All"
-
-  // Derived signal for main categories (for the first dropdown)
+  const [selectedCategory, setSelectedCategory] = createSignal<string>("");
   const filterMainCategories = createMemo(() => {
     if (!apiCategories()) return [];
     return Object.keys(apiCategories()).map((key) => ({
@@ -40,7 +36,6 @@ export const ServiceListings = () => {
     }));
   });
 
-  // Derived signal for subcategories (dynamic based on selectedCategory)
   const filterSubCategories = createMemo(() => {
     const currentCategories = apiCategories();
     const currentSelectedCategory = selectedCategory();

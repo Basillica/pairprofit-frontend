@@ -42,7 +42,6 @@ export const PostServiceRequestForm: Component<{
   isOpen: Accessor<boolean>;
   closeModal: Setter<boolean>;
 }> = (props) => {
-  // Form state management
   const [formData, setFormData] = createSignal<NewListingForm>({
     serviceCategory: "",
     serviceSubCategory: "",
@@ -119,34 +118,34 @@ export const PostServiceRequestForm: Component<{
     }));
   };
 
-  const handleFileChange = (e: any) => {
-    const files: File[] = Array.from(e.target.files);
-    const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
+  //   const handleFileChange = (e: any) => {
+  //     const files: File[] = Array.from(e.target.files);
+  //     const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
 
-    if (currentFiles.length + files.length > 5) {
-      alert("You can upload a maximum of 5 files.");
-      e.target.value = ""; // Clear input
-      return;
-    }
+  //     if (currentFiles.length + files.length > 5) {
+  //       alert("You can upload a maximum of 5 files.");
+  //       e.target.value = ""; // Clear input
+  //       return;
+  //     }
 
-    const newFilesToUpload: any[] = [];
-    files.forEach((file) => {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        alert(`File "${file.name}" is too large. Max 5MB per file.`);
-      } else {
-        newFilesToUpload.push({
-          file: file,
-          previewUrl: file.type.startsWith("image/")
-            ? URL.createObjectURL(file)
-            : null, // Only create URL for images
-        });
-      }
-    });
+  //     const newFilesToUpload: any[] = [];
+  //     files.forEach((file) => {
+  //       if (file.size > 5 * 1024 * 1024) {
+  //         // 5MB limit
+  //         alert(`File "${file.name}" is too large. Max 5MB per file.`);
+  //       } else {
+  //         newFilesToUpload.push({
+  //           file: file,
+  //           previewUrl: file.type.startsWith("image/")
+  //             ? URL.createObjectURL(file)
+  //             : null, // Only create URL for images
+  //         });
+  //       }
+  //     });
 
-    setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
-    e.target.value = "";
-  };
+  //     setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
+  //     e.target.value = "";
+  //   };
 
   const removeFile = (fileNameToRemove: string) => {
     setUploadedFiles((prev) => {
@@ -172,6 +171,7 @@ export const PostServiceRequestForm: Component<{
     | "NEXT_WEEK"
     | "FLEXIBLE"
     | "SPECIFIC_DATE" => {
+    console.log(urgency, "the frigging thingy");
     return "24h";
   };
 
@@ -224,11 +224,15 @@ export const PostServiceRequestForm: Component<{
       ],
     };
     setIsLoading(true);
-    setInterval(() => {
-      console.log(formData(), payload, "ääääääääää");
-    }, 5000);
 
     let result = await api.addListing(payload);
+    if (result.success) {
+      //   setTimeout(() => {
+      console.log("success");
+      props.closeModal(false);
+      //   }, 5000);
+    }
+
     setIsLoading(false);
   };
 
@@ -289,7 +293,9 @@ export const PostServiceRequestForm: Component<{
             </p>
 
             {isLoading() ? (
-              <LoadingAnimation />
+              <div style={"width: 90px; height: 90px"}>
+                <LoadingAnimation />
+              </div>
             ) : (
               <form onSubmit={handleSubmit} class="space-y-6">
                 <section class="border-b border-gray-200 pb-6 pt-6">

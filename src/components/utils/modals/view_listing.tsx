@@ -1,4 +1,13 @@
-import { Show, For, Component, Accessor, Setter, createSignal } from "solid-js";
+import {
+  Show,
+  For,
+  Component,
+  Accessor,
+  Setter,
+  createSignal,
+  Switch,
+  Match,
+} from "solid-js";
 import { Portal } from "solid-js/web";
 import modal_styles from "./style.module.css";
 import { ListingPayload } from "../../../models/listing";
@@ -14,7 +23,7 @@ const urgencyMap = {
 
 export const ServiceRequestDetails: Component<{
   isOpen: Accessor<boolean>;
-  listing: ListingPayload;
+  listing: Accessor<ListingPayload | undefined>;
   closeModel: Setter<boolean>;
 }> = (props) => {
   // State for form inputs
@@ -27,7 +36,9 @@ export const ServiceRequestDetails: Component<{
   const [emailSenderEmail, setEmailSenderEmail] = createSignal("");
   const [emailSubject, setEmailSubject] = createSignal("");
   const [emailMessage, setEmailMessage] = createSignal("");
-  const [activeTab, setActiveTab] = createSignal("chat"); // 'chat', 'callback', 'email'
+  //   const [activeTab, setActiveTab] = createSignal(
+  //     props.listing()?.contact_method
+  //   ); // 'chat', 'callback', 'email'
   //   const [request] = createSignal<ListingPayload>(props.listing);
   //   const [isLoading, setIsLoading] = createSignal(true);
   //   const [isNotFound, setIsNotFound] = createSignal(false);
@@ -67,9 +78,9 @@ export const ServiceRequestDetails: Component<{
   //   };
 
   // Handler for tab clicks
-  const handleTabClick = (tabName: string) => {
-    setActiveTab(tabName);
-  };
+  //   const handleTabClick = (tabName: string) => {
+  //     setActiveTab(tabName);
+  //   };
 
   // Form submission handlers
   const handleSendMessage = () => {
@@ -149,7 +160,7 @@ export const ServiceRequestDetails: Component<{
         >
           <div class={modal_styles.modal_content}>
             <button
-              class="text-blue-600 hover:text-blue-800 text-sm font-medium mb-6 inline-flex items-center"
+              class="text-blue-600 hover:text-blue-800 text-sm font-bold mb-6 inline-flex items-center"
               onClick={() => props.closeModel(false)}
             >
               <svg
@@ -171,7 +182,7 @@ export const ServiceRequestDetails: Component<{
 
             <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6">
               <Show when={props.listing} fallback={"Loading Request..."}>
-                {props.listing!.requestTitle}
+                {props.listing()!.title}
               </Show>
             </h1>
 
@@ -188,7 +199,7 @@ export const ServiceRequestDetails: Component<{
                 </p>
               </Show> */}
 
-              <Show when={props.listing}>
+              <Show when={props.listing()}>
                 {(req) => (
                   <>
                     <section class="bg-gray-50 p-6 rounded-lg shadow-inner">
@@ -197,46 +208,48 @@ export const ServiceRequestDetails: Component<{
                       </h2>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                         <div>
-                          <p class="font-medium">Service Category:</p>
-                          <p>{req().serviceCategory}</p>
+                          <p class="font-bold">Service Category:</p>
+                          <p>{req().category}</p>
                         </div>
                         <div>
-                          <p class="font-medium">Desired Timeline:</p>
+                          <p class="font-bold">Desired Timeline:</p>
                           <p>
-                            {urgencyMap[req().desiredTimeline] ||
-                              req().desiredTimeline}
+                            {urgencyMap[req().desired_timeline] ||
+                              req().desired_timeline}
                             <Show
                               when={
-                                req().desiredTimeline === "SPECIFIC_DATE" &&
-                                req().specificDateTime
+                                req().desired_timeline === "SPECIFIC_DATE" &&
+                                req().specific_date_time
                               }
                             >
                               <br />(
-                              {new Date(req().specificDateTime).toLocaleString(
-                                "en-DE",
-                                { dateStyle: "short", timeStyle: "short" }
-                              )}
+                              {new Date(
+                                req().specific_date_time
+                              ).toLocaleString("en-DE", {
+                                dateStyle: "short",
+                                timeStyle: "short",
+                              })}
                               )
                             </Show>
                           </p>
                         </div>
                         <div>
-                          <p class="font-medium">Estimated Budget:</p>
+                          <p class="font-bold">Estimated Budget:</p>
                           <p>
-                            {req().estimatedBudget
-                              ? `${req().estimatedBudget} EUR`
+                            {req().estimated_budget
+                              ? `${req().estimated_budget} EUR`
                               : "Not specified"}
                           </p>
                         </div>
                         <div>
-                          <p class="font-medium">Posted On:</p>
+                          <p class="font-bold">Posted On:</p>
                           <p>
-                            {new Date(req().postedDate).toLocaleDateString(
+                            {new Date(req().created_at!).toLocaleDateString(
                               "en-DE",
                               { dateStyle: "short" }
                             )}{" "}
                             at{" "}
-                            {new Date(req().postedDate).toLocaleTimeString(
+                            {new Date(req().created_at!).toLocaleTimeString(
                               "en-DE",
                               { timeStyle: "short" }
                             )}
@@ -244,18 +257,16 @@ export const ServiceRequestDetails: Component<{
                         </div>
                       </div>
                       <div class="mt-4">
-                        <p class="font-medium">Detailed Description:</p>
+                        <p class="font-bold">Detailed Description:</p>
                         <p class="mt-1 leading-relaxed whitespace-pre-wrap">
-                          {req().requestDescription}
+                          {req().description}
                         </p>
                       </div>
-                      <Show when={req().additionalNotes}>
+                      <Show when={req().additional_notes}>
                         <div class="mt-4">
-                          <p class="font-medium">
-                            Additional Notes/Preferences:
-                          </p>
+                          <p class="font-bold">Additional Notes/Preferences:</p>
                           <p class="mt-1 italic text-gray-600">
-                            {req().additionalNotes}
+                            {req().additional_notes}
                           </p>
                         </div>
                       </Show>
@@ -267,25 +278,25 @@ export const ServiceRequestDetails: Component<{
                       </h2>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                         <div>
-                          <p class="font-medium">Street Address/Area:</p>
-                          <p>{req().locationStreet}</p>
+                          <p class="font-bold">Street Address/Area:</p>
+                          <p>{req().location_street}</p>
                         </div>
                         <div>
-                          <p class="font-medium">City & Postal Code:</p>
+                          <p class="font-bold">City & Postal Code:</p>
                           <p>
-                            {req().locationCity}, {req().locationPostalCode}
+                            {req().location_city}, {req().location_postal_code}
                           </p>
                         </div>
                         <div>
-                          <p class="font-medium">Country:</p>
-                          <p>{req().locationCountry}</p>
+                          <p class="font-bold">Country:</p>
+                          <p>{req().location_country}</p>
                         </div>
                       </div>
-                      <Show when={req().specificLocationDetails}>
+                      <Show when={req().specific_location_details}>
                         <div class="mt-4">
-                          <p class="font-medium">Specific Location Details:</p>
+                          <p class="font-bold">Specific Location Details:</p>
                           <p class="mt-1 leading-relaxed">
-                            {req().specificLocationDetails}
+                            {req().specific_location_details}
                           </p>
                         </div>
                       </Show>
@@ -297,12 +308,12 @@ export const ServiceRequestDetails: Component<{
                       </h2>
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                         <div>
-                          <p class="font-medium">Customer (Placeholder):</p>
-                          <p>{req().customerName || "Anonymous Customer"}</p>
+                          <p class="font-bold">Customer (Placeholder):</p>
+                          <p>{req().customer_name || "Anonymous Customer"}</p>
                         </div>
                         <div>
-                          <p class="font-medium">Preferred Contact Method:</p>
-                          <p>{req().contactMethod}</p>
+                          <p class="font-bold">Preferred Contact Method:</p>
+                          <p>{req().contact_method}</p>
                         </div>
                       </div>
                     </section>
@@ -400,9 +411,8 @@ export const ServiceRequestDetails: Component<{
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <button
                           type="button"
-                          onClick={() => handleTabClick("chat")}
                           class={`${
-                            activeTab() === "chat"
+                            props.listing()?.contact_method === "Platform Chat"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
@@ -412,9 +422,8 @@ export const ServiceRequestDetails: Component<{
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleTabClick("callback")}
                           class={`${
-                            activeTab() === "callback"
+                            props.listing()?.contact_method === "Phone Call"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
@@ -425,9 +434,8 @@ export const ServiceRequestDetails: Component<{
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleTabClick("email")}
                           class={`${
-                            activeTab() === "email"
+                            props.listing()?.contact_method === "Email"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
@@ -437,216 +445,229 @@ export const ServiceRequestDetails: Component<{
                         </button>
                       </div>
 
-                      <Show when={activeTab() === "chat"}>
-                        <div class="p-4 border border-blue-300 rounded-md bg-white">
-                          <h3 class="text-xl font-semibold text-gray-800 mb-3">
-                            Direct Message
-                          </h3>
-                          <p class="text-gray-600 mb-4">
-                            Start a private chat with the service provider on
-                            our platform.
-                          </p>
-                          <textarea
-                            rows="4"
-                            class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            placeholder="Type your message here..."
-                            value={chatMessage()}
-                            onInput={(e) =>
-                              setChatMessage(e.currentTarget.value)
-                            }
-                          ></textarea>
-                          <button
-                            type="button"
-                            onClick={handleSendMessage}
-                            class="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          >
-                            Send Message
-                          </button>
-                        </div>
-                      </Show>
-
-                      <Show when={activeTab() === "callback"}>
-                        <div class="p-4 border border-blue-300 rounded-md bg-white">
-                          <h3 class="text-xl font-semibold text-gray-800 mb-3">
-                            Request a Callback
-                          </h3>
-                          <p class="text-gray-600 mb-4">
-                            Fill out the form below and the provider will call
-                            you back at your preferred time.
-                          </p>
-                          <form
-                            onSubmit={(e) => handleSubmitCallback(e)}
-                            class="space-y-4"
-                          >
-                            <div>
-                              <label
-                                for="callbackName"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Your Name
-                              </label>
-                              <input
-                                type="text"
-                                id="callbackName"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                value={callbackName()}
-                                onInput={(e) =>
-                                  setCallbackName(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="callbackPhone"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Your Phone Number
-                              </label>
-                              <input
-                                type="tel"
-                                id="callbackPhone"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="+49 123 456789"
-                                value={callbackPhone()}
-                                onInput={(e) =>
-                                  setCallbackPhone(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="callbackTime"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Preferred Callback Time
-                              </label>
-                              <input
-                                type="datetime-local"
-                                id="callbackTime"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                value={callbackTime()}
-                                onInput={(e) =>
-                                  setCallbackTime(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="callbackMessage"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Brief Message
-                              </label>
-                              <textarea
-                                id="callbackMessage"
-                                rows="3"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="e.g., I'm interested in your cleaning service for a large apartment."
-                                value={callbackMessage()}
-                                onInput={(e) =>
-                                  setCallbackMessage(e.currentTarget.value)
-                                }
-                              ></textarea>
-                            </div>
-                            <button
-                              type="submit"
-                              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      <Switch>
+                        <Match
+                          when={props.listing()?.contact_method === "Email"}
+                        >
+                          <div class="p-4 border border-blue-300 rounded-md bg-white">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                              Send an Email
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                              Send a direct email to the service provider.
+                            </p>
+                            <form
+                              onSubmit={handleSubmitEmail}
+                              class="space-y-4"
                             >
-                              Submit Callback Request
-                            </button>
-                          </form>
-                        </div>
-                      </Show>
-
-                      <Show when={activeTab() === "email"}>
-                        <div class="p-4 border border-blue-300 rounded-md bg-white">
-                          <h3 class="text-xl font-semibold text-gray-800 mb-3">
-                            Send an Email
-                          </h3>
-                          <p class="text-gray-600 mb-4">
-                            Send a direct email to the service provider.
-                          </p>
-                          <form onSubmit={handleSubmitEmail} class="space-y-4">
-                            <div>
-                              <label
-                                for="emailSenderName"
-                                class="block text-sm font-medium text-gray-700"
+                              <div>
+                                <label
+                                  for="emailSenderName"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Your Name
+                                </label>
+                                <input
+                                  type="text"
+                                  id="emailSenderName"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  value={emailSenderName()}
+                                  onInput={(e) =>
+                                    setEmailSenderName(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="emailSenderEmail"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Your Email Address
+                                </label>
+                                <input
+                                  type="email"
+                                  id="emailSenderEmail"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  placeholder="your.email@example.com"
+                                  value={emailSenderEmail()}
+                                  onInput={(e) =>
+                                    setEmailSenderEmail(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="emailSubject"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Subject
+                                </label>
+                                <input
+                                  type="text"
+                                  id="emailSubject"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  placeholder="Inquiry about your service"
+                                  value={emailSubject()}
+                                  onInput={(e) =>
+                                    setEmailSubject(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="emailMessage"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Message
+                                </label>
+                                <textarea
+                                  id="emailMessage"
+                                  rows="6"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  placeholder="Write your detailed message here..."
+                                  value={emailMessage()}
+                                  onInput={(e) =>
+                                    setEmailMessage(e.currentTarget.value)
+                                  }
+                                ></textarea>
+                              </div>
+                              <button
+                                type="submit"
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                               >
-                                Your Name
-                              </label>
-                              <input
-                                type="text"
-                                id="emailSenderName"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                value={emailSenderName()}
-                                onInput={(e) =>
-                                  setEmailSenderName(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="emailSenderEmail"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Your Email Address
-                              </label>
-                              <input
-                                type="email"
-                                id="emailSenderEmail"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="your.email@example.com"
-                                value={emailSenderEmail()}
-                                onInput={(e) =>
-                                  setEmailSenderEmail(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="emailSubject"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Subject
-                              </label>
-                              <input
-                                type="text"
-                                id="emailSubject"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="Inquiry about your service"
-                                value={emailSubject()}
-                                onInput={(e) =>
-                                  setEmailSubject(e.currentTarget.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label
-                                for="emailMessage"
-                                class="block text-sm font-medium text-gray-700"
-                              >
-                                Message
-                              </label>
-                              <textarea
-                                id="emailMessage"
-                                rows="6"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="Write your detailed message here..."
-                                value={emailMessage()}
-                                onInput={(e) =>
-                                  setEmailMessage(e.currentTarget.value)
-                                }
-                              ></textarea>
-                            </div>
-                            <button
-                              type="submit"
-                              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                Send Email
+                              </button>
+                            </form>
+                          </div>
+                        </Match>
+                        <Match
+                          when={
+                            props.listing()?.contact_method === "Phone Call"
+                          }
+                        >
+                          <div class="p-4 border border-blue-300 rounded-md bg-white">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                              Request a Callback
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                              Fill out the form below and the provider will call
+                              you back at your preferred time.
+                            </p>
+                            <form
+                              onSubmit={(e) => handleSubmitCallback(e)}
+                              class="space-y-4"
                             >
-                              Send Email
+                              <div>
+                                <label
+                                  for="callbackName"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Your Name
+                                </label>
+                                <input
+                                  type="text"
+                                  id="callbackName"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  value={callbackName()}
+                                  onInput={(e) =>
+                                    setCallbackName(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="callbackPhone"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Your Phone Number
+                                </label>
+                                <input
+                                  type="tel"
+                                  id="callbackPhone"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  placeholder="+49 123 456789"
+                                  value={callbackPhone()}
+                                  onInput={(e) =>
+                                    setCallbackPhone(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="callbackTime"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Preferred Callback Time
+                                </label>
+                                <input
+                                  type="datetime-local"
+                                  id="callbackTime"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  value={callbackTime()}
+                                  onInput={(e) =>
+                                    setCallbackTime(e.currentTarget.value)
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="callbackMessage"
+                                  class="block text-sm font-bold text-gray-700"
+                                >
+                                  Brief Message
+                                </label>
+                                <textarea
+                                  id="callbackMessage"
+                                  rows="3"
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  placeholder="e.g., I'm interested in your cleaning service for a large apartment."
+                                  value={callbackMessage()}
+                                  onInput={(e) =>
+                                    setCallbackMessage(e.currentTarget.value)
+                                  }
+                                ></textarea>
+                              </div>
+                              <button
+                                type="submit"
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              >
+                                Submit Callback Request
+                              </button>
+                            </form>
+                          </div>
+                        </Match>
+                        <Match
+                          when={
+                            props.listing()?.contact_method === "Platform Chat"
+                          }
+                        >
+                          <div class="p-4 border border-blue-300 rounded-md bg-white">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                              Direct Message
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                              Start a private chat with the service provider on
+                              our platform.
+                            </p>
+                            <textarea
+                              rows="4"
+                              class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                              placeholder="Type your message here..."
+                              value={chatMessage()}
+                              onInput={(e) =>
+                                setChatMessage(e.currentTarget.value)
+                              }
+                            ></textarea>
+                            <button
+                              type="button"
+                              onClick={handleSendMessage}
+                              class="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              Send Message
                             </button>
-                          </form>
-                        </div>
-                      </Show>
+                          </div>
+                        </Match>
+                      </Switch>
                     </section>
                   </>
                 )}
@@ -657,7 +678,7 @@ export const ServiceRequestDetails: Component<{
               <div class="mt-8 pt-6 border-t border-gray-200">
                 <button
                   onClick={handleSubmitProposal}
-                  class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   Submit Proposal
                 </button>

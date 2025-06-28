@@ -8,6 +8,7 @@ import { PrimaryButton } from "../../../components/utils/button";
 import { LoadingOverlay, NotificationBar } from "../../../components/utils";
 import { useNavigate } from "@solidjs/router";
 import { authService } from "../../../oauth/manager";
+import { useAppContext } from "../../../state";
 
 interface AuthCardProps {
   id: string;
@@ -90,13 +91,9 @@ export const LoginPage = () => {
   });
   const navigate = useNavigate();
   const { getAuthorizationUrl } = useOAuth();
-  const [notificationType, setNotificationType] = createSignal<
-    "success" | "warning" | "error" | null
-  >(null);
+  const { notification } = useAppContext();
   const publicApiHandler = new PublicHandler();
-  const [notificationMessage, setNotificationMessage] = createSignal<
-    string | null
-  >(null);
+
   const [currentProcess, setCurrentProcess] =
     createSignal<ProcessType>("LoginCard");
   const [isLoading, setIsLoading] = createSignal(false);
@@ -116,30 +113,25 @@ export const LoginPage = () => {
     password: string;
   }>({ username: "", password: "" });
 
-  const showAppNotification = (
-    type: "success" | "warning" | "error",
-    message: string
-  ) => {
-    setNotificationType(type);
-    setNotificationMessage(message);
-  };
-
   const handleLoginSubmit = async (e: Event) => {
     e.preventDefault();
     if (!isValidEmail(loginCredentials().username)) {
-      showAppNotification("error", `the provided email is not valid`);
+      notification.showAppNotification(
+        "error",
+        `the provided email is not valid`
+      );
       return;
     }
 
     setIsLoading(true);
     const result = await publicApiHandler.login({ ...loginCredentials() });
     if (!result.success) {
-      showAppNotification("error", "wrong user credentials");
+      notification.showAppNotification("error", "wrong user credentials");
       setIsLoading(false);
       return;
     }
 
-    showAppNotification("success", "successfully logged in");
+    notification.showAppNotification("success", "successfully logged in");
     authService.setAuthToken(result.data.token, result.data.tokenAge);
     authService.setAuthUser(result.data.user);
     setIsLoading(false);
@@ -149,12 +141,18 @@ export const LoginPage = () => {
   const handleRegisterSubmit = async (e: Event) => {
     e.preventDefault();
     if (!isValidEmail(newUser().email)) {
-      showAppNotification("error", `the provided email is not valid`);
+      notification.showAppNotification(
+        "error",
+        `the provided email is not valid`
+      );
       return;
     }
 
     if (newUser().password !== newUser().passwordRepeat) {
-      showAppNotification("error", "the provided passwords do not match");
+      notification.showAppNotification(
+        "error",
+        "the provided passwords do not match"
+      );
       return;
     }
 
@@ -163,11 +161,17 @@ export const LoginPage = () => {
     if (!result.success) {
       console.log(result, "the frigging result");
       setIsLoading(false);
-      showAppNotification("error", "the user accout could not be created");
+      notification.showAppNotification(
+        "error",
+        "the user accout could not be created"
+      );
       return;
     }
 
-    showAppNotification("success", "Your data has been saved successfully!");
+    notification.showAppNotification(
+      "success",
+      "Your data has been saved successfully!"
+    );
     setConfirmSignUp({ ...confirmSignUp(), token: result.data.token });
     setCurrentProcess("OTPCard");
     authService.confirmLogin("OTPCard", result.data.token);
@@ -177,7 +181,10 @@ export const LoginPage = () => {
   const handleForgotPasswordSubmit = async (e: Event) => {
     e.preventDefault();
     if (!isValidEmail(loginCredentials().username)) {
-      showAppNotification("error", `the provided email is not valid`);
+      notification.showAppNotification(
+        "error",
+        `the provided email is not valid`
+      );
       return;
     }
 
@@ -188,11 +195,17 @@ export const LoginPage = () => {
     setIsLoading(false);
 
     if (!result.success) {
-      showAppNotification("error", "the provided user does not exist");
+      notification.showAppNotification(
+        "error",
+        "the provided user does not exist"
+      );
       return;
     }
 
-    showAppNotification("success", "email sent with further instructions");
+    notification.showAppNotification(
+      "success",
+      "email sent with further instructions"
+    );
     setCurrentProcess("ResetPassword");
     authService.setAuthProcessToken(result.data.token);
     setConfirmPasswordReset({
@@ -218,7 +231,10 @@ export const LoginPage = () => {
   const handleResetPasswordSubmit = async (e: Event) => {
     e.preventDefault();
     if (!isValidEmail(loginCredentials().username)) {
-      showAppNotification("error", `the provided email is not valid`);
+      notification.showAppNotification(
+        "error",
+        `the provided email is not valid`
+      );
       return;
     }
 
@@ -230,12 +246,12 @@ export const LoginPage = () => {
     });
 
     if (!result.success) {
-      showAppNotification("error", "unable to login user");
+      notification.showAppNotification("error", "unable to login user");
       setIsLoading(false);
       return;
     }
 
-    showAppNotification("success", "successfully logged in");
+    notification.showAppNotification("success", "successfully logged in");
     authService.setAuthToken(result.data.token, result.data.tokenAge);
     authService.setAuthUser(result.data.user);
     setIsLoading(false);
@@ -301,11 +317,11 @@ export const LoginPage = () => {
 
       let result = await api.loginByProvider(provider, params.toString());
       if (!result.success) {
-        showAppNotification("error", "unable to log in user");
+        notification.showAppNotification("error", "unable to log in user");
         return;
       }
 
-      showAppNotification("success", "successfully logged in");
+      notification.showAppNotification("success", "successfully logged in");
       authService.setAuthToken(result.data.token, result.data.tokenAge);
       authService.setAuthUser(result.data.user);
       setIsLoading(false);
@@ -327,34 +343,40 @@ export const LoginPage = () => {
   ) => {
     e.preventDefault();
     if (!isValidEmail(confirmSignUp().email)) {
-      showAppNotification("error", `the provided email is not valid`);
+      notification.showAppNotification(
+        "error",
+        `the provided email is not valid`
+      );
       return;
     }
 
     if (confirmSignUp().otp === 0 || confirmSignUp().otp < 99999) {
-      showAppNotification("error", "the provided OTP is wrong");
+      notification.showAppNotification("error", "the provided OTP is wrong");
       return;
     }
 
     setIsLoading(true);
     let result = await publicApiHandler.confirmSignup({ ...confirmSignUp() });
     if (!result.success) {
-      showAppNotification("error", "unable to confirm user signup");
+      notification.showAppNotification(
+        "error",
+        "unable to confirm user signup"
+      );
       setIsLoading(false);
       return;
     }
 
     authService.setAuthToken(result.data.token, result.data.tokenAge);
     setIsLoading(false);
-    showAppNotification("success", "successfully logged in");
+    notification.showAppNotification("success", "successfully logged in");
     navigate("/listings");
   };
 
   return (
     <div class="container-auth">
       <NotificationBar
-        type={notificationType}
-        message={notificationMessage}
+        type={notification.notificationType}
+        message={notification.notificationMessage}
         duration={4000}
       />
       <LoadingOverlay isLoading={isLoading()} />

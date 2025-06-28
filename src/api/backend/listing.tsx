@@ -18,15 +18,15 @@ export class ListingApiHandler extends ApiHandler {
     return await this.get(`/listings/profile/${id}`);
   }
 
-  async getAllListings() {
-    return await this.get(`/listing/listings/all`);
+  async fetchAllListins(props: any) {
+    return await this.post(`/listings/all`, props);
   }
 
   async deleteListing(id: string) {
     return await this.delete(`/listings/${id}`);
   }
 
-  async deleteMultiple(ids: string) {
-    return await this.delete(`/listings/${ids}`);
+  async deleteMultiple(ids: string[]) {
+    return await this.post(`/delete-many`, ids);
   }
 }
