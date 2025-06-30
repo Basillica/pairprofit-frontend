@@ -1,38 +1,30 @@
-import { createSignal, For, JSX } from "solid-js";
+import { Accessor, createSignal, For, JSX, Setter } from "solid-js";
 import "./style.css";
 
 interface FilterOption {
-  value: string;
-  label: string;
+  category: string;
+  subCategory: string;
+  location: string;
+  price: number;
 }
 
 interface ResponsiveFilterBarProps {
-  categories: FilterOption[];
-  subCategories: FilterOption[];
-  locations: FilterOption[];
-  prices: FilterOption[];
-  onApplyFilters: (filters: {
-    category: string;
-    subCategory: string;
-    location: string;
-    price: string;
-  }) => void;
+  categories: Accessor<string[]>;
+  subCategories: Accessor<string[]>;
+  setFilterOption: Setter<FilterOption>;
+  filterOption: Accessor<FilterOption>;
+  onApplyFilters: (filters: FilterOption) => void;
+  handleInputChange: (
+    e: Event & {
+      currentTarget: HTMLSelectElement;
+      target: HTMLSelectElement;
+    }
+  ) => void;
 }
 
 export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
-  const [category, setCategory] = createSignal("");
-  const [subCategory, setSubCategory] = createSignal("");
   const [location, setLocation] = createSignal("");
   const [price, setPrice] = createSignal("");
-
-  const handleApplyFilters = () => {
-    props.onApplyFilters({
-      category: category(),
-      subCategory: subCategory(),
-      location: location(),
-      price: price(),
-    });
-  };
 
   return (
     <div
@@ -47,12 +39,13 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
           <select
             id="main-category"
             class="filter-select"
-            value={category()}
-            onChange={(e) => setCategory(e.currentTarget.value)}
+            value={props.filterOption()!.category}
+            onChange={(e) => props.handleInputChange(e)}
+            name="category"
           >
             <option value="">All Categories</option>
-            <For each={props.categories}>
-              {(option) => <option value={option.value}>{option.label}</option>}
+            <For each={props.categories()}>
+              {(option) => <option value={option}>{option}</option>}
             </For>
           </select>
           <div class="select-icon">
@@ -71,12 +64,13 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
           <select
             id="sub-category"
             class="filter-select"
-            value={subCategory()}
-            onChange={(e) => setSubCategory(e.currentTarget.value)}
+            value={props.filterOption()!.subCategory}
+            onChange={(e) => props.handleInputChange(e)}
+            name="subCategory"
           >
             <option value="">All Subcategories</option>
-            <For each={props.subCategories}>
-              {(option) => <option value={option.value}>{option.label}</option>}
+            <For each={props.subCategories()}>
+              {(option) => <option value={option}>{option}</option>}
             </For>
           </select>
           <div class="select-icon">
@@ -97,11 +91,12 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
             class="filter-select"
             value={location()}
             onChange={(e) => setLocation(e.currentTarget.value)}
+            name="location"
           >
             <option value="">All Locations</option>
-            <For each={props.locations}>
+            {/* <For each={props.locations}>
               {(option) => <option value={option.value}>{option.label}</option>}
-            </For>
+            </For> */}
           </select>
           <div class="select-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -121,11 +116,12 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
             class="filter-select"
             value={price()}
             onChange={(e) => setPrice(e.currentTarget.value)}
+            name="price"
           >
             <option value="">All Prices</option>
-            <For each={props.prices}>
+            {/* <For each={props.prices}>
               {(option) => <option value={option.value}>{option.label}</option>}
-            </For>
+            </For> */}
           </select>
           <div class="select-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -135,7 +131,10 @@ export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
         </div>
       </div>
 
-      <button class="filter-button" onClick={handleApplyFilters}>
+      <button
+        class="filter-button"
+        onClick={() => props.onApplyFilters(props.filterOption())}
+      >
         Apply Filters
       </button>
     </div>

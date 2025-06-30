@@ -1,51 +1,22 @@
-import {
-  Accessor,
-  Component,
-  createResource,
-  createSignal,
-  For,
-} from "solid-js";
+import { Accessor, Component, createSignal, For, Resource } from "solid-js";
 import css_module from "./style.module.css";
 import { ListingPayload } from "../../../models/listing";
-import { ServiceRequestDetails } from "../../../components";
-import { ListingApiHandler } from "../../../api/backend/listing";
-
-interface ListingsFilter {
-  filters: string[];
-  string_params: string[];
-  limit?: number;
-  offset?: number;
-}
+import { Pagination, ServiceRequestDetails } from "../../../components";
 
 export const ServiceListingA: Component<{
   categories: Accessor<{
     [key: string]: string[];
   }>;
-}> = () => {
-  const fetchListings = async (
-    props: ListingsFilter
-  ): Promise<ListingPayload[]> => {
-    let api = new ListingApiHandler();
-    let listings: ListingPayload[] = [];
-    const result = await api.fetchAllListins(props);
-    if (result.success) {
-      listings = result.data as ListingPayload[];
-    }
-    return listings;
-  };
-
-  const [filterProps] = createSignal<ListingsFilter>({
-    filters: ["category"],
-    string_params: ["Jobs"],
-    limit: 3,
-  });
-  const [listings] = createResource(filterProps, fetchListings);
-
+  listings: Resource<ListingPayload[]>;
+  listingsCount: Accessor<number>;
+  handlePageChange: (newPage: number, offset: number, limit: number) => void;
+}> = (props) => {
   const [currentListing, setCurrentListing] = createSignal<ListingPayload>();
   const [viewListing, setViewListing] = createSignal(false);
+  const NUMBER_OF_ITEMS_PER_PAGE = 10;
 
   const openListing = (listingID: string) => {
-    setCurrentListing(listings.latest!.find((el) => el.id === listingID));
+    setCurrentListing(props.listings.latest!.find((el) => el.id === listingID));
     setViewListing(true);
   };
 
@@ -56,7 +27,7 @@ export const ServiceListingA: Component<{
         listing={currentListing}
         closeModel={setViewListing}
       />
-      <For each={listings.latest}>
+      <For each={props.listings.latest}>
         {(service) => (
           <div class="md:w-6/12 px-2 lg:w-3/12 mb-2">
             <div class={css_module.listing_card}>
@@ -121,6 +92,27 @@ export const ServiceListingA: Component<{
           </div>
         )}
       </For>
+
+      {!props.listings.loading &&
+        props.listingsCount() > NUMBER_OF_ITEMS_PER_PAGE && (
+          <div
+            style={{
+              width: "100%",
+              left: "50%",
+              "flex-shrink": 0,
+              color: "#ecf0f1",
+              padding: "0.1rem 0",
+            }}
+          >
+            <Pagination
+              itemsPerPage={NUMBER_OF_ITEMS_PER_PAGE}
+              totalItems={props.listingsCount()}
+              onPageChange={props.handlePageChange}
+              initialPage={1}
+              maxPagesToShow={5}
+            />
+          </div>
+        )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { createSignal, createMemo, For, Show, Component } from "solid-js";
-import paginationStyles from "./style.module.css"; // Import the CSS module
+import paginationStyles from "./style.module.css";
 
 /**
  * Pagination Component for SolidJS
@@ -15,10 +15,13 @@ export const Pagination: Component<{
   totalItems: number;
   itemsPerPage: number;
   maxPagesToShow: number;
-  onPageChange: (num: number) => void;
+  onPageChange: (newPage: number, offset: number, limit: number) => void;
 }> = (props) => {
   const [currentPage, setCurrentPage] = createSignal(props.initialPage || 1);
-
+  const limit = createMemo(() => props.itemsPerPage);
+  const offset = createMemo(() => {
+    return (currentPage() - 1) * limit();
+  });
   // Memoized total pages calculation - re-runs only when totalItems or itemsPerPage changes
   const totalPages = createMemo(() => {
     return Math.ceil(props.totalItems / props.itemsPerPage);
@@ -70,10 +73,7 @@ export const Pagination: Component<{
       pageNumber !== currentPage()
     ) {
       setCurrentPage(pageNumber);
-      // Call the provided onPageChange callback
-      props.onPageChange && props.onPageChange(pageNumber);
-      // In a real app, you'd trigger data fetching here
-      alert(`Simulating: Loading content for Page ${pageNumber}.`);
+      props.onPageChange && props.onPageChange(pageNumber, offset(), limit());
     }
   };
 
@@ -83,7 +83,6 @@ export const Pagination: Component<{
 
   return (
     <div class="flex justify-center items-center space-x-2 mt-8">
-      {/* Previous Button */}
       <button
         onClick={goToPrevPage}
         disabled={currentPage() === 1}
@@ -92,7 +91,6 @@ export const Pagination: Component<{
         Previous
       </button>
 
-      {/* Page Numbers */}
       <div class="flex space-x-1">
         <For each={displayedPageNumbers()}>
           {(page) => (
@@ -104,7 +102,11 @@ export const Pagination: Component<{
                   class={`${
                     paginationStyles.paginationLink
                   } px-3 py-1 rounded-md hover:bg-blue-100 text-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
-                  ${page === currentPage() ? paginationStyles.active : ""}`}
+                  ${
+                    Number(page) === currentPage()
+                      ? paginationStyles.active
+                      : ""
+                  }`}
                 >
                   {page}
                 </button>
@@ -116,7 +118,6 @@ export const Pagination: Component<{
         </For>
       </div>
 
-      {/* Next Button */}
       <button
         onClick={goToNextPage}
         disabled={currentPage() === totalPages()}

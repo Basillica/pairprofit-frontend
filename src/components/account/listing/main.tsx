@@ -1,12 +1,22 @@
-import { createSignal, For, JSX, Show } from "solid-js";
+import { createMemo, createSignal, For, JSX, onMount } from "solid-js";
 import css_class from "./style.module.css";
 import { FilterBar, Pagination } from "../../utils";
 import { ServiceProviderModel } from "../../../models/profile";
 import { ProviderProfileDetail } from "../../utils/modals";
+import { authService } from "../../../oauth/manager";
+import { useNavigate } from "@solidjs/router";
+import { SecureLocalStorage } from "../../../lib/localstore";
+import { PublicHandler } from "../../../api";
 
 interface FilterOption {
-  value: string;
-  label: string;
+  category: string;
+  subCategory: string;
+  location: string;
+  price: number;
+}
+
+interface ApiCategoriesResponse {
+  [key: string]: string[];
 }
 
 const generateProviders = (count: number): ServiceProviderModel[] => {
@@ -247,6 +257,7 @@ export const ServiceProviderListings = (): JSX.Element => {
   const [profiles, setProfiles] = createSignal<ServiceProviderModel[]>(
     generateProviders(15)
   );
+  const navigate = useNavigate();
   const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
   const [viewProfile, setViewProfile] = createSignal(false);
   const [currentListing, setCurrentListing] =
@@ -254,38 +265,60 @@ export const ServiceProviderListings = (): JSX.Element => {
   const ITEMS_PER_PAGE = 10;
   const TOTAL_ITEMS = 53;
 
-  const [currentPage, setCurrentPageData] = createSignal(1); // State to hold the current page in the parent
+  const [, setCurrentPageData] = createSignal(1); // State to hold the current page in the parent
   const handlePageChange = (newPage: number) => {
     console.log(`Parent received page change to: ${newPage}`);
     setCurrentPageData(newPage);
   };
+  const [categories, setCategories] = createSignal<string[]>([]);
+  const [filterOption, setFilterOption] = createSignal<FilterOption>({
+    category: "",
+    subCategory: "",
+    price: 0,
+    location: "",
+  });
+  const [apiCategories, setApiCategories] = createSignal<ApiCategoriesResponse>(
+    {}
+  );
+  const subCategories = createMemo(
+    () => apiCategories()[filterOption()!.category]
+  );
 
-  const categories: FilterOption[] = [
-    { value: "electronics", label: "Electronics" },
-    { value: "clothing", label: "Clothing" },
-    { value: "home-garden", label: "Home & Garden" },
-  ];
+  onMount(async () => {
+    if (!authService.checkAuth()) {
+      navigate("/login");
+      return;
+    }
 
-  const subCategories: FilterOption[] = [
-    { value: "laptops", label: "Laptops" },
-    { value: "phones", label: "Phones" },
-    { value: "shirts", label: "Shirts" },
-    { value: "pants", label: "Pants" },
-    { value: "sofas", label: "Sofas" },
-    { value: "tables", label: "Tables" },
-  ];
+    let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
+      "x-pairprofit-categories"
+    );
+    if (cachedCategores) {
+      setApiCategories(cachedCategores);
+      setCategories(Object.keys(cachedCategores));
+      return;
+    }
 
-  const locations: FilterOption[] = [
-    { value: "usa", label: "USA" },
-    { value: "canada", label: "Canada" },
-    { value: "uk", label: "UK" },
-  ];
-
-  const prices: FilterOption[] = [
-    { value: "0-50", label: "$0 - $50" },
-    { value: "50-100", label: "$50 - $100" },
-    { value: "100+", label: "$100+" },
-  ];
+    const api = new PublicHandler();
+    try {
+      const res = await api.fetchCategories();
+      if (res.success) {
+        setApiCategories(res.data.categories);
+        SecureLocalStorage.storeItem(
+          "x-pairprofit-categories",
+          res.data.categories
+        );
+        console.log(res.data.categories);
+        setCategories(Object.keys(res.data.categories));
+      } else {
+        console.error("API response for categories was not an object:", res);
+        setApiCategories({});
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setApiCategories({});
+    }
+  });
 
   const handleApplyFilters = () => {
     const selectedCategory = category();
@@ -337,6 +370,21 @@ export const ServiceProviderListings = (): JSX.Element => {
     setViewProfile(true);
   };
 
+  const handleInputChange = (
+    e: Event & {
+      currentTarget: HTMLSelectElement;
+      target: HTMLSelectElement;
+    }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { name, value } = e.target;
+    setFilterOption((prev) => ({
+      ...prev!,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
       <div class="flex flex-wrap">
@@ -377,9 +425,10 @@ export const ServiceProviderListings = (): JSX.Element => {
             <FilterBar
               categories={categories}
               subCategories={subCategories}
-              locations={locations}
-              prices={prices}
+              filterOption={filterOption}
+              setFilterOption={setFilterOption}
               onApplyFilters={handleApplyFilters}
+              handleInputChange={handleInputChange}
             />
             <button
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -395,9 +444,10 @@ export const ServiceProviderListings = (): JSX.Element => {
             <FilterBar
               categories={categories}
               subCategories={subCategories}
-              locations={locations}
-              prices={prices}
+              filterOption={filterOption}
+              setFilterOption={setFilterOption}
               onApplyFilters={handleApplyFilters}
+              handleInputChange={handleInputChange}
             />
           </div>
         )}

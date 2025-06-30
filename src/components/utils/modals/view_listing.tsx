@@ -7,6 +7,7 @@ import {
   createSignal,
   Switch,
   Match,
+  createEffect,
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import modal_styles from "./style.module.css";
@@ -36,6 +37,9 @@ export const ServiceRequestDetails: Component<{
   const [emailSenderEmail, setEmailSenderEmail] = createSignal("");
   const [emailSubject, setEmailSubject] = createSignal("");
   const [emailMessage, setEmailMessage] = createSignal("");
+  const [contactMethod, setContactMethod] = createSignal(
+    props.listing()?.contact_method
+  );
   //   const [activeTab, setActiveTab] = createSignal(
   //     props.listing()?.contact_method
   //   ); // 'chat', 'callback', 'email'
@@ -151,6 +155,15 @@ export const ServiceRequestDetails: Component<{
     }
   };
 
+  createEffect(() => {
+    if (props.listing()) {
+      console.log(
+        props.listing()?.contact_method,
+        "props.listing()?.contact_methodprops.listing()?.contact_methodprops.listing()?.contact_method"
+      );
+      setContactMethod(props.listing()?.contact_method);
+    }
+  });
   return (
     <Portal>
       <Show when={props.isOpen()}>
@@ -407,27 +420,31 @@ export const ServiceRequestDetails: Component<{
                       <h2 class="text-2xl font-bold text-blue-800 mb-4">
                         Provide this service
                       </h2>
+                      <h4 class="text-sm font-bold text-yellow-800 mb-4">
+                        You can only contact this client based their prefered
+                        means of communication
+                      </h4>
 
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <button
                           type="button"
                           class={`${
-                            props.listing()?.contact_method === "Platform Chat"
+                            contactMethod() === "Platform Chat"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
-                                              py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                            py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
                         >
                           <span class="block text-xl">💬</span> Send a Message
                         </button>
                         <button
                           type="button"
                           class={`${
-                            props.listing()?.contact_method === "Phone Call"
+                            contactMethod() === "Phone Call"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
-                                              py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                           py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
                         >
                           <span class="block text-xl">📞</span> Request a
                           Callback
@@ -435,11 +452,11 @@ export const ServiceRequestDetails: Component<{
                         <button
                           type="button"
                           class={`${
-                            props.listing()?.contact_method === "Email"
+                            contactMethod() === "Email"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-800"
                           }
-                                              py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                        py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
                         >
                           <span class="block text-xl">📧</span> Send an Email
                         </button>
