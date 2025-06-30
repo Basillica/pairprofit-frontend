@@ -622,9 +622,29 @@ export const PostServiceRequestForm: Component<{
                   <div class="mt-6">
                     <label
                       for="attachments"
-                      class="block text-sm font-medium text-gray-700"
+                      class="block text-sm font-medium text-gray-700 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500 hover:border-blue-400 transition-colors duration-200 cursor-pointer"
                     >
                       Attachments (Photos, Documents - Optional)
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <p class="mt-2">
+                        Drag and drop files here, or{" "}
+                        <span class="text-blue-600 font-medium">
+                          click to upload
+                        </span>
+                      </p>
                     </label>
                     <input
                       type="file"
@@ -632,7 +652,7 @@ export const PostServiceRequestForm: Component<{
                       id="attachments"
                       multiple
                       accept="image/*, .pdf, .doc, .docx"
-                      class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      class="hidden"
                       onInput={(e) =>
                         setFormData({
                           ...formData(),
