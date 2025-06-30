@@ -30,10 +30,10 @@
   --google-hover: #f8f9fa;
   --linkedin-blue: #0077b5;
   --linkedin-hover: #004182;
-  --github-bg: #cbe1b5; /* This seems like a non-standard GitHub color, typically it's black/dark gray */
-  --github-hover: #310173; /* This seems like a non-standard GitHub color */
-  --facebook-bg: #9fd8e9; /* This seems like a non-standard Facebook color, typically it's #1877F2 */
-  --facebook-hover: #8dc3dc; /* This seems like a non-standard Facebook color */
+  --github-bg: #cbe1b5;
+  --github-hover: #310173;
+  --facebook-bg: #9fd8e9;
+  --facebook-hover: #8dc3dc;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -76,14 +76,29 @@ body {
   min-height: 100vh;
   background-color: #f0f2f5;
   color: #050505;
-  padding-top: 56px; /* Height of the navbar */
+  padding-top: 56px;
   display: flex;
   overflow-x: hidden;
-  font-family: sans-serif; /* Ensure a fallback font */
+  font-family: sans-serif;
 }
 
 @media (max-width: 768px) {
     body {
         padding-top: 0px;
     }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate_fade_in_up {
+    animation: fadeInUp 0.6s ease-out forwards;
 }

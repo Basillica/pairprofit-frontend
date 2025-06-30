@@ -270,6 +270,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     console.log(`Parent received page change to: ${newPage}`);
     setCurrentPageData(newPage);
   };
+  const [currentPage, setCurrentPage] = createSignal(1);
   const [categories, setCategories] = createSignal<string[]>([]);
   const [filterOption, setFilterOption] = createSignal<FilterOption>({
     category: "",
@@ -521,6 +522,8 @@ export const ServiceProviderListings = (): JSX.Element => {
         onPageChange={handlePageChange}
         initialPage={1} // Optional: start on a specific page
         maxPagesToShow={5} // Optional: control how many page numbers are visible
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
     </>
   );

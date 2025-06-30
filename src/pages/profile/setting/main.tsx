@@ -326,7 +326,7 @@ export const AccountSettings = () => {
                 />
               </div>
             </div>
-            <div>
+            <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
               <label
                 for="profilePicture"
                 class="block text-sm font-medium text-gray-700 mb-2"
@@ -340,6 +340,7 @@ export const AccountSettings = () => {
                   alt="Profile Picture"
                 />
                 <input
+                  style={`width: ${window.innerWidth < 768 ? "190px" : ""}`}
                   type="file"
                   id="profilePicture"
                   name="profilePicture"

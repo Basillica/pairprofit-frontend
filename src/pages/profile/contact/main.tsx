@@ -62,6 +62,7 @@ export const ContactList = () => {
   const [searchTerm, setSearchTerm] = createSignal("");
   const [filterRole, setFilterRole] = createSignal("all");
   const [filterStatus, setFilterStatus] = createSignal("all");
+  const [currentPage, setCurrentPage] = createSignal(1);
   const ITEMS_PER_PAGE = 10;
   const TOTAL_ITEMS = 53;
 
@@ -299,6 +300,8 @@ export const ContactList = () => {
         onPageChange={handlePageChange}
         initialPage={1} // Optional: start on a specific page
         maxPagesToShow={5} // Optional: control how many page numbers are visible
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <p class="text-gray-500 text-sm mt-8 text-center">
         Note: Customers that you have either provided for or accepted service

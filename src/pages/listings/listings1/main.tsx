@@ -9,10 +9,11 @@ export const ServiceListingA: Component<{
   }>;
   listings: Resource<ListingPayload[]>;
   listingsCount: Accessor<number>;
-  handlePageChange: (newPage: number, offset: number, limit: number) => void;
+  handlePageChange: (offset: number, limit: number) => void;
 }> = (props) => {
   const [currentListing, setCurrentListing] = createSignal<ListingPayload>();
   const [viewListing, setViewListing] = createSignal(false);
+  const [currentPage, setCurrentPage] = createSignal(1);
   const NUMBER_OF_ITEMS_PER_PAGE = 10;
 
   const openListing = (listingID: string) => {
@@ -93,26 +94,25 @@ export const ServiceListingA: Component<{
         )}
       </For>
 
-      {!props.listings.loading &&
-        props.listingsCount() > NUMBER_OF_ITEMS_PER_PAGE && (
-          <div
-            style={{
-              width: "100%",
-              left: "50%",
-              "flex-shrink": 0,
-              color: "#ecf0f1",
-              padding: "0.1rem 0",
-            }}
-          >
-            <Pagination
-              itemsPerPage={NUMBER_OF_ITEMS_PER_PAGE}
-              totalItems={props.listingsCount()}
-              onPageChange={props.handlePageChange}
-              initialPage={1}
-              maxPagesToShow={5}
-            />
-          </div>
-        )}
+      <div
+        style={{
+          width: "100%",
+          left: "50%",
+          "flex-shrink": 0,
+          color: "#ecf0f1",
+          padding: "0.1rem 0",
+        }}
+      >
+        <Pagination
+          itemsPerPage={NUMBER_OF_ITEMS_PER_PAGE}
+          totalItems={props.listingsCount()}
+          onPageChange={props.handlePageChange}
+          initialPage={1}
+          maxPagesToShow={5}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 };

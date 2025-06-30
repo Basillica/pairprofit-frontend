@@ -5,6 +5,7 @@ import {
   onMount,
   createMemo,
   createResource,
+  Component,
 } from "solid-js";
 import css_module from "./style.module.css";
 import { FilterBar } from "../../components/utils";
@@ -103,8 +104,7 @@ export const ServiceListings = () => {
     });
   };
 
-  const handlePageChange = (newPage: number, offset: number, limit: number) => {
-    console.log("going to page: ", newPage);
+  const handlePageChange = (offset: number, limit: number) => {
     setFilterProps({
       ...filterProps(),
       limit: limit,
@@ -182,6 +182,8 @@ export const ServiceListings = () => {
 
   return (
     <div>
+      {listings.loading && <Overlay />}
+
       {/* {window.innerWidth > 768 && (
         <div
           class="flex flex-nowrap justify-between items-center rounded-md"
@@ -289,6 +291,23 @@ export const ServiceListings = () => {
           <ServiceListingsC />
         </Match>
       </Switch>
+    </div>
+  );
+};
+
+const Overlay: Component = () => {
+  return (
+    <div class={css_module.loading_overlay}>
+      <svg class={css_module.loading_spinner} viewBox="0 0 50 50">
+        <circle
+          class="path"
+          cx="25"
+          cy="25"
+          r="20"
+          fill="none"
+          stroke-width="5"
+        ></circle>
+      </svg>
     </div>
   );
 };

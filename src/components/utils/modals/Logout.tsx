@@ -24,19 +24,16 @@ export const LogoutModal: Component<LogoutModalProps> = (props) => {
     return null;
   }
 
-  // Create a portal to render the modal outside the component tree
-  // This is often appended to document.body
   return (
     <Portal>
       <Show when={props.isOpen()}>
         <div
           class="fixed inset-0 bg-gray-400 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
-          // Optional: Close modal if clicking on the overlay (outside the content)
           onClick={props.onCancel}
         >
           <div
             class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm transform transition-all duration-300 ease-out scale-100 opacity-100"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal content
+            onClick={(e) => e.stopPropagation()}
           >
             <h2 class="text-xl font-bold text-gray-800 mb-4">Confirm Logout</h2>
             <p class="text-gray-700 mb-6">Are you sure you want to log out?</p>

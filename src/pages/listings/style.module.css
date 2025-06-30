@@ -185,3 +185,54 @@
         margin-bottom: 0.75rem; /* Tailwind's mb-3 */
     }
 }
+
+
+.loading_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Semi-transparent black background (you can adjust the last value for more or less visibility) */
+    background-color: rgba(0, 0, 0, 0.4); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensures it's above all other content */
+    /* Add pointer-events: none if you want clicks to pass through the overlay itself 
+        while still covering the content beneath. However, for a loading overlay 
+        that prevents interaction, you generally *don't* want pointer-events: none here. */
+}
+
+.loading_spinner {
+    animation: rotate 2s linear infinite;
+    height: 50px;
+    width: 50px;
+}
+
+.loading_spinner .path {
+    stroke: #4CAF50; /* Green color for the spinner */
+    stroke-linecap: round;
+    animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+    }
+
+    @keyframes dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}

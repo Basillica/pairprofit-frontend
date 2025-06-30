@@ -3,7 +3,6 @@ import { Portal } from "solid-js/web";
 import { ServiceProviderModel } from "../../../models/profile";
 import modal_styles from "./style.module.css";
 
-// Define types for better readability and type-checking (optional, remove if not using TypeScript)
 /**
  * @typedef {object} Review
  * @property {number} id
@@ -92,9 +91,7 @@ export const ProviderProfileDetail: Component<{
   closeModal: Setter<boolean>;
   listing: Accessor<ServiceProviderModel | undefined>;
 }> = (props) => {
-  // Calculate total reviews for percentage calculation in rating breakdown
   const totalReviews = () => props.listing()?.totalReviews;
-  // State for form inputs
   const [chatMessage, setChatMessage] = createSignal("");
   const [callbackName, setCallbackName] = createSignal("");
   const [callbackPhone, setCallbackPhone] = createSignal("");
@@ -104,24 +101,21 @@ export const ProviderProfileDetail: Component<{
   const [emailSenderEmail, setEmailSenderEmail] = createSignal("");
   const [emailSubject, setEmailSubject] = createSignal("");
   const [emailMessage, setEmailMessage] = createSignal("");
-  const [activeTab, setActiveTab] = createSignal("chat"); // 'chat', 'callback', 'email'
+  const [activeTab, setActiveTab] = createSignal("chat");
 
   const handleClose = () => {
     props.closeModal(false);
   };
 
-  // Handler for tab clicks
   const handleTabClick = (tabName: string) => {
     setActiveTab(tabName);
   };
 
-  // Form submission handlers
   const handleSendMessage = () => {
     const message = chatMessage().trim();
     if (message) {
       console.log("Sending message:", message);
-      alert("Message sent to provider! (Check console)");
-      setChatMessage(""); // Clear input
+      setChatMessage("");
     } else {
       alert("Please type a message.");
     }
@@ -142,7 +136,6 @@ export const ProviderProfileDetail: Component<{
     if (name && phone && time) {
       console.log("Callback Request:", { name, phone, time, message });
       alert("Callback request submitted! (Check console)");
-      // Clear form inputs
       setCallbackName("");
       setCallbackPhone("");
       setCallbackTime("");

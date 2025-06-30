@@ -6,8 +6,6 @@ interface LoadingOverlayProps {
 }
 
 export const LoadingOverlay: Component<LoadingOverlayProps> = (props) => {
-  // We use createPortal to render the overlay directly to the document.body
-  // This ensures it overlays everything else, regardless of parent z-index.
   return (
     <Portal>
       <Show when={props.isLoading}>

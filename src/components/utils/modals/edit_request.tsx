@@ -16,6 +16,7 @@ import { useNavigate } from "@solidjs/router";
 import { ListingApiHandler } from "../../../api/backend/listing";
 import { UserModel } from "../../../models/auth";
 import { LoadingAnimation } from "../../../lib/lottie";
+import { ListingPayload } from "../../../models/listing";
 
 interface NewListingForm {
   serviceCategory: string;
@@ -38,9 +39,10 @@ interface NewListingForm {
   desiredTimeLine: string;
 }
 
-export const PostServiceRequestForm: Component<{
+export const EditServiceRequestForm: Component<{
   isOpen: Accessor<boolean>;
   closeModal: Setter<boolean>;
+  listing: Accessor<ListingPayload>;
 }> = (props) => {
   const [formData, setFormData] = createSignal<NewListingForm>({
     serviceCategory: "",

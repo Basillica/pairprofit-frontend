@@ -426,40 +426,50 @@ export const ServiceRequestDetails: Component<{
                       </h4>
 
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        <button
-                          type="button"
-                          class={`${
-                            contactMethod() === "Platform Chat"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-800"
-                          }
-                            py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
-                        >
-                          <span class="block text-xl">💬</span> Send a Message
-                        </button>
-                        <button
-                          type="button"
-                          class={`${
-                            contactMethod() === "Phone Call"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-800"
-                          }
-                           py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
-                        >
-                          <span class="block text-xl">📞</span> Request a
-                          Callback
-                        </button>
-                        <button
-                          type="button"
-                          class={`${
-                            contactMethod() === "Email"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-800"
-                          }
+                        <Switch>
+                          <Match when={contactMethod() === "Email"}>
+                            <button
+                              type="button"
+                              class={`${
+                                contactMethod() === "Email"
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-200 text-gray-800"
+                              }
                         py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
-                        >
-                          <span class="block text-xl">📧</span> Send an Email
-                        </button>
+                            >
+                              <span class="block text-xl">📧</span> Send an
+                              Email
+                            </button>
+                          </Match>
+                          <Match when={contactMethod() === "Phone Call"}>
+                            <button
+                              type="button"
+                              class={`${
+                                contactMethod() === "Phone Call"
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-200 text-gray-800"
+                              }
+                           py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                            >
+                              <span class="block text-xl">📞</span> Request a
+                              Callback
+                            </button>
+                          </Match>
+                          <Match when={contactMethod() === "Platform Chat"}>
+                            <button
+                              type="button"
+                              class={`${
+                                contactMethod() === "Platform Chat"
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-200 text-gray-800"
+                              }
+                            py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                            >
+                              <span class="block text-xl">💬</span> Send a
+                              Message
+                            </button>
+                          </Match>
+                        </Switch>
                       </div>
 
                       <Switch>

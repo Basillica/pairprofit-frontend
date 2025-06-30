@@ -18,7 +18,7 @@ interface NotificationBarProps {
 
 export const NotificationBar: Component<NotificationBarProps> = (props) => {
   const [isVisible, setIsVisible] = createSignal(false);
-  let timeoutId: number | undefined; // To store the timeout ID for clearing
+  let timeoutId: number | NodeJS.Timeout | undefined; // To store the timeout ID for clearing
 
   createEffect(() => {
     const currentType = props.type();
@@ -48,14 +48,11 @@ export const NotificationBar: Component<NotificationBarProps> = (props) => {
     }
   });
 
-  // Clean up the timeout if the component is unmounted
   onCleanup(() => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
   });
-
-  // --- Helper functions for dynamic styling and icons ---
 
   const getIconSvg = (type: NotificationType) => {
     switch (type) {
