@@ -8,4 +8,6 @@ export {
   PostServiceRequestForm,
   LogoutModal,
   ServiceRequestDetails,
+  EditServiceRequestForm,
+  DeleteItemModal,
 } from "./modals";

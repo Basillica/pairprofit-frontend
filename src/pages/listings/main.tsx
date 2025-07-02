@@ -42,7 +42,7 @@ export const ServiceListings = () => {
   const [apiCategories, setApiCategories] = createSignal<ApiCategoriesResponse>(
     {}
   );
-  const NUMBER_OF_ITEMS_PER_PAGE = 20;
+  const NUMBER_OF_ITEMS_PER_PAGE = 21;
   const [openFilterBar] = createSignal(window.innerWidth > 768 ? true : false);
   const navigate = useNavigate();
   const [categories, setCategories] = createSignal<string[]>([]);
@@ -74,7 +74,7 @@ export const ServiceListings = () => {
   const [filterProps, setFilterProps] = createSignal<ListingsFilter>({
     filters: [""],
     string_params: [""],
-    limit: 10,
+    limit: NUMBER_OF_ITEMS_PER_PAGE,
   });
 
   const [listings] = createResource(filterProps, fetchListings);
@@ -90,12 +90,10 @@ export const ServiceListings = () => {
       filters.push("category");
       params.push(filterOption().category);
     }
-    filters.push(...filterProps().filters);
     if (filterOption().subCategory !== "") {
       filters.push("sub_category");
       params.push(filterOption().subCategory);
     }
-    params.push(...filterProps().string_params);
 
     setFilterProps({
       filters: [...new Set(filters.filter((e) => e))],
@@ -109,7 +107,6 @@ export const ServiceListings = () => {
       ...filterProps(),
       limit: limit,
       offset: offset,
-      // limit
     });
   };
 
@@ -145,7 +142,7 @@ export const ServiceListings = () => {
   }
 
   onMount(async () => {
-    if (!authService.checkAuth()) {
+    if (!authService.getAuthUser()) {
       navigate("/login");
       return;
     }

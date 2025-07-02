@@ -157,10 +157,6 @@ export const ServiceRequestDetails: Component<{
 
   createEffect(() => {
     if (props.listing()) {
-      console.log(
-        props.listing()?.contact_method,
-        "props.listing()?.contact_methodprops.listing()?.contact_methodprops.listing()?.contact_method"
-      );
       setContactMethod(props.listing()?.contact_method);
     }
   });
@@ -343,76 +339,55 @@ export const ServiceRequestDetails: Component<{
                           </p>
                         }
                       >
-                        <Show
-                          when={
-                            req().attachments.filter(
-                              (att) => att.type === "image"
-                            ).length > 0
-                          }
-                        >
-                          <div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">
-                              Attached Images:
-                            </h3>
-                            <div class="image-gallery">
-                              <For
-                                each={req().attachments.filter(
-                                  (att) => att.type === "image"
-                                )}
-                              >
-                                {(img) => (
-                                  <img
-                                    src={img.url}
-                                    alt={img.name}
-                                    title={img.name}
-                                  />
-                                )}
-                              </For>
-                            </div>
-                          </div>
-                        </Show>
-
-                        <Show
-                          when={
-                            req().attachments.filter(
-                              (att) => att.type !== "image"
-                            ).length > 0
-                          }
-                        >
-                          <div class="mt-4">
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">
-                              Attached Documents:
-                            </h3>
-                            <For
-                              each={req().attachments.filter(
-                                (att) => att.type !== "image"
-                              )}
-                            >
-                              {(file) => (
-                                <a
-                                  href={file.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  class="file-link"
-                                >
-                                  <svg
-                                    class="h-5 w-5 text-gray-500"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg"
+                        <ul>
+                          <For each={req().attachments}>
+                            {(attachment, i) => (
+                              <li id={`element-${i()}`}>
+                                <Switch>
+                                  <Match
+                                    when={attachment.type === "application/pdf"}
                                   >
-                                    <path
-                                      fill-rule="evenodd"
-                                      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.414L14.586 5A2 2 0 0115 6.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0h4v2H6V4zm6 0h2v2h-2V4zm-2 5a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z"
-                                      clip-rule="evenodd"
-                                    ></path>
-                                  </svg>
-                                  <span>{file.name}</span>
-                                </a>
-                              )}
-                            </For>
-                          </div>
-                        </Show>
+                                    <a
+                                      href={attachment.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      class="file-link"
+                                    >
+                                      <div class="flex flex-row items-center">
+                                        <i
+                                          class="fa-solid fa-file-pdf mr-2 md:mr-4"
+                                          style="color: blue"
+                                        ></i>
+                                        <span>{attachment.name}</span>
+                                      </div>
+                                    </a>
+                                  </Match>
+                                  <Match
+                                    when={
+                                      attachment.type === "image/png" ||
+                                      attachment.type === "image/png"
+                                    }
+                                  >
+                                    <a
+                                      href={attachment.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      class="file-link"
+                                    >
+                                      <div class="flex flex-row items-center">
+                                        <i
+                                          class="fa-solid fa-images mr-2 md:mr-4"
+                                          style="color: blue"
+                                        ></i>
+                                        <span>{attachment.name}</span>
+                                      </div>
+                                    </a>
+                                  </Match>
+                                </Switch>
+                              </li>
+                            )}
+                          </For>
+                        </ul>
                       </Show>
                     </section>
 
@@ -421,8 +396,8 @@ export const ServiceRequestDetails: Component<{
                         Provide this service
                       </h2>
                       <h4 class="text-sm font-bold text-yellow-800 mb-4">
-                        You can only contact this client based their prefered
-                        means of communication
+                        You can only contact this client based on their prefered
+                        mode of communication
                       </h4>
 
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">

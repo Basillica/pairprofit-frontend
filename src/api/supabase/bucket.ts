@@ -68,8 +68,8 @@ export class BucketAPIHandler extends SupabaseHandler {
         return data.message;
     }
 
-    async uploadFile(bucket: string, file: File): Promise<string | null> {
-        const { data, error } = await this.getClient().storage.from(bucket).upload("public/avatar1.png", file, {
+    async uploadFile(bucket: string, name: string, file: File): Promise<string | null> {
+        const { data, error } = await this.getClient().storage.from(bucket).upload(name, file, {
             cacheControl: "3600",
             upsert: false,
         });

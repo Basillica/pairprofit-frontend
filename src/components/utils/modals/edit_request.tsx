@@ -6,6 +6,7 @@ import {
   Accessor,
   Setter,
   onMount,
+  createEffect,
 } from "solid-js";
 import { Portal } from "solid-js/web";
 import modal_styles from "./style.module.css";
@@ -16,7 +17,9 @@ import { useNavigate } from "@solidjs/router";
 import { ListingApiHandler } from "../../../api/backend/listing";
 import { UserModel } from "../../../models/auth";
 import { LoadingAnimation } from "../../../lib/lottie";
-import { ListingPayload } from "../../../models/listing";
+import { ListingPayload, UrgencyType } from "../../../models/listing";
+import { PreviewImages } from "./preview_images";
+import { BucketAPIHandler } from "../../../api/supabase";
 
 interface NewListingForm {
   serviceCategory: string;
@@ -39,36 +42,124 @@ interface NewListingForm {
   desiredTimeLine: string;
 }
 
+interface ImageProps {
+  type: string;
+  url: string;
+  name: string;
+}
+
 export const EditServiceRequestForm: Component<{
   isOpen: Accessor<boolean>;
   closeModal: Setter<boolean>;
-  listing: Accessor<ListingPayload>;
+  listing: Accessor<ListingPayload | undefined>;
+  authUser: Accessor<UserModel | null>;
 }> = (props) => {
   const [formData, setFormData] = createSignal<NewListingForm>({
-    serviceCategory: "",
-    serviceSubCategory: "",
-    requestTitle: "",
-    requestDescription: "",
-    locationStreet: "",
-    locationCity: "Nuremberg",
-    locationPostalCode: "",
-    locationCountry: "Germany",
-    specificLocationDetails: "",
-    desiredTimeline: "",
-    specificDateTime: "",
-    estimatedBudget: "",
-    additionalNotes: "",
-    contactMethod: "Platform Chat",
-    urgency: "Low",
+    serviceCategory: props.listing()?.category!,
+    serviceSubCategory: props.listing()?.sub_category!,
+    requestTitle: props.listing()?.title!,
+    requestDescription: props.listing()?.description!,
+    locationStreet: props.listing()?.location_street!,
+    locationCity: props.listing()?.location_city!,
+    locationPostalCode: props.listing()?.location_postal_code!,
+    locationCountry: props.listing()?.location_country!,
+    specificLocationDetails: props.listing()?.specific_location_details!,
+    desiredTimeline: props.listing()?.desired_timeline!,
+    specificDateTime: props.listing()?.specific_date_time!,
+    estimatedBudget: props.listing()?.estimated_budget!.toString()!,
+    additionalNotes: props.listing()?.additional_notes!,
+    contactMethod: props.listing()?.contact_method!,
+    urgency: props.listing()?.urgency!,
     agreeTerms: false,
-    isNegotiable: false,
-    desiredTimeLine: "",
+    isNegotiable: props.listing()?.is_negotiable!,
+    desiredTimeLine: props.listing()?.desired_timeline!,
   });
 
-  // State for uploaded files (stores File objects and their preview URLs)
   const [uploadedFiles, setUploadedFiles] = createSignal<
-    { file: File; previewUrl: string }[]
+    { file: File; previewUrl: string; mimeType: string }[]
   >([]);
+
+  const [attachments, setAttachments] = createSignal<ImageProps[]>();
+
+  const handleRemoveImage = (name: string) => {
+    const newAttachments = attachments()?.filter((el) => el.name !== name);
+    let att: ImageProps[] = [];
+
+    newAttachments!.map((el) => {
+      att.push({
+        url: el.url,
+        type: el.type,
+        name: el.name,
+      });
+    });
+    setAttachments(att);
+  };
+
+  const makeUniqueByUrl = (arr: ImageProps[]) => {
+    const seenUrls = new Set();
+    return arr.filter((item) => {
+      if (!seenUrls.has(item.url)) {
+        seenUrls.add(item.url);
+        return true; // Keep this item
+      }
+      return false; // Discard this item (duplicate URL)
+    });
+  };
+
+  const imagesToBeDeleted = (
+    originalArray: ImageProps[],
+    modifiedArray: ImageProps[]
+  ) => {
+    // Create a Set of URLs from arrayB for efficient lookups.
+    // This allows O(1) average time complexity for checking existence.
+    const urlsInB = new Set(modifiedArray.map((item) => item.url));
+
+    // Filter arrayA: keep items whose URL is NOT found in urlsInB
+    const itemsToDelete = originalArray.filter((item) => {
+      return !urlsInB.has(item.url);
+    });
+
+    return itemsToDelete;
+  };
+
+  createEffect(() => {
+    if (props.listing() && !formData().serviceCategory) {
+      let attachments: ImageProps[] = [];
+
+      props.listing()?.attachments!.map((el) => {
+        attachments.push({
+          url: el.url,
+          type: el.type,
+          name: el.name,
+        });
+      });
+
+      setAttachments(attachments);
+
+      setFormData({
+        serviceCategory: props.listing()?.category!,
+        serviceSubCategory: props.listing()?.sub_category!,
+        requestTitle: props.listing()?.request_title!,
+        requestDescription: props.listing()?.request_description!,
+        locationStreet: props.listing()?.location_street!,
+        locationCity: props.listing()?.location_city!,
+        locationPostalCode: props.listing()?.location_postal_code!,
+        locationCountry: props.listing()?.location_country!,
+        specificLocationDetails: props.listing()?.specific_location_details!,
+        desiredTimeline: props.listing()?.desired_timeline!,
+        specificDateTime: props.listing()?.specific_date_time! ?? "", // new Date().toISOString(),
+        estimatedBudget: props.listing()?.estimated_budget!.toString()!,
+        additionalNotes: props.listing()?.additional_notes!,
+        contactMethod: props.listing()?.contact_method!,
+        urgency: props.listing()?.urgency!,
+        agreeTerms: false,
+        isNegotiable: props.listing()?.is_negotiable!,
+        desiredTimeLine: props.listing()?.desired_timeline!,
+        id: props.listing()?.id!,
+      });
+    }
+  });
+
   const navigate = useNavigate();
   const [apiCategories, setApiCategories] = createSignal<{
     [key: string]: string[];
@@ -90,158 +181,8 @@ export const EditServiceRequestForm: Component<{
     }));
   };
 
-  const handleInputChange = (
-    e: InputEvent & {
-      currentTarget: HTMLInputElement;
-      target: HTMLInputElement;
-    }
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSelect = (
-    e: InputEvent & {
-      currentTarget: HTMLSelectElement;
-      target: HTMLSelectElement;
-    }
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  //   const handleFileChange = (e: any) => {
-  //     const files: File[] = Array.from(e.target.files);
-  //     const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
-
-  //     if (currentFiles.length + files.length > 5) {
-  //       alert("You can upload a maximum of 5 files.");
-  //       e.target.value = ""; // Clear input
-  //       return;
-  //     }
-
-  //     const newFilesToUpload: any[] = [];
-  //     files.forEach((file) => {
-  //       if (file.size > 5 * 1024 * 1024) {
-  //         // 5MB limit
-  //         alert(`File "${file.name}" is too large. Max 5MB per file.`);
-  //       } else {
-  //         newFilesToUpload.push({
-  //           file: file,
-  //           previewUrl: file.type.startsWith("image/")
-  //             ? URL.createObjectURL(file)
-  //             : null, // Only create URL for images
-  //         });
-  //       }
-  //     });
-
-  //     setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
-  //     e.target.value = "";
-  //   };
-
-  const removeFile = (fileNameToRemove: string) => {
-    setUploadedFiles((prev) => {
-      const updatedFiles = prev.filter(
-        (item) => item.file.name !== fileNameToRemove
-      );
-      // Revoke Object URLs to free memory
-      prev.forEach((item) => {
-        if (item.file.name === fileNameToRemove && item.previewUrl) {
-          URL.revokeObjectURL(item.previewUrl);
-        }
-      });
-      return updatedFiles;
-    });
-  };
-
-  const getUrgency = (
-    urgency: string
-  ):
-    | "IMMEDIATE"
-    | "24h"
-    | "FEW_DAYS"
-    | "NEXT_WEEK"
-    | "FLEXIBLE"
-    | "SPECIFIC_DATE" => {
-    console.log(urgency, "the frigging thingy");
-    return "24h";
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const user = SecureLocalStorage.getItem<UserModel>("x-auth-user-model");
-    if (!user) return;
-
-    const api = new ListingApiHandler();
-    const payload = {
-      id: "",
-      title: `${formData().serviceCategory} Request`,
-      location: formData().locationCity,
-      description: `Request for the services in the ${
-        formData().serviceCategory
-      } and ${formData().serviceSubCategory} fields`,
-      price: formData().isNegotiable ? 0.0 : Number(formData().estimatedBudget),
-      longitude: 0.0,
-      latitude: 0.0,
-      is_negotiable: formData().isNegotiable,
-      urgency: formData().urgency,
-      customer_name: user.firstname,
-      request_title: formData().requestTitle,
-      category: formData().serviceCategory,
-      sub_category: formData().serviceSubCategory,
-      request_description: formData().requestDescription,
-      location_street: formData().locationStreet,
-      location_city: formData().locationCity,
-      location_postal_code: formData().locationPostalCode,
-      location_country: formData().locationCountry,
-      specific_location_details: formData().specificLocationDetails,
-      desired_timeline: getUrgency(formData().desiredTimeline),
-      estimated_budget: formData().isNegotiable
-        ? 0.0
-        : Number(formData().estimatedBudget),
-      additional_notes: formData().additionalNotes,
-      contact_method: formData().contactMethod,
-      specific_date_time: formData().specificDateTime,
-      postedDate: new Date(),
-      creator_id: user.id,
-      scope: user.scope,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      attachments: [
-        {
-          type: "",
-          url: "",
-          name: "",
-        },
-      ],
-    };
-    setIsLoading(true);
-
-    let result = await api.addListing(payload);
-    if (result.success) {
-      console.log("success");
-      props.closeModal(false);
-    }
-
-    setIsLoading(false);
-  };
-
-  const handleClose = () => {
-    props.closeModal(false);
-  };
-
   onMount(async () => {
-    if (!authService.checkAuth()) {
+    if (!authService.isAuthValid()) {
       navigate("/login");
       return;
     }
@@ -273,6 +214,260 @@ export const EditServiceRequestForm: Component<{
     }
   });
 
+  const handleInputChange = (
+    e: InputEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelect = (
+    e: InputEvent & {
+      currentTarget: HTMLSelectElement;
+      target: HTMLSelectElement;
+    }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (
+    e: InputEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => {
+    const files: File[] = Array.from(e.target.files!);
+    const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
+
+    if (currentFiles.length + files.length + attachments()!.length > 5) {
+      alert("You can upload a maximum of 5 files.");
+      e.target.value = ""; // Clear input
+      return;
+    }
+
+    const newFilesToUpload: {
+      file: File;
+      previewUrl: string;
+      mimeType: string;
+    }[] = [];
+    files.forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert(`File "${file.name}" is too large. Max 5MB per file.`);
+      } else {
+        newFilesToUpload.push({
+          file: file,
+          previewUrl: file.name,
+          mimeType: file.type,
+        });
+      }
+    });
+
+    setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
+    e.target.value = "";
+  };
+
+  const removeFile = (fileNameToRemove: string) => {
+    setUploadedFiles((prev) => {
+      const updatedFiles = prev.filter(
+        (item) => item.file.name !== fileNameToRemove
+      );
+      // Revoke Object URLs to free memory
+      prev.forEach((item) => {
+        if (item.file.name === fileNameToRemove && item.previewUrl) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+      return updatedFiles;
+    });
+  };
+
+  const slugify = (str: string) => {
+    str = str.replace(/^\s+|\s+$/g, ""); // trim leading/trailing white space
+    str = str.toLowerCase(); // convert string to lowercase
+    str = str
+      .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
+      .replace(/\s+/g, "-") // replace spaces with hyphens
+      .replace(/-+/g, "-"); // remove consecutive hyphens
+    return str;
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const user = SecureLocalStorage.getItem<UserModel>("x-auth-user-model");
+    if (!user) return;
+
+    // start the process
+    setIsLoading(true);
+
+    const listingApi = new ListingApiHandler();
+    const bucketApi = new BucketAPIHandler();
+    const project_url = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+
+    // --- 1. Prepare Base Payload ---
+    // Destructuring and clearer variable names for readability
+    const currentListing = props.listing()!; // Get current listing once
+    const currentFormData = formData(); // Get form data once
+
+    // Ensure we have a valid ID and title from the original listing
+    if (
+      !currentListing?.id ||
+      !currentListing?.title ||
+      !currentListing?.created_at
+    ) {
+      console.error(
+        "Missing critical listing data (id, title, created_at). Aborting."
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    const payload = {
+      id: currentListing.id,
+      title: currentListing.title,
+      created_at: currentListing.created_at,
+      updated_at: new Date().toISOString(),
+      // Form Data Mapped
+      location: currentFormData.locationCity,
+      description: `Request for the services in the ${currentFormData.serviceCategory} and ${currentFormData.serviceSubCategory} fields`,
+      price: currentFormData.isNegotiable
+        ? 0.0
+        : Number(currentFormData.estimatedBudget),
+      longitude: 0.0,
+      latitude: 0.0,
+      is_negotiable: currentFormData.isNegotiable,
+      urgency: currentFormData.urgency,
+      customer_name: user.firstname,
+      request_title: currentFormData.requestTitle,
+      category: currentFormData.serviceCategory,
+      sub_category: currentFormData.serviceSubCategory,
+      request_description: currentFormData.requestDescription,
+      location_street: currentFormData.locationStreet,
+      location_city: currentFormData.locationCity,
+      location_postal_code: currentFormData.locationPostalCode,
+      location_country: currentFormData.locationCountry,
+      specific_location_details: currentFormData.specificLocationDetails,
+      desired_timeline: currentFormData.desiredTimeline as UrgencyType,
+      estimated_budget: currentFormData.isNegotiable
+        ? 0.0
+        : Number(currentFormData.estimatedBudget),
+      additional_notes: currentFormData.additionalNotes,
+      contact_method: currentFormData.contactMethod,
+      specific_date_time: currentFormData.specificDateTime,
+      creator_id: user.id,
+      scope: user.scope,
+
+      // Attachments will be built dynamically
+      // attachments: props.listing()?.attachments!,
+      attachments: [] as ImageProps[], // Initialize as empty array
+    };
+
+    try {
+      // --- 2. Handle File Uploads (New Attachments) ---
+      const newFilesToUpload = uploadedFiles();
+      const uploadPromises = newFilesToUpload.map(async (element) => {
+        const filePath = `${slugify(currentFormData.serviceCategory)}/${slugify(
+          currentFormData.serviceSubCategory
+        )}/${element.previewUrl}`;
+
+        const file_url_path = await bucketApi.uploadFile(
+          "listings",
+          filePath,
+          element.file
+        );
+
+        if (file_url_path) {
+          return {
+            type: element.mimeType,
+            url: `${project_url}/storage/v1/object/public/listings/${file_url_path}`,
+            name: element.previewUrl,
+          } as ImageProps;
+        }
+        return null;
+      });
+
+      // Await all new file uploads
+      const newUploadedAttachments = (await Promise.all(uploadPromises)).filter(
+        Boolean
+      ) as ImageProps[];
+      // Add newly uploaded attachments to payload.attachments
+      payload.attachments.push(...newUploadedAttachments);
+
+      // --- 3. Consolidate Kept Attachments ---
+      // 'attachments()' should represent the files the user wants to keep from existing ones,
+      // and any new ones are handled by newUploadedAttachments.
+      // So, we add the attachments from `attachments()` (which likely already includes retained old ones)
+      // and then deduplicate everything.
+      const keptExistingAttachments = attachments()! || []; // Handle potential null/undefined
+      payload.attachments.push(...keptExistingAttachments);
+
+      // Make sure all attachments (newly uploaded + kept existing) are unique by URL
+      payload.attachments = makeUniqueByUrl(payload.attachments);
+
+      // --- 4. Identify and Delete Old Images ---
+      // We need the original attachments that were loaded when the form opened.
+      const originalAttachments: ImageProps[] =
+        currentListing.attachments || [];
+
+      // Find attachments that are in originalAttachments but NOT in the final payload.attachments
+      const imagesToDelete = imagesToBeDeleted(
+        originalAttachments,
+        payload.attachments
+      );
+
+      if (imagesToDelete.length > 0) {
+        console.log("Images to delete from storage:", imagesToDelete);
+        const deletePromises = imagesToDelete.map(async (element) => {
+          // Extract the path relative to the bucket, e.g., 'listings/category/subcategory/A.png'
+          const filePathInBucket = element.url.replace(
+            `${project_url}/storage/v1/object/public/listings/`,
+            ""
+          );
+
+          console.log(`Deleting: ${filePathInBucket}`);
+          const result = await bucketApi.deleteFile("listings", [
+            filePathInBucket,
+          ]);
+          return result;
+        });
+
+        await Promise.all(deletePromises);
+        console.log("Dangling images deletion process completed.");
+      }
+
+      // --- 5. Handle Listing Update ---
+      const result = await listingApi.editListing(payload.id, payload);
+
+      if (result.success) {
+        props.closeModal(false);
+      } else {
+        console.error("Failed to update listing:", result.error);
+      }
+    } catch (error) {
+      console.error("An error occurred during submission:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    props.closeModal(false);
+  };
+
   return (
     <Portal>
       <Show when={props.isOpen()}>
@@ -285,7 +480,7 @@ export const EditServiceRequestForm: Component<{
               &times;
             </span>
             <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-8">
-              Post a Service Request
+              Edit a Service Request
             </h1>
             <p class="text-gray-600 text-center mb-8">
               Tell us what kind of assistance you need. Artisans will see your
@@ -328,6 +523,7 @@ export const EditServiceRequestForm: Component<{
                         handleSelect={handleSelect}
                         title="Select a category"
                         name="serviceCategory"
+                        currentValue={props.listing()?.category!}
                       />
                     </div>
 
@@ -343,6 +539,7 @@ export const EditServiceRequestForm: Component<{
                         handleSelect={handleSelect}
                         title="Select a subcategory"
                         name="serviceSubCategory"
+                        currentValue={props.listing()?.sub_category! ?? ""}
                       />
                     </div>
                   </div>
@@ -491,7 +688,11 @@ export const EditServiceRequestForm: Component<{
                       rows="3"
                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                       placeholder="e.g., 'Car is on the shoulder of A9, northbound, at kilometer mark 150', 'Apt 3B on the 2nd floor'"
-                      value={formData().specificLocationDetails}
+                      value={
+                        formData().specificLocationDetails !== "undefined"
+                          ? formData().specificLocationDetails
+                          : ""
+                      }
                       onInput={(e) => handleTextArea(e)}
                     ></textarea>
                   </div>
@@ -512,20 +713,20 @@ export const EditServiceRequestForm: Component<{
                       required
                     >
                       <option value="">Select an option</option>
-                      <option value="immediate">Immediately / Emergency</option>
+                      <option value="IMMEDIATE">Immediately / Emergency</option>
                       <option value="24h">Within 24 hours</option>
-                      <option value="few_days">Within a few days</option>
-                      <option value="next_week">Within the next week</option>
-                      <option value="flexible">
+                      <option value="FEW_DAYS">Within a few days</option>
+                      <option value="NEXT_WEEK">Within the next week</option>
+                      <option value="FLEXIBLE">
                         Flexible / Any time convenient
                       </option>
-                      <option value="specific_date">
+                      <option value="SPECIFIC_DATE">
                         I have a specific date/time (please specify below)
                       </option>
                     </select>
                   </div>
 
-                  <Show when={formData().desiredTimeline === "specific_date"}>
+                  <Show when={formData().desiredTimeline === "SPECIFIC_DATE"}>
                     <div id="specificDateTimeContainer" class="mt-4">
                       <label
                         for="specificDateTime"
@@ -655,12 +856,7 @@ export const EditServiceRequestForm: Component<{
                       multiple
                       accept="image/*, .pdf, .doc, .docx"
                       class="hidden"
-                      onInput={(e) =>
-                        setFormData({
-                          ...formData(),
-                          agreeTerms: e.currentTarget.checked,
-                        })
-                      }
+                      onInput={(e) => handleFileChange(e)}
                     />
 
                     <p class="mt-2 text-xs text-gray-500">
@@ -700,6 +896,11 @@ export const EditServiceRequestForm: Component<{
                       </For>
                     </div>
                   </div>
+
+                  <PreviewImages
+                    attachments={attachments}
+                    handleRemoveImage={handleRemoveImage}
+                  />
                 </section>
 
                 {/* contact method */}
@@ -935,8 +1136,11 @@ const DropDown: Component<{
   ) => void;
   title: string;
   name: string;
+  currentValue?: string;
 }> = (props) => {
-  const [currentValue, setCurrentValue] = createSignal<string>("");
+  const [currentValue, setCurrentValue] = createSignal<string>(
+    props.currentValue ?? ""
+  );
   const handleSelect = (
     e: InputEvent & {
       currentTarget: HTMLSelectElement;

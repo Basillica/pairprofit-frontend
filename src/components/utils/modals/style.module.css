@@ -130,3 +130,84 @@
     height: 20px;
     border-radius: 10px;
 }
+
+.preview_gallery {
+    display: flex; /* Makes items arrange horizontally */
+    flex-wrap: wrap; /* Allows items to wrap to the next line if space runs out */
+    gap: 15px; /* Space between image containers */
+    padding: 20px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 900px; /* Limit gallery width */
+    justify-content: center; /* Center images if there's extra space */
+}
+
+.image_container {
+    position: relative; /* Crucial for positioning the delete button */
+    width: 150px; /* Fixed width for each image container */
+    height: 150px; /* Fixed height for consistency */
+    border: 1px solid #ddd;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border-radius: 6px;
+    overflow: hidden; /* Ensures image corners respect border-radius */
+    display: flex; /* Use flex to center the image if it's smaller */
+    align-items: center;
+    justify-content: center;
+}
+
+.preview_image {
+    width: 100%; /* Make image fill the container width */
+    height: 100%; /* Make image fill the container height */
+    object-fit: cover; /* Crops image to fill, maintaining aspect ratio */
+    display: block; /* Removes extra space below image */
+}
+
+/* Styling for a placeholder if the image fails to load */
+.preview_image:not([src]):not([alt])::before {
+    content: "No image";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    color: #777;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.remove_button {
+    position: absolute;
+    top: 5px; /* Distance from the top edge */
+    right: 5px; /* Distance from the right edge */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Makes it circular */
+    width: 24px; /* Size of the button */
+    height: 24px; /* Size of the button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8em; /* Size of the X icon */
+    opacity: 0.8; /* Slightly transparent by default */
+    transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    z-index: 10; /* Ensure button is above the image */
+}
+
+.remove_button:hover {
+    opacity: 1;
+    background-color: rgba(255, 0, 0, 0.7); /* Red on hover */
+}
+
+/* Hide button on mobile until a better UX is implemented, or adjust size */
+@media (max-width: 600px) {
+    .remove_button {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7em;
+    }
+}

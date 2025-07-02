@@ -16,6 +16,8 @@ import { useNavigate } from "@solidjs/router";
 import { ListingApiHandler } from "../../../api/backend/listing";
 import { UserModel } from "../../../models/auth";
 import { LoadingAnimation } from "../../../lib/lottie";
+import { ListingPayload, UrgencyType } from "../../../models/listing";
+import { BucketAPIHandler } from "../../../api/supabase";
 
 interface NewListingForm {
   serviceCategory: string;
@@ -65,7 +67,7 @@ export const PostServiceRequestForm: Component<{
 
   // State for uploaded files (stores File objects and their preview URLs)
   const [uploadedFiles, setUploadedFiles] = createSignal<
-    { file: File; previewUrl: string }[]
+    { file: File; previewUrl: string; mimeType: string }[]
   >([]);
   const navigate = useNavigate();
   const [apiCategories, setApiCategories] = createSignal<{
@@ -118,34 +120,52 @@ export const PostServiceRequestForm: Component<{
     }));
   };
 
-  //   const handleFileChange = (e: any) => {
-  //     const files: File[] = Array.from(e.target.files);
-  //     const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
+  const slugify = (str: string) => {
+    str = str.replace(/^\s+|\s+$/g, ""); // trim leading/trailing white space
+    str = str.toLowerCase(); // convert string to lowercase
+    str = str
+      .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
+      .replace(/\s+/g, "-") // replace spaces with hyphens
+      .replace(/-+/g, "-"); // remove consecutive hyphens
+    return str;
+  };
 
-  //     if (currentFiles.length + files.length > 5) {
-  //       alert("You can upload a maximum of 5 files.");
-  //       e.target.value = ""; // Clear input
-  //       return;
-  //     }
+  const handleFileChange = (
+    e: InputEvent & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) => {
+    const files: File[] = Array.from(e.target.files!);
+    const currentFiles: { file: File; previewUrl: string }[] = uploadedFiles();
 
-  //     const newFilesToUpload: any[] = [];
-  //     files.forEach((file) => {
-  //       if (file.size > 5 * 1024 * 1024) {
-  //         // 5MB limit
-  //         alert(`File "${file.name}" is too large. Max 5MB per file.`);
-  //       } else {
-  //         newFilesToUpload.push({
-  //           file: file,
-  //           previewUrl: file.type.startsWith("image/")
-  //             ? URL.createObjectURL(file)
-  //             : null, // Only create URL for images
-  //         });
-  //       }
-  //     });
+    if (currentFiles.length + files.length > 5) {
+      alert("You can upload a maximum of 5 files.");
+      e.target.value = ""; // Clear input
+      return;
+    }
 
-  //     setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
-  //     e.target.value = "";
-  //   };
+    const newFilesToUpload: {
+      file: File;
+      previewUrl: string;
+      mimeType: string;
+    }[] = [];
+    files.forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert(`File "${file.name}" is too large. Max 5MB per file.`);
+      } else {
+        newFilesToUpload.push({
+          file: file,
+          previewUrl: file.name,
+          mimeType: file.type,
+        });
+      }
+    });
+
+    setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
+    e.target.value = "";
+  };
 
   const removeFile = (fileNameToRemove: string) => {
     setUploadedFiles((prev) => {
@@ -162,29 +182,15 @@ export const PostServiceRequestForm: Component<{
     });
   };
 
-  const getUrgency = (
-    urgency: string
-  ):
-    | "IMMEDIATE"
-    | "24h"
-    | "FEW_DAYS"
-    | "NEXT_WEEK"
-    | "FLEXIBLE"
-    | "SPECIFIC_DATE" => {
-    console.log(urgency, "the frigging thingy");
-    return "24h";
-  };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const user = SecureLocalStorage.getItem<UserModel>("x-auth-user-model");
     if (!user) return;
 
     const api = new ListingApiHandler();
-    const payload = {
+    const payload: ListingPayload = {
       id: "",
       title: `${formData().serviceCategory} Request`,
-      location: formData().locationCity,
       description: `Request for the services in the ${
         formData().serviceCategory
       } and ${formData().serviceSubCategory} fields`,
@@ -203,27 +209,69 @@ export const PostServiceRequestForm: Component<{
       location_postal_code: formData().locationPostalCode,
       location_country: formData().locationCountry,
       specific_location_details: formData().specificLocationDetails,
-      desired_timeline: getUrgency(formData().desiredTimeline),
+      desired_timeline: formData().desiredTimeline as UrgencyType,
       estimated_budget: formData().isNegotiable
         ? 0.0
         : Number(formData().estimatedBudget),
       additional_notes: formData().additionalNotes,
       contact_method: formData().contactMethod,
       specific_date_time: formData().specificDateTime,
-      postedDate: new Date(),
       creator_id: user.id,
       scope: user.scope,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      attachments: [
-        {
-          type: "",
-          url: "",
-          name: "",
-        },
-      ],
+      attachments: [],
     };
+
     setIsLoading(true);
+    const supabase = new BucketAPIHandler();
+    const project_url = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+
+    // for (let index = 0; index < uploadedFiles().length; index++) {
+    //   const element = uploadedFiles()[index];
+    //   let file_url = await supabase.uploadFile(
+    //     "listings",
+    //     `${slugify(formData().serviceCategory)}/${slugify(
+    //       formData().serviceSubCategory
+    //     )}/${element.previewUrl}`,
+    //     element.file
+    //   );
+    //   if (file_url) {
+    //     payload.attachments.push({
+    //       type: "file",
+    //       url: `${project_url}/storage/v1/object/public/listings/${file_url}`,
+    //       name: element.previewUrl,
+    //     });
+    //   }
+    // }
+
+    const uploadPromises = uploadedFiles().map(async (element) => {
+      const filePath = `${slugify(formData().serviceCategory)}/${slugify(
+        formData().serviceSubCategory
+      )}/${element.previewUrl}`;
+
+      const file_url = await supabase.uploadFile(
+        "listings",
+        filePath,
+        element.file
+      );
+
+      if (file_url) {
+        return {
+          type: element.mimeType,
+          url: `${project_url}/storage/v1/object/public/listings/${file_url}`,
+          name: element.previewUrl,
+        };
+      }
+      return null;
+    });
+
+    const uploadedAttachments = await Promise.all(uploadPromises);
+    uploadedAttachments.forEach((attachment) => {
+      if (attachment) {
+        payload.attachments.push(attachment);
+      }
+    });
 
     let result = await api.addListing(payload);
     if (result.success) {
@@ -239,7 +287,7 @@ export const PostServiceRequestForm: Component<{
   };
 
   onMount(async () => {
-    if (!authService.checkAuth()) {
+    if (!authService.isAuthValid()) {
       navigate("/login");
       return;
     }
@@ -510,20 +558,20 @@ export const PostServiceRequestForm: Component<{
                       required
                     >
                       <option value="">Select an option</option>
-                      <option value="immediate">Immediately / Emergency</option>
+                      <option value="IMMEDIATE">Immediately / Emergency</option>
                       <option value="24h">Within 24 hours</option>
-                      <option value="few_days">Within a few days</option>
-                      <option value="next_week">Within the next week</option>
-                      <option value="flexible">
+                      <option value="FEW_DAYS">Within a few days</option>
+                      <option value="NEXT_WEEK">Within the next week</option>
+                      <option value="FLEXIBLE">
                         Flexible / Any time convenient
                       </option>
-                      <option value="specific_date">
+                      <option value="SPECIFIC_DATE">
                         I have a specific date/time (please specify below)
                       </option>
                     </select>
                   </div>
 
-                  <Show when={formData().desiredTimeline === "specific_date"}>
+                  <Show when={formData().desiredTimeline === "SPECIFIC_DATE"}>
                     <div id="specificDateTimeContainer" class="mt-4">
                       <label
                         for="specificDateTime"
@@ -653,12 +701,7 @@ export const PostServiceRequestForm: Component<{
                       multiple
                       accept="image/*, .pdf, .doc, .docx"
                       class="hidden"
-                      onInput={(e) =>
-                        setFormData({
-                          ...formData(),
-                          agreeTerms: e.currentTarget.checked,
-                        })
-                      }
+                      onInput={(e) => handleFileChange(e)}
                     />
 
                     <p class="mt-2 text-xs text-gray-500">

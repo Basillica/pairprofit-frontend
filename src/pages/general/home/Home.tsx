@@ -1,4 +1,4 @@
-import { Accessor, Component, createSignal, For, onMount } from "solid-js";
+import { Accessor, Component, createSignal, For } from "solid-js";
 import home_styles from "./style.module.css";
 import baker from "../../../assets/profiles/baker.jpg";
 import bodyguard from "../../../assets/profiles/bodyguard.jpg";
@@ -14,7 +14,6 @@ import plumber from "../../../assets/profiles/plumber.jpg";
 import security from "../../../assets/profiles/security.jpg";
 import tutor from "../../../assets/profiles/tutor.jpg";
 import wedding from "../../../assets/profiles/wedding.jpg";
-import { BucketAPIHandler } from "../../../api/supabase";
 
 interface HeroItem {
   image: string;
@@ -129,12 +128,6 @@ export const HomePage: Component = () => {
     setOpenFAQ(openFAQ() === id ? null : id);
   };
 
-  onMount(async () => {
-    const handler = new BucketAPIHandler();
-    const client = handler.getClient();
-    const { data, error } = await client.storage.listBuckets();
-    console.log(client, ".............", data, error);
-  });
   return (
     <main class="flex-grow container-fluid mx-auto">
       <section class="text-center py-16 bg-blue-300 text-white rounded-lg shadow-lg mb-12">

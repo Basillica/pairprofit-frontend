@@ -37,7 +37,7 @@ class AuthService {
     return false;
   }
 
-  public checkAuth(): boolean {
+  public isAuthValid(): boolean {
     const now = Math.floor(Date.now() / 1000);
     const tokenExp = SecureLocalStorage.getItem(this.TOKEN_EXP_KEY);
 
@@ -65,8 +65,8 @@ class AuthService {
   }
 
   public getAuthUser(): UserModel | null {
-    const user = SecureLocalStorage.getItem(this.AUTH_USER_MODEL);
-    if (user) return JSON.parse(user);
+    const user = SecureLocalStorage.getItem<UserModel>(this.AUTH_USER_MODEL);
+    if (user) return user;
     return null;
   }
 
