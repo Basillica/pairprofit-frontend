@@ -19,6 +19,7 @@ import {
 import { authService } from "../../../oauth/manager";
 import { ListingApiHandler } from "../../../api/backend/listing";
 import { useAppContext } from "../../../state";
+import { BucketAPIHandler } from "../../../api/supabase";
 
 export const ServiceListingA: Component<{
   categories: Accessor<{
@@ -59,8 +60,31 @@ export const ServiceListingA: Component<{
   };
 
   const deleteListing = async () => {
-    const api = new ListingApiHandler();
-    const result = await api.deleteListing(currentListing()?.id!);
+    const listingApi = new ListingApiHandler();
+    const bucketApi = new BucketAPIHandler();
+    const project_url = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+
+    if (currentListing()?.attachments!.length! > 0) {
+      const deletePromises = currentListing()?.attachments!.map(
+        async (element) => {
+          // Extract the path relative to the bucket, e.g., 'listings/category/subcategory/A.png'
+          const filePathInBucket = element.url.replace(
+            `${project_url}/storage/v1/object/public/listings/`,
+            ""
+          );
+
+          console.log(`Deleting: ${filePathInBucket}`);
+          const result = await bucketApi.deleteFile("listings", [
+            filePathInBucket,
+          ]);
+          return result;
+        }
+      );
+      await Promise.all(deletePromises!);
+      console.log("Dangling images deletion process completed.");
+    }
+
+    const result = await listingApi.deleteListing(currentListing()?.id!);
     if (result.success) {
       notification.showAppNotification(
         "success",
