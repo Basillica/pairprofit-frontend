@@ -474,7 +474,7 @@ export const LoginPage = () => {
             />
             <LoadingOverlay isLoading={isLoading()} />
             <div class={login_css.left_panel}>
-                <img src={logo} alt="Company Logo" class="logo" />
+                <img src={logo} alt="Company Logo" class={login_css.logo} />
             </div>
             <div class={login_css.right_panel}>
                 <Switch>
