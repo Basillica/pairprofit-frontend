@@ -1,0 +1,169 @@
+.site_footer {
+  background-color: var(--footer-bg-dark);
+  color: var(--footer-text-light);
+  padding: 3rem 0; /* Ample padding top and bottom */
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .site_footer {
+    padding: 2rem 0; /* Reduce padding on very small screens */
+  }
+}
+
+.footer_container {
+  max-width: 1200px; /* Aligns with common container widths */
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
+  justify-content: space-between; /* Distributes space between sections */
+  gap: 2rem; /* Space between columns */
+  padding: 0 1.5rem; /* Horizontal padding for responsiveness */
+}
+
+.footer_section {
+  flex: 1; /* Allows sections to grow and shrink */
+  min-width: 200px; /* Minimum width before wrapping */
+  max-width: 280px; /* Max width to control column size */
+}
+
+.footer_section h4 {
+  color: var(--footer-heading-color);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+/* Underline effect for headings */
+.footer_section h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--footer-link-hover);
+}
+
+.footer_section p {
+  margin-bottom: 0.8rem;
+}
+
+.footer_section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer_section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer_section a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer_section a:hover {
+  color: var(--footer-link-hover);
+}
+
+.bottom_links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center links if they wrap */
+  gap: 1rem;
+}
+
+.bottom_links li {
+  margin: 0;
+}
+
+.bottom_links a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.bottom_links a:hover {
+  color: var(--footer-link-hover);
+}
+
+.footer_bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separator line */
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* Space between copyright and bottom links */
+}
+
+.footer_bottom p {
+  margin: 0;
+  flex-shrink: 0; /* Prevent copyright text from shrinking too much */
+}
+
+.social_icons {
+  display: flex;
+  gap: 1rem; /* Space between icons */
+}
+
+.social_icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; /* Fixed size for social icons */
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background */
+  color: var(--footer-icon-color);
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.social_icons a:hover {
+  background-color: var(--footer-link-hover);
+  color: var(--footer-text-light);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .footer_container {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center; /* Center items when stacked */
+    text-align: center;
+  }
+
+  .footer_section {
+    max-width: 100%; /* Take full width on smaller screens */
+    margin-bottom: 2rem; /* Add space between stacked sections */
+  }
+
+  .footer_section:last-child {
+    margin-bottom: 0; /* No margin on the last section */
+  }
+
+  .footer_section h4::after {
+    left: 50%; /* Center the underline */
+    transform: translateX(-50%);
+  }
+
+  .social_icons {
+    justify-content: center; /* Center social icons */
+  }
+
+  .footer_bottom {
+    flex-direction: column; /* Stack bottom elements */
+    gap: 0.5rem;
+  }
+}

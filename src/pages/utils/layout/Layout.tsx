@@ -2,6 +2,7 @@ import { createSignal } from 'solid-js';
 import { PersistentSidebar } from '../../../components/utils/menu';
 import { AppContextProvider } from '../../../state';
 import { OAuthContextProvider } from '../../../oauth';
+import layout_css from './style.module.css';
 
 export const RootLayout = (props: any) => {
     const [expanded, setExpanded] = createSignal(false);
@@ -46,7 +47,7 @@ export const RootLayout = (props: any) => {
             </div>
 
             <footer
-                class="site-footer"
+                class={layout_css.site_footer}
                 style={{
                     'flex-shrink': 0,
                     'background-color': '#2c3e50',
@@ -54,7 +55,7 @@ export const RootLayout = (props: any) => {
                     padding: '0.5rem 0',
                 }}
             >
-                <div class="footer-container">
+                <div class={layout_css.footer_container}>
                     {/* <div class="footer-section about">
                         <h4>About Us</h4>
                         <p>
@@ -134,14 +135,14 @@ export const RootLayout = (props: any) => {
                         </p>
                     </div> */}
                 </div>
-                <div class="footer-bottom">
+                <div class={`${layout_css.footer_bottom}`}>
                     <p>
                         &copy; <span id="current-year"></span> PairProfit
                         Platform. All rights reserved.
                     </p>
-                    <div class="footer-section social">
+                    <div class={`${layout_css.footer_section} social`}>
                         {/* <h4>Follow Us</h4> */}
-                        <div class="social-icons">
+                        <div class={layout_css.social_icons}>
                             <a
                                 href="https://facebook.com"
                                 target="_blank"
@@ -172,7 +173,7 @@ export const RootLayout = (props: any) => {
                             </a>
                         </div>
                     </div>
-                    <ul class="bottom-links">
+                    <ul class={layout_css.bottom_links}>
                         <li>
                             <a href="#privacy">Privacy Policy</a>
                         </li>

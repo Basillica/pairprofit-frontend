@@ -214,23 +214,23 @@
 
 
 .submit_button { /* You would give your button a class name, e.g., .my-button */
-  background-color: #3b82f6; /* bg-blue-600 */
-  color: #ffffff; /* text-white */
-  padding-left: 1.25rem; /* px-5 (1.25rem = 20px) */
-  padding-right: 1.25rem; /* px-5 */
-  padding-top: 0.5rem; /* py-2 (0.5rem = 8px) */
-  padding-bottom: 0.5rem; /* py-2 */
-  border-radius: 0.5rem; /* rounded-lg (0.5rem = 8px) */
-  font-weight: 600; /* font-semibold */
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors, covers most color-related transitions */
-  transition-duration: 200ms; /* duration-200 */
-  white-space: nowrap; /* whitespace-nowrap */
-  /* Remove default button styles */
-  border: none;
-  cursor: pointer;
-  -webkit-appearance: none; /* For cross-browser consistency */
-  -moz-appearance: none;
-  appearance: none;
+    background-color: #3b82f6; /* bg-blue-600 */
+    color: #ffffff; /* text-white */
+    padding-left: 1.25rem; /* px-5 (1.25rem = 20px) */
+    padding-right: 1.25rem; /* px-5 */
+    padding-top: 0.5rem; /* py-2 (0.5rem = 8px) */
+    padding-bottom: 0.5rem; /* py-2 */
+    border-radius: 0.5rem; /* rounded-lg (0.5rem = 8px) */
+    font-weight: 600; /* font-semibold */
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter; /* transition-colors, covers most color-related transitions */
+    transition-duration: 200ms; /* duration-200 */
+    white-space: nowrap; /* whitespace-nowrap */
+    /* Remove default button styles */
+    border: none;
+    cursor: pointer;
+    -webkit-appearance: none; /* For cross-browser consistency */
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .submit_button:hover {

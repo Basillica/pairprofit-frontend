@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppLog Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for a nicer look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* Darker track */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* Gray thumb */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* Lighter gray on hover */
+        }
+
+        /* Hide the default date input arrow for a cleaner look */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background: none;
+            display: none;
+        }
+        input[type="date"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1f2937; /* Darker gray background */
+            padding: 2rem;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased flex flex-col h-screen">
+
+    <header class="bg-gray-800 p-4 shadow-lg z-10">
+        <h1 class="text-3xl font-extrabold text-white text-center tracking-wide">
+            AppLog Explorer
+        </h1>
+        <p class="text-gray-400 text-center text-sm mt-1">
+            Intuitive visualization and analysis of application debug logs.
+        </p>
+    </header>
+
+    <main class="flex flex-1 overflow-hidden p-4">
+
+        <aside class="w-72 bg-gray-800 p-6 rounded-lg shadow-xl flex flex-col space-y-6 mr-4 overflow-y-auto custom-scrollbar">
+            <h2 class="text-xl font-bold text-white mb-4">Filters</h2>
+
+            <div>
+                <label for="date-range" class="block text-gray-300 text-sm font-semibold mb-2">Date Range:</label>
+                <div class="flex flex-col space-y-2">
+                    <button id="filter-last-month" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200">Last Month</button>
+                    <button id="filter-last-year" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200">Last Year</button>
+                </div>
+                <div class="mt-4">
+                    <label for="start-date" class="block text-gray-300 text-sm font-semibold mb-1">From:</label>
+                    <input type="date" id="start-date" class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white">
+                </div>
+                <div class="mt-2">
+                    <label for="end-date" class="block text-gray-300 text-sm font-semibold mb-1">To:</label>
+                    <input type="date" id="end-date" class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white">
+                </div>
+                 <button id="apply-date-filter" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200">Apply Date Filter</button>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6"></div>
+
+            <div>
+                <label for="search-input" class="block text-gray-300 text-sm font-semibold mb-2">Search Keyword:</label>
+                <input type="text" id="search-input" placeholder="e.g., login, error, user ID"
+                       class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400">
+            </div>
+
+            <div class="border-t border-gray-700 pt-6"></div>
+
+            <div>
+                <label class="block text-gray-300 text-sm font-semibold mb-2">Log Types:</label>
+                <div class="space-y-2">
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500" value="INFO" checked>
+                        <span class="ml-2">Info</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-yellow-500 bg-gray-700 border-gray-600 rounded focus:ring-yellow-500" value="WARN" checked>
+                        <span class="ml-2">Warning</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500" value="ERROR" checked>
+                        <span class="ml-2">Error</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500" value="DEBUG" checked>
+                        <span class="ml-2">Debug</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-teal-500 bg-gray-700 border-gray-600 rounded focus:ring-teal-500" value="SECURITY" checked>
+                        <span class="ml-2">Security</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500" value="API" checked>
+                        <span class="ml-2">API Call</span>
+                    </label>
+                    <label class="flex items-center text-gray-200">
+                        <input type="checkbox" class="log-type-checkbox form-checkbox h-4 w-4 text-fuchsia-500 bg-gray-700 border-gray-600 rounded focus:ring-fuchsia-500" value="DATA_MODIFICATION" checked>
+                        <span class="ml-2">Data Modification</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6"></div>
+
+            <button id="reset-filters" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200 mt-auto">
+                Reset Filters
+            </button>
+        </aside>
+
+        <section class="flex-1 bg-gray-800 p-6 rounded-lg shadow-xl flex flex-col">
+            <h2 class="text-xl font-bold text-white mb-4">Log Entries</h2>
+            <div id="log-entries-container" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 p-2 bg-gray-900 rounded-md">
+                <p id="no-logs-message" class="text-center text-gray-500 italic hidden mt-8">No logs found matching your criteria.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="details-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-200 text-2xl font-bold">&times;</button>
+            <h3 class="text-2xl font-bold text-white mb-4" id="modal-title">Log Details</h3>
+
+            <div id="modal-body" class="text-gray-300">
+                </div>
+
+            <button id="modal-ok-button" class="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200">
+                OK
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Dummy Log Data (Simulated) ---
+        // In a real application, this would come from an API call to your backend.
+        // Added 'details' property for DATA_MODIFICATION logs to include oldValue/newValue or deletedValue
+        const allLogs = [
+            { id: 1, timestamp: new Date(2025, 5, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'alice.smith', message: 'User alice.smith logged in successfully from IP 192.168.1.100' },
+            { id: 2, timestamp: new Date(2025, 5, 1, 10, 5, 15), level: 'DEBUG', type: 'API', user: 'system', message: 'API call to /api/users/123 - Data fetched.' },
+            {
+                id: 3,
+                timestamp: new Date(2025, 5, 1, 10, 10, 30),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'bob.johnson',
+                message: 'Updated user profile for ID 456',
+                details: {
+                    oldValue: { name: 'Bob Johnson', email: 'bob.j@example.com', status: 'active', role: 'user' },
+                    newValue: { name: 'Robert Johnson', email: 'robert.j@example.com', status: 'active', role: 'admin' }
+                }
+            },
+            { id: 4, timestamp: new Date(2025, 5, 2, 11, 20, 0), level: 'WARN', type: 'SYSTEM', message: 'Database connection pool reaching limit. Current connections: 95/100' },
+            { id: 5, timestamp: new Date(2025, 5, 3, 14, 0, 0), level: 'ERROR', type: 'AUTH', user: 'alice.smith', message: 'Failed login attempt for user alice.smith. Invalid password.' },
+            { id: 6, timestamp: new Date(2025, 5, 4, 9, 30, 0), level: 'INFO', type: 'LOGIN', user: 'charlie.brown', message: 'User charlie.brown logged in successfully.' },
+            { id: 7, timestamp: new Date(2025, 5, 5, 16, 45, 0), level: 'DEBUG', type: 'API', user: 'charlie.brown', message: 'User charlie.brown accessed sensitive data endpoint /api/finance/report' },
+            {
+                id: 8,
+                timestamp: new Date(2025, 5, 6, 8, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'diana.prince',
+                message: 'Created new product entry: ProductX',
+                details: {
+                    newValue: { productId: 'PX001', name: 'ProductX', price: 99.99, category: 'Electronics', stock: 100 }
+                }
+            },
+            { id: 9, timestamp: new Date(2025, 6, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'eve.adams', message: 'User eve.adams logged in successfully from IP 10.0.0.5' },
+            { id: 10, timestamp: new Date(2025, 6, 2, 10, 15, 0), level: 'ERROR', type: 'SYSTEM', message: 'Disk space critical on server-01. Remaining: 5GB' },
+            {
+                id: 11,
+                timestamp: new Date(2025, 6, 3, 11, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'frank.zappa',
+                message: 'Deleted old user account: UserID 789',
+                details: {
+                    deletedValue: { id: 789, name: 'Old User', status: 'inactive', creationDate: '2020-01-01', lastLogin: '2023-01-01' }
+                }
+            },
+            { id: 12, timestamp: new Date(2025, 6, 4, 13, 0, 0), level: 'WARN', type: 'API', message: 'Third-party API request timed out after 10s: /external/service' },
+            { id: 13, timestamp: new Date(2025, 7, 1, 9, 0, 0), level: 'INFO', type: 'LOGIN', user: 'grace.hopper', message: 'User grace.hopper logged in successfully.' },
+            { id: 14, timestamp: new Date(2025, 7, 2, 10, 0, 0), level: 'DEBUG', type: 'API', message: 'Detailed debug info for request ID XYZ' },
+            { id: 15, timestamp: new Date(2025, 7, 3, 11, 0, 0), level: 'SECURITY', type: 'AUTH', user: 'mallory.x', message: 'Brute-force attempt detected from IP 203.0.113.45' },
+            {
+                id: 16,
+                timestamp: new Date(2025, 7, 4, 14, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'ivan.ivanov',
+                message: 'Added new customer record: Customer A',
+                details: {
+                    newValue: { customerId: 'CUST-A', companyName: 'Acme Corp', contact: 'John Doe', status: 'New' }
+                }
+            },
+            { id: 17, timestamp: new Date(2025, 8, 1, 12, 0, 0), level: 'INFO', type: 'LOGIN', user: 'judy.jets', message: 'User judy.jets logged in.' },
+            { id: 18, timestamp: new Date(2025, 8, 2, 13, 0, 0), level: 'ERROR', type: 'SYSTEM', message: 'Critical service "Payments" failed to start.' },
+            { id: 19, timestamp: new Date(2025, 8, 3, 15, 0, 0), level: 'DEBUG', type: 'API', message: 'Payload for API /users/create: {name: "NewUser"}' },
+            { id: 20, timestamp: new Date(2025, 9, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'karen.jones', message: 'User karen.jones logged in.' },
+            {
+                id: 21,
+                timestamp: new Date(2025, 9, 2, 11, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'laura.cruz',
+                message: 'Modified product quantity for ProductZ',
+                details: {
+                    oldValue: { productId: 'PZ001', quantity: 50, location: 'Warehouse A' },
+                    newValue: { productId: 'PZ001', quantity: 30, location: 'Warehouse A' }
+                }
+            },
+            { id: 22, timestamp: new Date(2025, 9, 3, 14, 0, 0), level: 'WARN', type: 'SYSTEM', message: 'Scheduled backup failed for database "main_db".' },
+            { id: 23, timestamp: new Date(2025, 10, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'mike.tyson', message: 'User mike.tyson logged in successfully.' },
+            { id: 24, timestamp: new Date(2025, 10, 2, 11, 0, 0), level: 'ERROR', type: 'API', message: 'External service returned 500: Payment Gateway unresponsive.' },
+            { id: 25, timestamp: new Date(2025, 10, 3, 12, 0, 0), level: 'SECURITY', type: 'AUTH', user: 'system', message: 'Failed password change attempt for admin account.' },
+            { id: 26, timestamp: new Date(2025, 11, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'nancy.drew', message: 'User nancy.drew logged in.' },
+            {
+                id: 27,
+                timestamp: new Date(2025, 11, 2, 11, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'oliver.twist',
+                message: 'Updated inventory count for item #12345.',
+                details: {
+                    oldValue: { itemId: '12345', stock: 150 },
+                    newValue: { itemId: '12345', stock: 120 }
+                }
+            },
+            { id: 28, timestamp: new Date(2024, 6, 15, 9, 0, 0), level: 'INFO', type: 'LOGIN', user: 'old.user', message: 'Old user logged in from a year ago.' },
+            { id: 29, timestamp: new Date(2024, 6, 20, 14, 30, 0), level: 'ERROR', type: 'SYSTEM', message: 'Archived process failed due to file permissions.' },
+            {
+                id: 30,
+                timestamp: new Date(2025, 0, 5, 8, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'january.user',
+                message: 'Modified configuration setting X.',
+                details: {
+                    oldValue: { config: 'old_value_for_X' },
+                    newValue: { config: 'new_value_for_X' }
+                }
+            },
+            { id: 31, timestamp: new Date(2025, 1, 10, 17, 0, 0), level: 'DEBUG', type: 'API', message: 'Trace for new feature deployment.' },
+            { id: 32, timestamp: new Date(2025, 2, 1, 10, 0, 0), level: 'INFO', type: 'LOGIN', user: 'march.user', message: 'User march.user logged in.' },
+            { id: 33, timestamp: new Date(2025, 3, 15, 11, 0, 0), level: 'ERROR', type: 'AUTH', message: 'Multiple failed login attempts detected from IP 198.51.100.1.' },
+            {
+                id: 34,
+                timestamp: new Date(2025, 4, 20, 13, 0, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'april.user',
+                message: 'Processed bulk data update for reports.',
+                details: {
+                    newValue: { recordsProcessed: 1500, status: 'completed' }
+                }
+            },
+            { id: 35, timestamp: new Date(2025, 5, 25, 16, 0, 0), level: 'WARN', type: 'SYSTEM', message: 'High CPU usage detected on server "web-02".' },
+            { id: 36, timestamp: new Date(2025, 6, 1, 9, 30, 0), level: 'INFO', type: 'LOGIN', user: 'july.user', message: 'User july.user logged in.' },
+            {
+                id: 37,
+                timestamp: new Date(2025, 6, 7, 10, 45, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'admin.user',
+                message: 'Admin modified critical system settings.',
+                details: {
+                    oldValue: { settingA: true, settingB: 'old' },
+                    newValue: { settingA: false, settingB: 'new' }
+                }
+            },
+            { id: 38, timestamp: new Date(2025, 6, 7, 11, 0, 0), level: 'SECURITY', type: 'AUTH', user: 'system', message: 'Two-factor authentication bypass attempt detected.' },
+            { id: 39, timestamp: new Date(2025, 6, 7, 11, 15, 0), level: 'ERROR', type: 'API', message: 'Payment gateway connection refused.' },
+            { id: 40, timestamp: new Date(2025, 6, 7, 12, 0, 0), level: 'INFO', type: 'LOGIN', user: 'current.user', message: 'User current.user logged in just now.' },
+            { id: 41, timestamp: new Date(2025, 6, 7, 12, 5, 0), level: 'DEBUG', type: 'SYSTEM', message: 'Cache rebuild initiated.' },
+            {
+                id: 42,
+                timestamp: new Date(2025, 6, 7, 12, 10, 0),
+                level: 'INFO',
+                type: 'DATA_MODIFICATION',
+                user: 'current.user',
+                message: 'User current.user modified their profile picture.',
+                details: {
+                    oldValue: { imageUrl: 'old_pic.jpg', thumbUrl: 'old_thumb.jpg' },
+                    newValue: { imageUrl: 'new_pic.jpg', thumbUrl: 'new_thumb.jpg' }
+                }
+            },
+            { id: 43, timestamp: new Date(2025, 6, 7, 12, 15, 0), level: 'WARN', type: 'API', message: 'External image service responded with a large file (20MB).' },
+            { id: 44, timestamp: new Date(2025, 6, 7, 12, 20, 0), level: 'SECURITY', type: 'LOGIN', user: 'suspicious.user', message: 'Login from new suspicious IP detected: 8.8.8.8' },
+            { id: 45, timestamp: new Date(2025, 6, 7, 12, 25, 0), level: 'ERROR', type: 'SYSTEM', message: 'File system corruption detected in /var/log.' },
+        ].sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+
+
+        // --- DOM Elements ---
+        const logEntriesContainer = document.getElementById('log-entries-container');
+        const searchInput = document.getElementById('search-input');
+        const logTypeCheckboxes = document.querySelectorAll('.log-type-checkbox');
+        const filterLastMonthBtn = document.getElementById('filter-last-month');
+        const filterLastYearBtn = document.getElementById('filter-last-year');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const applyDateFilterBtn = document.getElementById('apply-date-filter');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        const noLogsMessage = document.getElementById('no-logs-message');
+
+        // Modal Elements
+        const detailsModal = document.getElementById('details-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalOkButton = document.getElementById('modal-ok-button');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        // --- Current Filter State ---
+        let currentFilters = {
+            startDate: null,
+            endDate: null,
+            searchTerm: '',
+            selectedTypes: Array.from(logTypeCheckboxes).filter(cb => cb.checked).map(cb => cb.value)
+        };
+
+        // --- Helper Functions ---
+
+        // Formats Date objects into a readable string
+        const formatTimestamp = (date) => {
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            return date.toLocaleString('en-US', options);
+        };
+
+        // Get Tailwind color classes based on log level
+        const getLogLevelColor = (level) => {
+            switch (level.toUpperCase()) {
+                case 'INFO': return 'text-blue-400 bg-blue-900/20 border-blue-700';
+                case 'WARN': return 'text-yellow-400 bg-yellow-900/20 border-yellow-700';
+                case 'ERROR': return 'text-red-400 bg-red-900/20 border-red-700';
+                case 'DEBUG': return 'text-purple-400 bg-purple-900/20 border-purple-700';
+                case 'SECURITY': return 'text-teal-400 bg-teal-900/20 border-teal-700';
+                case 'API': return 'text-orange-400 bg-orange-900/20 border-orange-700';
+                case 'DATA_MODIFICATION': return 'text-fuchsia-400 bg-fuchsia-900/20 border-fuchsia-700';
+                default: return 'text-gray-400 bg-gray-700/20 border-gray-600';
+            }
+        };
+
+        // --- Modal Functions ---
+        const showDetailsModal = (details) => {
+            modalBody.innerHTML = ''; // Clear previous content
+            modalTitle.textContent = 'Data Modification Details';
+
+            if (details.oldValue && details.newValue) {
+                modalBody.innerHTML = `
+                    <p class="font-semibold text-lg text-gray-200 mb-2">Before:</p>
+                    <pre class="bg-gray-700 p-3 rounded-md text-sm overflow-x-auto custom-scrollbar">${JSON.stringify(details.oldValue, null, 2)}</pre>
+                    <p class="font-semibold text-lg text-gray-200 mt-4 mb-2">After:</p>
+                    <pre class="bg-gray-700 p-3 rounded-md text-sm overflow-x-auto custom-scrollbar">${JSON.stringify(details.newValue, null, 2)}</pre>
+                `;
+            } else if (details.deletedValue) {
+                modalBody.innerHTML = `
+                    <p class="font-semibold text-lg text-red-300 mb-2">Deleted Value:</p>
+                    <pre class="bg-gray-700 p-3 rounded-md text-sm overflow-x-auto custom-scrollbar">${JSON.stringify(details.deletedValue, null, 2)}</pre>
+                `;
+            } else if (details.newValue) { // For creation events (only newValue)
+                modalBody.innerHTML = `
+                    <p class="font-semibold text-lg text-green-300 mb-2">Created Value:</p>
+                    <pre class="bg-gray-700 p-3 rounded-md text-sm overflow-x-auto custom-scrollbar">${JSON.stringify(details.newValue, null, 2)}</pre>
+                `;
+            } else {
+                modalBody.innerHTML = `<p class="text-gray-400">No specific modification details available.</p>`;
+            }
+
+            detailsModal.classList.add('active');
+        };
+
+        const hideDetailsModal = () => {
+            detailsModal.classList.remove('active');
+        };
+
+        // --- Core Rendering Function ---
+        const renderLogs = (logsToDisplay) => {
+            logEntriesContainer.innerHTML = ''; // Clear previous logs
+            if (logsToDisplay.length === 0) {
+                noLogsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noLogsMessage.classList.add('hidden');
+            }
+
+            logsToDisplay.forEach(log => {
+                const logEntryDiv = document.createElement('div');
+                const levelColors = getLogLevelColor(log.level);
+                logEntryDiv.className = `p-4 rounded-lg border shadow-md transition-all duration-150 hover:bg-gray-800 ${levelColors}`;
+
+                let detailsButtonHtml = '';
+                if (log.type === 'DATA_MODIFICATION' && log.details) {
+                    detailsButtonHtml = `
+                        <button class="view-details-btn bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-1 px-3 rounded-md ml-3 transition-all duration-200"
+                                data-log-id="${log.id}">
+                            View Details
+                        </button>
+                    `;
+                }
+
+                logEntryDiv.innerHTML = `
+                    <div class="flex justify-between items-start text-sm mb-1">
+                        <span class="font-mono text-gray-400">${formatTimestamp(log.timestamp)}</span>
+                        <div class="flex space-x-2 items-center">
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${levelColors.split(' ')[0].replace('400', '200')} ${levelColors.split(' ')[1].replace('900/20', '700')}">
+                                ${log.level}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-gray-300">
+                                ${log.type}
+                            </span>
+                            ${detailsButtonHtml}
+                        </div>
+                    </div>
+                    <p class="text-base font-medium text-gray-200">${log.message}</p>
+                    ${log.user ? `<p class="text-xs text-gray-400 mt-1">User: <span class="font-mono">${log.user}</span></p>` : ''}
+                `;
+                logEntriesContainer.appendChild(logEntryDiv);
+            });
+
+            // Attach event listeners to new 'View Details' buttons
+            document.querySelectorAll('.view-details-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const logId = parseInt(e.target.dataset.logId);
+                    const log = allLogs.find(l => l.id === logId);
+                    if (log && log.details) {
+                        showDetailsModal(log.details);
+                    }
+                });
+            });
+        };
+
+        // --- Filtering Logic ---
+        const applyFilters = () => {
+            let filteredLogs = allLogs;
+
+            // 1. Filter by Date Range
+            if (currentFilters.startDate && currentFilters.endDate) {
+                filteredLogs = filteredLogs.filter(log => {
+                    return log.timestamp >= currentFilters.startDate && log.timestamp <= currentFilters.endDate;
+                });
+            }
+
+            // 2. Filter by Search Term
+            if (currentFilters.searchTerm) {
+                const lowerCaseSearchTerm = currentFilters.searchTerm.toLowerCase();
+                filteredLogs = filteredLogs.filter(log =>
+                    log.message.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    log.level.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    log.type.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    (log.user && log.user.toLowerCase().includes(lowerCaseSearchTerm))
+                );
+            }
+
+            // 3. Filter by Log Type
+            if (currentFilters.selectedTypes.length > 0) {
+                filteredLogs = filteredLogs.filter(log =>
+                    currentFilters.selectedTypes.includes(log.type)
+                );
+            }
+
+            renderLogs(filteredLogs);
+        };
+
+        // --- Event Listeners ---
+
+        // Search Input
+        searchInput.addEventListener('input', (e) => {
+            currentFilters.searchTerm = e.target.value.trim();
+            applyFilters();
+        });
+
+        // Log Type Checkboxes
+        logTypeCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                currentFilters.selectedTypes = Array.from(logTypeCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                applyFilters();
+            });
+        });
+
+        // Date Range Buttons
+        filterLastMonthBtn.addEventListener('click', () => {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 1);
+            currentFilters.startDate = startDate;
+            currentFilters.endDate = endDate;
+            startDateInput.value = startDate.toISOString().split('T')[0];
+            endDateInput.value = endDate.toISOString().split('T')[0];
+            applyFilters();
+        });
+
+        filterLastYearBtn.addEventListener('click', () => {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            currentFilters.startDate = startDate;
+            currentFilters.endDate = endDate;
+            startDateInput.value = startDate.toISOString().split('T')[0];
+            endDateInput.value = endDate.toISOString().split('T')[0];
+            applyFilters();
+        });
+
+        // Custom Date Range Inputs
+        applyDateFilterBtn.addEventListener('click', () => {
+            const start = startDateInput.value ? new Date(startDateInput.value) : null;
+            const end = endDateInput.value ? new Date(endDateInput.value) : null;
+
+            if (start && end) {
+                // Set time to start/end of day for accurate filtering
+                start.setHours(0, 0, 0, 0);
+                end.setHours(23, 59, 59, 999);
+                currentFilters.startDate = start;
+                currentFilters.endDate = end;
+            } else if (!start && !end) {
+                currentFilters.startDate = null;
+                currentFilters.endDate = null;
+            } else {
+                alert('Please select both start and end dates, or neither.');
+                return;
+            }
+            applyFilters();
+        });
+
+        // Reset Filters
+        resetFiltersBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            startDateInput.value = '';
+            endDateInput.value = '';
+            logTypeCheckboxes.forEach(checkbox => {
+                checkbox.checked = true; // Check all by default
+            });
+
+            currentFilters = {
+                startDate: null,
+                endDate: null,
+                searchTerm: '',
+                selectedTypes: Array.from(logTypeCheckboxes).map(cb => cb.value)
+            };
+            applyFilters();
+        });
+
+        // Modal Close Listeners
+        closeModalBtn.addEventListener('click', hideDetailsModal);
+        modalOkButton.addEventListener('click', hideDetailsModal);
+        detailsModal.addEventListener('click', (e) => { // Click outside modal to close
+            if (e.target === detailsModal) {
+                hideDetailsModal();
+            }
+        });
+        document.addEventListener('keydown', (e) => { // Escape key to close
+            if (e.key === 'Escape' && detailsModal.classList.contains('active')) {
+                hideDetailsModal();
+            }
+        });
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial date range to "Last Month" as a friendly default
+            filterLastMonthBtn.click();
+            // Ensure all checkboxes are checked by default on load
+            logTypeCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            applyFilters();
+        });
+    </script>
+</body>
+</html>
