@@ -18,6 +18,10 @@ export class PublicHandler extends ApiHandler {
         return await this.post(`/public/confirm-signup`, body);
     }
 
+    async confirmOTP(body: { token: string; otp: number; email: string }) {
+        return await this.post(`/public/confirm-otp`, body);
+    }
+
     async forgotPassword(body: { email: string }) {
         return await this.post(`/public/forgot-password`, body);
     }

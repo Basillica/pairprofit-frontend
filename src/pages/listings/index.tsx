@@ -1,2 +1,2 @@
-export { ServiceListings } from "./main";
-export { ListingDetailPage, ServiceDetailsComponent } from "./listing_detail";
+export { ServiceListings } from './main';
+export { ListingDetailPage, ServiceDetailsComponent } from './listing_detail';

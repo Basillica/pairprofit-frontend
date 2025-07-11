@@ -1,1 +1,1 @@
-export { ServiceListingsC } from './main'
+export { ServiceListingsC } from './main';

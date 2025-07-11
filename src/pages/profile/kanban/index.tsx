@@ -1,1 +1,1 @@
-export { KanbanBoard } from './main'
+export { KanbanBoard } from './main';

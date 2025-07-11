@@ -259,7 +259,13 @@ export const ServiceListingA: Component<{
                                                         )}`}
                                                     ></i>
                                                     <span>
-                                                        {attachment.name}
+                                                        {attachment.name
+                                                            .length > 40
+                                                            ? `${attachment.name.slice(
+                                                                  0,
+                                                                  40
+                                                              )}...`
+                                                            : attachment.name}
                                                     </span>
                                                 </a>
                                             )}

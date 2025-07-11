@@ -1,0 +1,449 @@
+.auth_card {
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 95%; /* Use a fixed width or max-width for better control */
+  max-width: 450px; /* Set a max-width for desktop */
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+}
+
+.container_auth {
+  display: grid; /* Use grid for main layout */
+  grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.left_panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--light-blue-bg);
+  padding: 2rem; /* Add some padding */
+  min-height: 95vh;
+}
+
+.logo {
+  max-width: 80%; /* Keep max-width for image scaling */
+  height: auto;
+  border-radius: 50%; /* Apply border-radius directly if it's always circular */
+}
+
+.right_panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem; /* Adjust padding for better spacing */
+  width: 100%; /* Ensure it takes full available width in its grid column */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+.auth_header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth_title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--dark-gray-text);
+  margin-bottom: 1.5rem;
+}
+
+.auth_subtitle {
+  font-size: 1rem;
+  color: var(--medium-gray-text);
+  margin-bottom: 0;
+}
+
+.form_group {
+  margin-bottom: 1rem;
+}
+
+.form_label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--dark-gray-text);
+  margin-bottom: 0.5rem;
+}
+
+.form_control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-gray-border);
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-sizing: border-box; /* Crucial for form elements */
+}
+
+.form_control:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.btn_primary {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.btn_primary:hover {
+  background-color: var(--hover-blue);
+}
+
+.auth_link {
+  font-size: 0.875rem;
+  color: var(--primary-blue);
+  text-decoration: none;
+  margin-top: 1rem;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.auth_link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.divider_text {
+  font-size: 0.875rem;
+  color: var(--medium-gray-text);
+  margin-left: 1rem;
+  margin-right: 1rem;
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.divider_line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--light-gray-divider);
+}
+
+.social_login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.social_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px; /* Limit max-width for social buttons */
+  transition: background-color 0.2s ease-in-out;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.social_btn i {
+  margin-right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.google_btn {
+  background-color: var(--white);
+  color: var(--google-blue);
+  border: 1px solid var(--google-blue);
+}
+
+.google_btn:hover {
+  background-color: var(--google-hover);
+}
+
+.linkedin_btn {
+  background-color: var(--linkedin-blue);
+  color: var(--white);
+}
+
+.linkedin_btn:hover {
+  background-color: var(--linkedin-hover);
+}
+
+.github_btn {
+  /* Using standard GitHub colors for better consistency */
+  background-color: #24292e; /* Dark gray/black */
+  color: var(--white);
+}
+
+.github_btn:hover {
+  background-color: #000000; /* Even darker */
+}
+
+.facebook_btn {
+  /* Using standard Facebook colors for better consistency */
+  background-color: #1877f2; /* Facebook Blue */
+  color: var(--white);
+}
+
+.facebook_btn:hover {
+  background-color: #166fe5; /* Slightly darker blue */
+}
+
+.logout_btn {
+  background-color: var(--red-logout);
+  color: var(--white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 2rem;
+  box-sizing: border-box;
+}
+
+.logout_btn:hover {
+  background-color: var(--red-logout-hover);
+}
+
+.success_message {
+  background-color: var(--green-success);
+  color: var(--white);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.error_message {
+  background-color: var(--red-error);
+  color: var(--white);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .container_auth {
+    grid-template-columns: 1fr; /* Stack columns on mobile */
+  }
+
+  .left_panel {
+    display: none; /* Hide the left panel on mobile */
+  }
+
+  .right_panel {
+    width: 100%; /* Take full width on mobile */
+    padding: 1rem; /* Adjust padding for mobile */
+  }
+
+  .auth_card {
+    width: 100%; /* Make auth card take full width on mobile */
+    max-width: none; /* Remove max-width constraint on mobile */
+  }
+}
+
+.site_footer {
+  background-color: var(--footer-bg-dark);
+  color: var(--footer-text-light);
+  padding: 3rem 0; /* Ample padding top and bottom */
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.footer_container {
+  max-width: 1200px; /* Aligns with common container widths */
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap; /* Allows sections to wrap on smaller screens */
+  justify-content: space-between; /* Distributes space between sections */
+  gap: 2rem; /* Space between columns */
+  padding: 0 1.5rem; /* Horizontal padding for responsiveness */
+}
+
+.footer_section {
+  flex: 1; /* Allows sections to grow and shrink */
+  min-width: 200px; /* Minimum width before wrapping */
+  max-width: 280px; /* Max width to control column size */
+}
+
+.footer_section h4 {
+  color: var(--footer-heading-color);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+/* Underline effect for headings */
+.footer_section h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--footer-link-hover);
+}
+
+.footer_section p {
+  margin-bottom: 0.8rem;
+}
+
+.footer_section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer_section ul li {
+  margin-bottom: 0.5rem;
+}
+
+.footer_section a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.footer_section a:hover {
+  color: var(--footer-link-hover);
+}
+
+.social_icons {
+  display: flex;
+  gap: 1rem; /* Space between icons */
+}
+
+.social_icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px; /* Fixed size for social icons */
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle background */
+  color: var(--footer-icon-color);
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.social_icons a:hover {
+  background-color: var(--footer-link-hover);
+  color: var(--footer-text-light);
+}
+
+.footer_section.contact p i {
+  margin-right: 0.5rem;
+  color: var(--footer-icon-color);
+}
+
+.footer_bottom {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separator line */
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* Space between copyright and bottom links */
+}
+
+.footer_bottom p {
+  margin: 0;
+  flex-shrink: 0; /* Prevent copyright text from shrinking too much */
+}
+
+.bottom_links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center links if they wrap */
+  gap: 1rem;
+}
+
+.bottom_links li {
+  margin: 0;
+}
+
+.bottom_links a {
+  color: var(--footer-text-light);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.bottom_links a:hover {
+  color: var(--footer-link-hover);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .footer_container {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center; /* Center items when stacked */
+    text-align: center;
+  }
+
+  .footer_section {
+    max-width: 100%; /* Take full width on smaller screens */
+    margin-bottom: 2rem; /* Add space between stacked sections */
+  }
+
+  .footer_section:last-child {
+    margin-bottom: 0; /* No margin on the last section */
+  }
+
+  .footer_section h4::after {
+    left: 50%; /* Center the underline */
+    transform: translateX(-50%);
+  }
+
+  .social_icons {
+    justify-content: center; /* Center social icons */
+  }
+
+  .footer_bottom {
+    flex-direction: column; /* Stack bottom elements */
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .site_footer {
+    padding: 2rem 0; /* Reduce padding on very small screens */
+  }
+}
