@@ -1,4 +1,3 @@
-/* @refresh reload */
 import { render } from 'solid-js/web';
 import { Route, Router } from '@solidjs/router';
 import {
@@ -23,6 +22,7 @@ import {
     MailApp,
     ComposeMailApp,
     LoggerPage,
+    CallerPage,
 } from './pages';
 import './App.css';
 import { EmailInbox } from './components';
@@ -44,6 +44,7 @@ render(
             <Route path="/login" component={LoginPage} />
             <Route path="/sw.js" /> <Route path="/brevo-frame.html" />
             <Route path="/public/profile" />{' '}
+            <Route path="/caller" component={CallerPage} />
             <Route path="/" component={AuthLayout}>
                 <Route path="/contact" component={ContactList} />
                 <Route path="/listings" component={ServiceListings} />
