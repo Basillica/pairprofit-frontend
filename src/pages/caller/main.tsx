@@ -86,7 +86,9 @@ export const CallerPage = () => {
 
     // 1. Initialize WebSocket connection on mount
     onMount(() => {
-        const newWs = new WebSocket('ws://127.0.0.1:8080/public/ws');
+        const newWs = new WebSocket(
+            'wss://www.pairprofitv2-backend.onrender.com/public/ws'
+        );
         newWs.onopen = () => {
             console.log('WebSocket connected');
             setWs(newWs);
