@@ -14,6 +14,7 @@ import plumber from '../../../assets/profiles/plumber.jpg';
 import security from '../../../assets/profiles/security.jpg';
 import tutor from '../../../assets/profiles/tutor.jpg';
 import wedding from '../../../assets/profiles/wedding.jpg';
+import { PublicNavBar } from '../../../components';
 
 interface HeroItem {
     image: string;
@@ -130,6 +131,7 @@ export const HomePage: Component = () => {
 
     return (
         <main class="flex-grow container-fluid mx-auto">
+            <PublicNavBar companyName={'PairProfit'} />
             <section class="text-center py-16 bg-blue-300 text-white rounded-lg shadow-lg mb-12">
                 <h1 class="text-4xl md:text-5xl font-extrabold mb-4">
                     Your Skills. Our Platform. Limitless Possibilities.

@@ -616,7 +616,7 @@ export const LoginPage = () => {
                             <AuthCard
                                 id="register-page"
                                 title="Register"
-                                subtitle="Create an account to get started."
+                                subtitle="Create account."
                                 show={() => true}
                             >
                                 <form
@@ -1072,7 +1072,7 @@ export const LoginPage = () => {
                         <Match when={currentProcess() === 'OTPCard'}>
                             <AuthCard
                                 id="logout-page"
-                                title="Complete Login Process"
+                                title="Complete Login"
                                 subtitle="We have sent you an OTP code. Please check your email."
                                 show={() => true}
                             >
