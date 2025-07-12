@@ -7,6 +7,7 @@ import {
     Accessor,
     Setter,
 } from 'solid-js';
+import { UserModel } from './models/auth';
 
 interface NotificationType {
     showAppNotification: (
@@ -19,6 +20,10 @@ interface NotificationType {
     setNotificationMessage: Setter<string | null>;
 }
 
+interface UserType {
+    authUser: Accessor<UserModel | undefined>;
+    setAuthUser: Setter<UserModel | undefined>;
+}
 interface AppContextType {
     isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
     sendMessage: (data: string) => void;
@@ -28,6 +33,7 @@ interface AppContextType {
     syncMode: Accessor<boolean>;
     setSyncMode: Setter<boolean>;
     notification: NotificationType;
+    userType: UserType;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -39,6 +45,7 @@ export const AppContextProvider = (props: {
 }) => {
     const [socket, setSocket] = createSignal<WebSocket | null>(null);
     const [isConnected, setIsConnected] = createSignal<boolean>(false);
+    const [authUser, setAuthUser] = createSignal<UserModel>();
     const [notificationType, setNotificationType] = createSignal<
         'success' | 'warning' | 'error' | null
     >(null);
@@ -214,6 +221,10 @@ export const AppContextProvider = (props: {
                     setNotificationMessage,
                     notificationType,
                     setNotificationType,
+                },
+                userType: {
+                    authUser,
+                    setAuthUser,
                 },
             }}
         >

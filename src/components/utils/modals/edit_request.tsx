@@ -483,7 +483,7 @@ export const EditServiceRequestForm: Component<{
                         'modal-overlay': true,
                         active: props.isOpen(),
                     }}
-                    class="fixed inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
+                    class="fixed inset-0 bg-gray-200 bg-opacity-75 mt-10 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
                 >
                     <div class={modal_styles.modal_content}>
                         <span

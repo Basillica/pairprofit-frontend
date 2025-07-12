@@ -55,7 +55,6 @@ class AuthService {
         SecureLocalStorage.removeItem(this.CURRENT_AUTH_PROCESS);
         SecureLocalStorage.removeItem(this.AUTH_PROCESS_TOKEN);
         SecureLocalStorage.removeItem(this.AUTH_USER_MODEL);
-        SecureLocalStorage.removeItem(this.AUTH_DEVICE_VERIFIED);
     }
 
     public getCurrentProcess(): string | null {

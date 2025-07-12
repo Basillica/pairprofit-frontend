@@ -1,13 +1,14 @@
 .auth_card {
-  background-color: var(--white);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  width: 95%; /* Use a fixed width or max-width for better control */
-  max-width: 450px; /* Set a max-width for desktop */
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-sizing: border-box;
+    background-color: var(--white);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 95%; /* Use a fixed width or max-width for better control */
+    max-width: 450px; /* Set a max-width for desktop */
+    height: 100%;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
 }
 
 .container_auth {

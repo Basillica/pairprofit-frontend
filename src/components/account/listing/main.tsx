@@ -239,16 +239,14 @@ export const ServiceProviderListings = (): JSX.Element => {
                 </div>
 
                 {openFilterBar() && (
-                    <div style={'width: 97vw;'}>
-                        <FilterBar
-                            categories={categories}
-                            subCategories={subCategories}
-                            filterOption={filterOption}
-                            setFilterOption={setFilterOption}
-                            onApplyFilters={handleApplyFilters}
-                            handleInputChange={handleInputChange}
-                        />
-                    </div>
+                    <FilterBar
+                        categories={categories}
+                        subCategories={subCategories}
+                        filterOption={filterOption}
+                        setFilterOption={setFilterOption}
+                        onApplyFilters={handleApplyFilters}
+                        handleInputChange={handleInputChange}
+                    />
                 )}
 
                 <div class="flex flex-wrap" style={'margin-top: 20px;'}>
@@ -347,8 +345,8 @@ export const ServiceProviderListings = (): JSX.Element => {
                 itemsPerPage={NUMBER_OF_ITEMS_PER_PAGE}
                 totalItems={artisanCount()}
                 onPageChange={handlePageChange}
-                initialPage={1} // Optional: start on a specific page
-                maxPagesToShow={5} // Optional: control how many page numbers are visible
+                initialPage={1}
+                maxPagesToShow={5}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
             />
@@ -362,15 +360,12 @@ const RenderStars: Component<{ rating: number }> = (props) => {
     const emptyStars = () => 5 - Math.ceil(props.rating);
     return (
         <div class="flex items-center text-yellow-500">
-            {/* Render full stars */}
             <For each={Array(fullStars())}>
                 {() => <i class="fas fa-star text-base"></i>}
             </For>
 
-            {/* Render half star if applicable */}
             {hasHalfStar() && <i class="fas fa-star-half-alt text-base"></i>}
 
-            {/* Render empty stars */}
             <For each={Array(emptyStars())}>
                 {() => <i class="far fa-star text-base"></i>}
             </For>

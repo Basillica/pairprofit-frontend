@@ -1,11 +1,9 @@
 import { createSignal } from 'solid-js';
-import { PersistentSidebar } from '../../../components/utils/menu';
 import { AppContextProvider } from '../../../state';
 import { OAuthContextProvider } from '../../../oauth';
 import layout_css from './style.module.css';
 
 export const RootLayout = (props: any) => {
-    const [expanded, setExpanded] = createSignal(false);
     const [query] = createSignal('');
 
     return (
@@ -16,6 +14,7 @@ export const RootLayout = (props: any) => {
                     'overflow-x': 'hidden',
                     'flex-grow': 1,
                     width: '100vw',
+                    'min-height': '100vh',
                 }}
             >
                 <AppContextProvider url="" query={query}>
@@ -28,22 +27,17 @@ export const RootLayout = (props: any) => {
                                 'scrollbar-width': 'none',
                                 'flex-grow': 1,
                                 'min-height': '100vh',
-                                width:
-                                    window.innerWidth > 768 ? '97vw' : '100vw',
-                                'margin-right':
-                                    window.innerWidth > 768 ? '15px' : '',
-                                'margin-left':
-                                    window.innerWidth > 768 ? '40px' : '',
+                                width: '100vw',
+                                // 'margin-right':
+                                //     window.innerWidth > 768 ? '15px' : '',
+                                // 'margin-left':
+                                //     window.innerWidth > 768 ? '40px' : '',
                             }}
                         >
                             {props.children}
                         </div>
                     </OAuthContextProvider>
                 </AppContextProvider>
-                <PersistentSidebar
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                />
             </div>
 
             <footer

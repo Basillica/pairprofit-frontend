@@ -217,7 +217,7 @@ export const ServiceListings = () => {
             </div>
 
             {openFilterBar() && (
-                <div style={'padding-bottom: 10px; margin-top: 5px'}>
+                <div style={'margin-bottom: 5px; padding: 3px'}>
                     <Switch fallback={<p>Loading filters...</p>}>
                         <Match when={apiCategories()}>
                             <FilterBar

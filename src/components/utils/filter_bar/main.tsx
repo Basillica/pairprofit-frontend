@@ -26,12 +26,11 @@ interface ResponsiveFilterBarProps {
 export const FilterBar = (props: ResponsiveFilterBarProps): JSX.Element => {
     const [location, setLocation] = createSignal('');
     const [price, setPrice] = createSignal('');
-    console.log(props.filterOption(), 'ääääääääääää');
 
     return (
         <div
-            class="container-fluid filter-bar filter-section top-0 left-0 w-full h-full bg-red-500 opacity-75 z-10"
-            style={'padding: 8px; z-index: 999'}
+            class="container-fluid filter-bar filter-section top-0 left-0 w-full h-full opacity-75"
+            style={'padding: 8px; background-color: #aedfe7ff'}
         >
             <div class="filter-section">
                 <label for="main-category" class="filter-label">

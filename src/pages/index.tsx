@@ -1,4 +1,4 @@
-export { RootLayout } from './utils/layout/Layout';
+export { RootLayout, AuthLayout } from './utils/layout';
 export {
     LovelyChat,
     ServiceProviderDashboard,
