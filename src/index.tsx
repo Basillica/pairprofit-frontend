@@ -55,7 +55,6 @@ render(
                         <Route path="/compose" component={ComposeMailApp} />
                     </Route>
                     <Route path="/chat" component={ChatApp} />
-
                     <Route path="/list" component={ContactList} />
                     <Route path="/call" component={CallerPageV3} />
                     {/* <Route path="/inbox" component={EmailInbox} />  */}
