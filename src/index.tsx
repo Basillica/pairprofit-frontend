@@ -5,11 +5,8 @@ import {
     RootLayout,
     AuthLayout,
     ServiceListings,
-    //   ListingDetailPage,
-    //   ServiceDetailsComponent,
     ServiceProviderDashboard,
     KanbanBoard,
-    LovelyChat,
     Page404,
     ProfileDashboard,
     ManageServiceProfiles,
@@ -27,7 +24,6 @@ import {
     CallerPageV3,
 } from './pages';
 import './App.css';
-import { EmailInbox } from './components';
 import { ServiceProviderListings } from './components/account';
 import { HomePage } from './pages/profile';
 
@@ -53,21 +49,19 @@ render(
                 <Route path="/listings" component={ServiceListings} />
                 <Route path="/notifications" component={NotificationsPage} />
                 <Route path="/logger" component={LoggerPage} />
-                <Route path="/chat" component={ChatApp} />
-                <Route path="/mail" component={MailApp} />
                 <Route path="/mailer" component={ComposeMailApp} />
-
                 <Route path="/profile">
                     <Route path="/setting" component={AccountSettings} />
                     <Route
                         path="/dashboard"
                         component={ServiceProviderDashboard}
                     />
-                    <Route path="/message" component={LovelyChat} />
-                    <Route path="/inbox" component={EmailInbox} />
+                    <Route path="/message" component={ChatApp} />
+                    {/* <Route path="/message" component={LovelyChat} /> */}
+                    <Route path="/inbox" component={MailApp} />
+                    {/* <Route path="/inbox" component={EmailInbox} /> */}
                     <Route path="/call" component={CallerPageV3} />
                 </Route>
-
                 <Route path="/profiles">
                     <Route path="/" component={ServiceProviderListings} />
                     <Route path="/manage" component={ManageServiceProfiles} />

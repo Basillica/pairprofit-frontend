@@ -1,7 +1,5 @@
 import { createSignal, createEffect, onCleanup, For, Show } from 'solid-js';
-import { PublicNavBar } from '../../components';
 
-// --- Type Definitions ---
 interface User {
     id: string;
     name: string;
@@ -13,7 +11,7 @@ interface ActiveCall {
     peer: string;
     service: string;
     startTime: Date;
-    duration: number; // in seconds
+    duration: number;
 }
 
 interface CallHistoryItem {
