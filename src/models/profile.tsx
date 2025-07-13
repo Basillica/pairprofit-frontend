@@ -1,4 +1,4 @@
-interface Testimonial {
+export interface Testimonial {
     id: number;
     reviewer: string;
     rating: number;
@@ -7,7 +7,7 @@ interface Testimonial {
     serviceTitle: string;
 }
 
-interface OfferedService {
+export interface OfferedService {
     id: string;
     title: string;
     category: string;
@@ -15,7 +15,7 @@ interface OfferedService {
     link: string;
 }
 
-interface PublicUpdate {
+export interface PublicUpdate {
     id: string;
     date: string;
     type: string;
@@ -42,7 +42,7 @@ export interface ArtisanModel {
     business_name: string;
     business_registration: string;
     contact_preferences: string[];
-    ratingBreakdown: {
+    rating_breakdown: {
         '5': number;
         '4': number;
         '3': number;
