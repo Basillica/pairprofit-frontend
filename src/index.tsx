@@ -23,6 +23,8 @@ import {
     ComposeMailApp,
     LoggerPage,
     CallerPage,
+    CallerPageV2,
+    CallerPageV3,
 } from './pages';
 import './App.css';
 import { EmailInbox } from './components';
@@ -45,6 +47,7 @@ render(
             <Route path="/sw.js" /> <Route path="/brevo-frame.html" />
             <Route path="/public/profile" />{' '}
             <Route path="/caller" component={CallerPage} />
+            <Route path="/caller2" component={CallerPageV2} />
             <Route path="/" component={AuthLayout}>
                 <Route path="/contact" component={ContactList} />
                 <Route path="/listings" component={ServiceListings} />
@@ -62,6 +65,7 @@ render(
                     />
                     <Route path="/message" component={LovelyChat} />
                     <Route path="/inbox" component={EmailInbox} />
+                    <Route path="/call" component={CallerPageV3} />
                 </Route>
 
                 <Route path="/profiles">

@@ -10,7 +10,7 @@ export {
     MailApp,
     ComposeMailApp,
 } from './profile';
-export { CallerPage } from './caller';
+export { CallerPage, CallerPageV2, CallerPageV3 } from './caller';
 export {
     ServiceListings,
     ListingDetailPage,

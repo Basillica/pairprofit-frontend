@@ -12,6 +12,7 @@ import { PostServiceRequestForm } from '../modals';
 import { useAppContext } from '../../../state';
 import { authService } from '../../../oauth/manager';
 import { MenuItem, MenuItems } from './menuitems';
+import logo from './../../../assets/A.png';
 
 // --- SubMenu Component ---
 // This component will recursively render menu items and their children
@@ -205,13 +206,14 @@ export const NavBar: Component<{
             <div class="top-section-left flex items-center">
                 <button
                     onClick={toggleMobileMenu}
-                    class="md:hidden text-blue-500 text-xl focus:outline-none"
+                    class="md:hidden text-blue-500 text-xl focus:outline-none mr-3"
                 >
                     <i class="fas fa-bars"></i>{' '}
                 </button>
-                <span class="text-xl font-bold text-blue-500 ml-2">
+                <span class="text-sm font-bold text-blue-500 ml-2">
                     <a href="/listings">PairProfit</a>
                 </span>
+                <img src={logo} alt="Company Logo" style={'width: 24px'} />
             </div>
 
             {/* Main Navigation - Hidden on mobile, shown on desktop */}

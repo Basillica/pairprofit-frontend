@@ -259,6 +259,12 @@ export const MenuItems: MenuItem[] = [
                 icon: 'fas fa-envelope-open-text',
             },
             {
+                id: 'in-app-call',
+                label: 'In-App Call',
+                path: '/profile/call',
+                icon: 'fas fa-solid fa-phone-volume',
+            },
+            {
                 id: 'email-inbox',
                 label: 'Email Inbox',
                 path: '/profile/inbox',
