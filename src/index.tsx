@@ -40,27 +40,33 @@ render(
             <Route path="/" component={HomePage} />
             <Route path="/about" component={AboutUs} />
             <Route path="/login" component={LoginPage} />
-            <Route path="/sw.js" /> <Route path="/brevo-frame.html" />
             <Route path="/public/profile" />{' '}
             <Route path="/caller" component={CallerPage} />
             <Route path="/caller2" component={CallerPageV2} />
+            <Route path="/sw.js" />
+            <Route path="/brevo-frame.html" />
             <Route path="/" component={AuthLayout}>
-                <Route path="/contact" component={ContactList} />
                 <Route path="/listings" component={ServiceListings} />
                 <Route path="/notifications" component={NotificationsPage} />
                 <Route path="/logger" component={LoggerPage} />
-                <Route path="/mailer" component={ComposeMailApp} />
+                <Route path="/contact">
+                    <Route path="/email">
+                        <Route path="/inbox" component={MailApp} />
+                        <Route path="/compose" component={ComposeMailApp} />
+                    </Route>
+                    <Route path="/chat" component={ChatApp} />
+
+                    <Route path="/list" component={ContactList} />
+                    <Route path="/call" component={CallerPageV3} />
+                    {/* <Route path="/inbox" component={EmailInbox} />  */}
+                    {/* <Route path="/message" component={LovelyChat} /> */}
+                </Route>
                 <Route path="/profile">
                     <Route path="/setting" component={AccountSettings} />
                     <Route
                         path="/dashboard"
                         component={ServiceProviderDashboard}
                     />
-                    <Route path="/message" component={ChatApp} />
-                    {/* <Route path="/message" component={LovelyChat} /> */}
-                    <Route path="/inbox" component={MailApp} />
-                    {/* <Route path="/inbox" component={EmailInbox} /> */}
-                    <Route path="/call" component={CallerPageV3} />
                 </Route>
                 <Route path="/profiles">
                     <Route path="/" component={ServiceProviderListings} />
