@@ -1,19 +1,22 @@
-import { ListingPayload } from '../../models/listing';
+import { ArtisanModel } from '../../models/profile';
 import { ApiHandler } from './base';
 
 export class ArtisanApiHandler extends ApiHandler {
-    async addListing(listing: ListingPayload) {
+    async addListing(listing: ArtisanModel) {
         return await this.post(`/artisans/add`, listing);
     }
 
-    async editListing(id: string, listing: ListingPayload) {
+    async editListing(id: string, listing: ArtisanModel) {
         return await this.put(`/artisans/${id}`, listing);
     }
 
-    async getListingByID(id: string) {
-        return await this.get(`/artisans/${id}`);
+    async getListingByID(id: string, props: any) {
+        return await this.post(`/artisans/id/${id}`, props);
     }
 
+    async getListingByEmail(email: string) {
+        return await this.get(`/artisans/email/${email}`);
+    }
     async getListingsForAUser(id: string) {
         return await this.get(`/artisans/profile/${id}`);
     }

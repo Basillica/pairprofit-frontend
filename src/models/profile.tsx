@@ -4,7 +4,7 @@ export interface Testimonial {
     rating: number;
     date: string;
     comment: string;
-    serviceTitle: string;
+    service_title: string;
 }
 
 export interface OfferedService {
@@ -33,7 +33,7 @@ export interface ArtisanModel {
     profile_picture: string;
     followers: number;
     specialization: string;
-    certifications: string;
+    certifications: string[];
     bio: string;
     overall_rating: number;
     total_reviews: number;

@@ -33,7 +33,7 @@
 }
 .modal_content {
     background-color: white;
-    /* padding: 2rem; */
+    padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     max-width: 900px;

@@ -146,7 +146,7 @@ export const PostServiceRequestForm: Component<{
             return;
         }
 
-        const newFilesToUpload: {
+        let newFilesToUpload: {
             file: File;
             previewUrl: string;
             mimeType: string;
