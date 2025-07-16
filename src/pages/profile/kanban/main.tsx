@@ -1,4 +1,4 @@
-import { createSignal, For, createMemo, onMount } from 'solid-js';
+import { createSignal, For, onMount } from 'solid-js';
 import { v4 as uuidv4 } from 'uuid';
 import './kanban.css'; // Ensure this path is correct
 

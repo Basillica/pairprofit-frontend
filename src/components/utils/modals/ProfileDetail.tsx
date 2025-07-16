@@ -315,7 +315,7 @@ export const ProviderProfileDetail: Component<{
                                             {(star) => {
                                                 const count =
                                                     props.listing()
-                                                        ?.ratingBreakdown[
+                                                        ?.rating_breakdown[
                                                         star as
                                                             | '5'
                                                             | '4'
@@ -412,7 +412,7 @@ export const ProviderProfileDetail: Component<{
                                                             Service:{' '}
                                                             <span class="font-medium">
                                                                 {
-                                                                    testimonial.serviceTitle
+                                                                    testimonial.service_title
                                                                 }
                                                             </span>
                                                         </p>

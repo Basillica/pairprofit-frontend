@@ -1,1 +1,1 @@
-export { FilterBar } from './main'
+export { FilterBar } from './main';

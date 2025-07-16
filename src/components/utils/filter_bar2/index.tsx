@@ -1,1 +1,1 @@
-export { ResponsiveFilterBar } from './main'
+export { ResponsiveFilterBar } from './main';

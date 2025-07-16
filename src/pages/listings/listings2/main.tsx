@@ -107,7 +107,7 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
                 | 'Email',
             created_at: new Date(
                 baseDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000
-            ), // Posted up to 7 days ago
+            ).toISOString(), // Posted up to 7 days ago
             attachments: hasAttachments
                 ? [
                       {
@@ -125,9 +125,6 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
 
             // Provider details (simplified for random generation)
             title: `${randomCategory} Provider`,
-            provider: `Provider ${String.fromCharCode(
-                65 + Math.floor(Math.random() * 26)
-            )}${i}`, // A-Z for provider names
             description: `Experienced provider offering top-notch ${randomCategory} services.`,
             location: `Serving: ${randomCity.name} and nearby regions`,
             availability:

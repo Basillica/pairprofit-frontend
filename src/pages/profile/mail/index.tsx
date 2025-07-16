@@ -1,1 +1,1 @@
-export { MailApp } from "./main";
+export { MailApp } from './main';
