@@ -10,4 +10,6 @@ export {
     ServiceRequestDetails,
     EditServiceRequestForm,
     DeleteItemModal,
+    ViewProfileModal,
+    EditProfileModal,
 } from './modals';

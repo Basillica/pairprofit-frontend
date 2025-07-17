@@ -5,467 +5,88 @@ import {
     Accessor,
     For,
     Show,
+    createMemo,
+    onMount,
 } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import modal_styles from './style.module.css';
+import {
+    TestimonialInput,
+    OfferedServiceInput,
+    PublicUpdateInput,
+} from './utils';
 import {
     ArtisanModel,
     OfferedService,
     PublicUpdate,
     Testimonial,
 } from '../../../models/profile';
+import { SecureLocalStorage } from '../../../lib/localstore';
+import { UserModel } from '../../../models/auth';
+import { BucketAPIHandler } from '../../../api/supabase';
+
+interface FilterOption {
+    category: string;
+    subCategory: string;
+    location: string;
+    price: number;
+    rating?: number;
+}
+
+interface ApiCategoriesResponse {
+    [key: string]: string[];
+}
 
 /**
- * TestimonialInput Component
- * Renders input fields for a single testimonial and allows its removal.
- */
-const TestimonialInput: Component<{
-    testimonial: Testimonial;
-    index: Accessor<number>;
-    arrayName: 'testimonials'; // Explicitly define arrayName for this component
-    onInput: (
-        arrayName: 'testimonials',
-        index: number,
-        field: keyof Testimonial,
-        value: string | number
-    ) => void;
-    onRemove: (arrayName: 'testimonials', index: number) => void;
-}> = (props) => {
-    return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label
-                        for={`testimonial-reviewer-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Reviewer Name
-                    </label>
-                    <input
-                        type="text"
-                        id={`testimonial-reviewer-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.testimonial.reviewer}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'reviewer',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Reviewer Name"
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`testimonial-rating-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Rating (1-5)
-                    </label>
-                    <input
-                        type="number"
-                        id={`testimonial-rating-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.testimonial.rating}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'rating',
-                                parseInt(e.target.value) || 0
-                            )
-                        }
-                        min="1"
-                        max="5"
-                        placeholder="Rating"
-                    />
-                </div>
-                <div class="md:col-span-2">
-                    <label
-                        for={`testimonial-comment-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Comment
-                    </label>
-                    <textarea
-                        id={`testimonial-comment-${props.index()}`}
-                        rows="2"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.testimonial.comment}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'comment',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Testimonial comment"
-                    ></textarea>
-                </div>
-                <div>
-                    <label
-                        for={`testimonial-date-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Date
-                    </label>
-                    <input
-                        type="date"
-                        id={`testimonial-date-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.testimonial.date}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'date',
-                                e.target.value
-                            )
-                        }
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`testimonial-service-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Service Title
-                    </label>
-                    <input
-                        type="text"
-                        id={`testimonial-service-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.testimonial.service_title}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'service_title',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Service related to testimonial"
-                    />
-                </div>
-            </div>
-            <button
-                type="button"
-                onClick={() => props.onRemove(props.arrayName, props.index())}
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-md shadow-sm text-sm"
-            >
-                Remove
-            </button>
-        </div>
-    );
-};
-
-/**
- * OfferedServiceInput Component
- * Renders input fields for a single offered service and allows its removal.
- */
-const OfferedServiceInput: Component<{
-    service: OfferedService;
-    index: Accessor<number>;
-    arrayName: 'services_offered'; // Explicitly define arrayName for this component
-    onInput: (
-        arrayName: 'services_offered',
-        index: number,
-        field: keyof OfferedService,
-        value: string
-    ) => void;
-    onRemove: (arrayName: 'services_offered', index: number) => void;
-}> = (props) => {
-    return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label
-                        for={`service-title-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Service Title
-                    </label>
-                    <input
-                        type="text"
-                        id={`service-title-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.service.title}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'title',
-                                e.target.value
-                            )
-                        }
-                        placeholder="e.g., Custom Wood Carving"
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`service-category-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Category
-                    </label>
-                    <input
-                        type="text"
-                        id={`service-category-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.service.category}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'category',
-                                e.target.value
-                            )
-                        }
-                        placeholder="e.g., Woodwork"
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`service-price-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Price
-                    </label>
-                    <input
-                        type="text"
-                        id={`service-price-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.service.price}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'price',
-                                e.target.value
-                            )
-                        }
-                        placeholder="e.g., $100/hr or Fixed Price"
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`service-link-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Link (Optional)
-                    </label>
-                    <input
-                        type="url"
-                        id={`service-link-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.service.link}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'link',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Link to service details"
-                    />
-                </div>
-            </div>
-            <button
-                type="button"
-                onClick={() => props.onRemove(props.arrayName, props.index())}
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-md shadow-sm text-sm"
-            >
-                Remove
-            </button>
-        </div>
-    );
-};
-
-/**
- * PublicUpdateInput Component
- * Renders input fields for a single public update and allows its removal.
- */
-const PublicUpdateInput: Component<{
-    update: PublicUpdate;
-    index: Accessor<number>;
-    arrayName: 'public_updates'; // Explicitly define arrayName for this component
-    onInput: (
-        arrayName: 'public_updates',
-        index: number,
-        field: keyof PublicUpdate,
-        value: string | null
-    ) => void;
-    onRemove: (arrayName: 'public_updates', index: number) => void;
-}> = (props) => {
-    return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label
-                        for={`update-date-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Date
-                    </label>
-                    <input
-                        type="date"
-                        id={`update-date-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.update.date}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'date',
-                                e.target.value
-                            )
-                        }
-                    />
-                </div>
-                <div>
-                    <label
-                        for={`update-type-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Type
-                    </label>
-                    <input
-                        type="text"
-                        id={`update-type-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.update.type}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'type',
-                                e.target.value
-                            )
-                        }
-                        placeholder="e.g., Event, New Product"
-                    />
-                </div>
-                <div class="md:col-span-2">
-                    <label
-                        for={`update-title-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Title
-                    </label>
-                    <input
-                        type="text"
-                        id={`update-title-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.update.title}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'title',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Update Title"
-                    />
-                </div>
-                <div class="md:col-span-2">
-                    <label
-                        for={`update-content-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Content
-                    </label>
-                    <textarea
-                        id={`update-content-${props.index()}`}
-                        rows="3"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.update.content}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'content',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Details of the update"
-                    ></textarea>
-                </div>
-                <div class="md:col-span-2">
-                    <label
-                        for={`update-image-${props.index()}`}
-                        class="block text-xs font-medium text-gray-600"
-                    >
-                        Image URL (Optional)
-                    </label>
-                    <input
-                        type="text" // Using text for URL, could be file input for actual upload
-                        id={`update-image-${props.index()}`}
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 text-sm"
-                        value={props.update.image || ''}
-                        onInput={(e) =>
-                            props.onInput(
-                                props.arrayName,
-                                props.index(),
-                                'image',
-                                e.target.value
-                            )
-                        }
-                        placeholder="Image URL"
-                    />
-                </div>
-            </div>
-            <button
-                type="button"
-                onClick={() => props.onRemove(props.arrayName, props.index())}
-                class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded-md shadow-sm text-sm"
-            >
-                Remove
-            </button>
-        </div>
-    );
-};
-
-/**
- * EditProfileModal SolidJS Component
- *
  * This modal allows users to edit their artisan profile details.
  * It uses the ArtisanModel for data structure and handles form input,
  * file uploads for profile pictures, and submission of updated data.
  *
  * Props:
  * - show: boolean - Controls the visibility of the modal.
- * - editingProfile: Accessor<ArtisanModel | undefined> - The current artisan profile data to be edited.
- * - onClose: () => void - Callback function to close the modal.
- * - onSave: (updatedProfile: ArtisanModel) => void - Callback function to save the updated profile.
- */
-
-/**
- * EditProfileModal SolidJS Component
- *
- * This modal allows users to edit their artisan profile details.
- * It uses the ArtisanModel for data structure and handles form input,
- * file uploads for profile pictures, and submission of updated data.
- *
- * Props:
- * - show: boolean - Controls the visibility of the modal.
- * - editingProfile: Accessor<ArtisanModel | undefined> - The current artisan profile data to be edited.
+ * - artisanProfile: Accessor<ArtisanModel | undefined> - The current artisan profile data to be edited.
  * - onClose: () => void - Callback function to close the modal.
  * - onSave: (updatedProfile: ArtisanModel) => void - Callback function to save the updated profile.
  */
 export const EditProfileModal: Component<{
     show: boolean;
-    editingProfile: Accessor<ArtisanModel | undefined>;
+    artisanProfile: Accessor<ArtisanModel | undefined>;
     onClose: () => void;
     onSave: (updatedProfile: ArtisanModel) => void;
 }> = (props) => {
     // Refs for direct DOM access, particularly for file input and image preview
     let profilePictureUploadRef: HTMLInputElement | undefined;
     let profilePicturePreviewRef: HTMLImageElement | undefined;
+    const [filterOption, setFilterOption] = createSignal<FilterOption>({
+        category: '',
+        subCategory: '',
+        price: 0,
+        rating: 5,
+        location: '',
+    });
+    const [testimonials, setTestimonials] = createSignal<Testimonial[]>([]);
+    const [offeredServices, setOfferedServices] = createSignal<
+        OfferedService[]
+    >([]);
+    const [publicUpdates, setPublicUpdates] = createSignal<PublicUpdate[]>([]);
+    const [categories, setCategories] = createSignal<string[]>([]);
+    const [apiCategories, setApiCategories] =
+        createSignal<ApiCategoriesResponse>({});
+    const subCategories = createMemo(
+        () => apiCategories()[filterOption()!.category]
+    );
+    const [newCertificationInput, setNewCertificationInput] = createSignal('');
+
+    onMount(() => {
+        let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
+            'x-pairprofit-categories'
+        );
+        if (cachedCategores) {
+            setApiCategories(cachedCategores);
+            setCategories(Object.keys(cachedCategores));
+            return;
+        }
+    });
 
     // Default placeholder image for the profile picture
     const DEFAULT_PROFILE_PICTURE =
@@ -507,47 +128,98 @@ export const EditProfileModal: Component<{
     });
 
     /**
-     * createEffect hook to synchronize formData with the editingProfile prop.
+     * Adds a new empty object to one of the dynamic arrays (testimonials, services_offered, public_updates).
+     * @param arrayName The name of the array field in ArtisanModel.
+     */
+    const addArrayObjectInput = (
+        arrayName: 'testimonials' | 'services_offered' | 'public_updates'
+    ) => {
+        if (arrayName === 'testimonials') {
+            setTestimonials([
+                ...testimonials(),
+                {
+                    id: Date.now(),
+                    reviewer: '',
+                    rating: 0,
+                    date: '',
+                    comment: '',
+                    service_title: '',
+                },
+            ]);
+        } else if (arrayName === 'services_offered') {
+            setOfferedServices([
+                ...offeredServices(),
+                {
+                    id: crypto.randomUUID(),
+                    title: '',
+                    category: '',
+                    price: '',
+                    link: '',
+                },
+            ]);
+        } else if (arrayName === 'public_updates') {
+            setPublicUpdates([
+                ...publicUpdates(),
+                {
+                    id: crypto.randomUUID(),
+                    date: '',
+                    type: '',
+                    title: '',
+                    content: '',
+                    image: null,
+                },
+            ]);
+        }
+    };
+
+    /**
+     * createEffect hook to synchronize formData with the artisanProfile prop.
      * This ensures that when the modal opens with a new profile, the form fields are populated.
      */
     createEffect(() => {
-        if (props.editingProfile()) {
-            // Merge the existing formData defaults with the incoming editingProfile data.
+        if (props.artisanProfile()) {
+            // Merge the existing formData defaults with the incoming artisanProfile data.
             // This ensures all ArtisanModel fields are present and correctly typed.
             setFormData((prev) => ({
-                ...prev, // Retain default values for fields not explicitly provided by editingProfile
-                ...props.editingProfile(),
+                ...prev, // Retain default values for fields not explicitly provided by artisanProfile
+                ...props.artisanProfile(),
+                category: props.artisanProfile()?.category!,
+                sub_category: props.artisanProfile()?.sub_category!,
                 // Ensure array/object fields are always initialized to prevent issues if they are null/undefined
-                contact_preferences: props.editingProfile()?.contact_preferences
-                    ? [...props.editingProfile()!.contact_preferences]
+                contact_preferences: props.artisanProfile()?.contact_preferences
+                    ? [...props.artisanProfile()!.contact_preferences]
                     : [],
-                testimonials: props.editingProfile()?.testimonials
+                testimonials: props.artisanProfile()?.testimonials
                     ? props
-                          .editingProfile()!
+                          .artisanProfile()!
                           .testimonials.map((t) => ({ ...t }))
                     : [],
-                services_offered: props.editingProfile()?.services_offered
+                services_offered: props.artisanProfile()?.services_offered
                     ? props
-                          .editingProfile()!
+                          .artisanProfile()!
                           .services_offered.map((s) => ({ ...s }))
                     : [],
-                public_updates: props.editingProfile()?.public_updates
+                public_updates: props.artisanProfile()?.public_updates
                     ? props
-                          .editingProfile()!
+                          .artisanProfile()!
                           .public_updates.map((p) => ({ ...p }))
                     : [],
-                rating_breakdown: props.editingProfile()?.rating_breakdown
-                    ? { ...props.editingProfile()!.rating_breakdown }
+                rating_breakdown: props.artisanProfile()?.rating_breakdown
+                    ? { ...props.artisanProfile()!.rating_breakdown }
                     : { '5': 0, '4': 0, '3': 0, '2': 0, '1': 0 },
                 // Set default profile picture if the incoming profile_picture is missing
                 profile_picture:
-                    props.editingProfile()?.profile_picture ||
+                    props.artisanProfile()?.profile_picture ||
                     DEFAULT_PROFILE_PICTURE,
             }));
+            setTestimonials(props.artisanProfile()?.testimonials!);
+            setOfferedServices(props.artisanProfile()?.services_offered!);
+            setPublicUpdates(props.artisanProfile()?.public_updates!);
+
             // Update the profile picture preview immediately if the ref is available
             if (profilePicturePreviewRef) {
                 profilePicturePreviewRef.src =
-                    props.editingProfile()?.profile_picture ||
+                    props.artisanProfile()?.profile_picture ||
                     DEFAULT_PROFILE_PICTURE;
             }
         } else {
@@ -639,112 +311,36 @@ export const EditProfileModal: Component<{
     };
 
     /**
-     * Handles input changes for nested arrays of objects (testimonials, services_offered, public_updates).
-     * @param arrayName The name of the array field in ArtisanModel (e.g., 'testimonials').
-     * @param index The index of the object within the array to update.
-     * @param fieldName The specific field within the object to update (e.g., 'reviewer').
-     * @param value The new value for the field.
-     */
-    const handleArrayObjectInputChange = <K extends keyof ArtisanModel>(
-        arrayName: K,
-        index: number,
-        fieldName: any, //keyof ArtisanModel[K][number], // Type for nested field name
-        value: string | number | null
-    ) => {
-        setFormData((prev) => {
-            // Create a deep copy of the array and the object to ensure immutability
-            const newArray = (prev[arrayName] as any[]).map((item, i) =>
-                i === index ? { ...item, [fieldName]: value } : { ...item }
-            );
-            return { ...prev, [arrayName]: newArray as ArtisanModel[K] };
-        });
-    };
-
-    /**
-     * Adds a new empty object to one of the dynamic arrays (testimonials, services_offered, public_updates).
-     * @param arrayName The name of the array field in ArtisanModel.
-     */
-    const addArrayObjectInput = (
-        arrayName: 'testimonials' | 'services_offered' | 'public_updates'
-    ) => {
-        setFormData((prev) => {
-            const newArray = [...prev[arrayName]];
-            if (arrayName === 'testimonials') {
-                newArray.push({
-                    id: Date.now(),
-                    reviewer: '',
-                    rating: 0,
-                    date: '',
-                    comment: '',
-                    service_title: '',
-                });
-            } else if (arrayName === 'services_offered') {
-                newArray.push({
-                    id: crypto.randomUUID(),
-                    title: '',
-                    category: '',
-                    price: '',
-                    link: '',
-                });
-            } else if (arrayName === 'public_updates') {
-                newArray.push({
-                    id: crypto.randomUUID(),
-                    date: '',
-                    type: '',
-                    title: '',
-                    content: '',
-                    image: null,
-                });
-            }
-            return {
-                ...prev,
-                [arrayName]: newArray as (typeof prev)[typeof arrayName],
-            };
-        });
-    };
-
-    /**
-     * Removes an object from one of the dynamic arrays.
-     * @param arrayName The name of the array field in ArtisanModel.
-     * @param index The index of the object to remove.
-     */
-    const removeArrayObjectInput = (
-        arrayName: 'testimonials' | 'services_offered' | 'public_updates',
-        index: number
-    ) => {
-        setFormData((prev) => {
-            const newArray = (prev[arrayName] as any[]).filter(
-                (_, i) => i !== index
-            );
-            return {
-                ...prev,
-                [arrayName]: newArray as (typeof prev)[typeof arrayName],
-            };
-        });
-    };
-
-    /**
      * Handles the form submission.
      * Prevents default form submission, prepares the data, and calls the onSave prop.
      */
-    const handleSubmit = (
+    const handleSubmit = async (
         e: Event // Event type for form submission
     ) => {
         e.preventDefault(); // Prevent default browser form submission
-
+        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        if (!user) return;
         // Create a copy of formData to ensure all ArtisanModel fields are present
         // and non-editable fields are carried over from the original profile.
+
+        const supabase = new BucketAPIHandler();
+        const project_url = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+        if (!project_url) {
+            console.error('VITE_SUPABASE_PROJECT_URL is missing.');
+            return;
+        }
+
         const dataToSave: ArtisanModel = {
             ...formData(),
             // Non-editable fields from ArtisanModel should be preserved from the original profile
-            user_id: props.editingProfile()?.user_id || '',
-            category: props.editingProfile()?.category || '',
-            sub_category: props.editingProfile()?.sub_category || '',
-            followers: props.editingProfile()?.followers || 0,
-            certifications: props.editingProfile()?.certifications || [],
-            overall_rating: props.editingProfile()?.overall_rating || 0,
-            total_reviews: props.editingProfile()?.total_reviews || 0,
-            rating_breakdown: props.editingProfile()?.rating_breakdown || {
+            user_id: props.artisanProfile()?.user_id || '',
+            category: props.artisanProfile()?.category || '',
+            sub_category: props.artisanProfile()?.sub_category || '',
+            followers: props.artisanProfile()?.followers || 0,
+            certifications: formData()?.certifications || [],
+            overall_rating: formData()?.overall_rating || 0,
+            total_reviews: props.artisanProfile()?.total_reviews || 0,
+            rating_breakdown: props.artisanProfile()?.rating_breakdown || {
                 '5': 0,
                 '4': 0,
                 '3': 0,
@@ -759,13 +355,39 @@ export const EditProfileModal: Component<{
             public_updates: formData().public_updates.map((p) => ({ ...p })),
         };
 
-        // If a new profile picture file was selected, simulate its upload.
-        // In a real application, this would involve uploading to a storage service (e.g., Firebase Storage)
-        // and updating `dataToSave.profile_picture` with the returned public URL.
-        // For this example, URL.createObjectURL creates a temporary local URL.
         const newProfilePicFile = profilePictureUploadRef?.files?.[0];
+
+        // Ensure user.id is available
+        if (!user.id) {
+            console.error('User ID is missing.');
+            return;
+        }
+
         if (newProfilePicFile) {
-            dataToSave.profile_picture = URL.createObjectURL(newProfilePicFile);
+            const storagePath = `${user.id}/${newProfilePicFile.name}`; // Path for Supabase storage
+            const newExpectedPublicUrl = `${project_url}/storage/v1/object/public/profiles/${storagePath}`;
+            let finalFileUrl: string | null = null;
+
+            if (props.artisanProfile()?.profile_picture === '') {
+                finalFileUrl = await supabase.uploadFile(
+                    'profiles',
+                    `${user.id}/${newProfilePicFile.name}`,
+                    newProfilePicFile!
+                );
+            } else if (
+                props.artisanProfile()?.profile_picture === newExpectedPublicUrl
+            ) {
+                finalFileUrl = props.artisanProfile()?.profile_picture!;
+            } else {
+                finalFileUrl = await supabase.replaceFile(
+                    'profiles',
+                    `${user.id}/${newProfilePicFile.name}`,
+                    newProfilePicFile!
+                );
+            }
+            if (finalFileUrl) {
+                dataToSave.profile_picture = `${project_url}/storage/v1/object/public/profiles/${finalFileUrl}`;
+            }
         }
 
         props.onSave(dataToSave); // Call the onSave prop with the prepared ArtisanModel data
@@ -808,10 +430,49 @@ export const EditProfileModal: Component<{
         }
     };
 
+    const handleSelect = (
+        e: Event & {
+            currentTarget: HTMLSelectElement;
+            target: HTMLSelectElement;
+        }
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const { name, value } = e.target;
+        setFilterOption((prev) => ({
+            ...prev!,
+            [name]: value,
+        }));
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const addCertification = () => {
+        const trimmedCert = newCertificationInput().trim();
+        if (trimmedCert && !formData().certifications.includes(trimmedCert)) {
+            // Prevent empty and duplicate
+            setFormData((prev) => ({
+                ...prev,
+                certifications: [...prev.certifications, trimmedCert],
+            }));
+            setNewCertificationInput(''); // Clear the input field
+        }
+    };
+
+    const removeCertification = (indexToRemove: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            certifications: prev.certifications.filter(
+                (_, i) => i !== indexToRemove
+            ),
+        }));
+    };
+
     return (
         <Portal>
             <Show when={props.show}>
-                {/* Modal Overlay */}
                 <div
                     class="fixed inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center p-4 transition-opacity duration-300 ease-out z-[9999]"
                     classList={{ 'modal-overlay': true, active: props.show }}
@@ -830,7 +491,7 @@ export const EditProfileModal: Component<{
                             &times;
                         </span>
                         {/* Modal Title */}
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        <h2 class="text-2xl font-bold text-blue-800 mb-6 text-center">
                             Edit Artisan Profile
                         </h2>
 
@@ -884,6 +545,62 @@ export const EditProfileModal: Component<{
                                             onInput={handleInputChange}
                                             required
                                         />
+                                    </div>
+                                    {/* Category Select */}
+                                    <div>
+                                        <label
+                                            for="artisanCategory"
+                                            class="block text-sm font-medium text-gray-700"
+                                        >
+                                            Category
+                                        </label>
+                                        <select
+                                            name="category"
+                                            id="artisanCategory"
+                                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            value={formData().category}
+                                            onInput={handleSelect}
+                                            required
+                                        >
+                                            <option value="">
+                                                Select a category
+                                            </option>
+                                            <For each={categories()}>
+                                                {(option) => (
+                                                    <option value={option}>
+                                                        {option}
+                                                    </option>
+                                                )}
+                                            </For>
+                                        </select>
+                                    </div>
+                                    {/* Sub-Category Input */}
+                                    <div>
+                                        <label
+                                            for="artisanSubCategory"
+                                            class="block text-sm font-medium text-gray-700"
+                                        >
+                                            Sub-Category (Optional)
+                                        </label>
+                                        <select
+                                            name="sub_category"
+                                            id="artisanCategory"
+                                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            value={formData().sub_category}
+                                            onInput={handleSelect}
+                                            required
+                                        >
+                                            <option value="">
+                                                Select a subcategory
+                                            </option>
+                                            <For each={subCategories()}>
+                                                {(option) => (
+                                                    <option value={option}>
+                                                        {option}
+                                                    </option>
+                                                )}
+                                            </For>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -1102,24 +819,124 @@ export const EditProfileModal: Component<{
                                 </div>
                             </section>
 
+                            {/* Certifications Section */}
+                            <section class="border-b border-gray-200 pb-6 pt-6">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                                    4. Certifications (Optional)
+                                </h2>
+                                <div class="bg-blue-50 border border-blue-200 p-4 rounded-md mb-4">
+                                    <p class="text-blue-800 font-medium">
+                                        Highlight your professional
+                                        qualifications.
+                                    </p>
+                                    <p class="text-blue-700 text-sm mt-2">
+                                        Listing relevant certifications can
+                                        significantly boost your credibility.
+                                    </p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label
+                                        for="new-certification"
+                                        class="block text-sm font-medium text-gray-700"
+                                    >
+                                        Add a new certification link
+                                    </label>
+                                    <div class="mt-1 flex rounded-md shadow-sm">
+                                        <input
+                                            type="text"
+                                            id="new-certification"
+                                            class="flex-1 block w-full rounded-none rounded-l-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            placeholder="e.g., Certified Master Carpenter"
+                                            value={newCertificationInput()}
+                                            onInput={(e) =>
+                                                setNewCertificationInput(
+                                                    e.target.value
+                                                )
+                                            }
+                                            onKeyDown={(e) => {
+                                                // Allow adding with Enter key
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault(); // Prevent form submission
+                                                    addCertification();
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={addCertification}
+                                            class="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Display current certifications */}
+                                {formData().certifications.length > 0 && (
+                                    <div class="mt-4 border border-gray-200 rounded-md p-3">
+                                        <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                                            Your Certifications:
+                                        </h4>
+                                        <ul class="space-y-2">
+                                            <For
+                                                each={formData().certifications}
+                                            >
+                                                {(cert, i) => (
+                                                    <li class="flex items-center justify-between bg-gray-50 p-2 rounded-md text-sm text-gray-800">
+                                                        <span>{cert}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                removeCertification(
+                                                                    i()
+                                                                )
+                                                            }
+                                                            class="ml-2 p-1 rounded-full text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                                            title="Remove certification"
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                class="h-4 w-4"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M6 18L18 6M6 6l12 12"
+                                                                />
+                                                            </svg>
+                                                        </button>
+                                                    </li>
+                                                )}
+                                            </For>
+                                        </ul>
+                                    </div>
+                                )}
+                                {formData().certifications.length === 0 && (
+                                    <p class="text-sm text-gray-500 italic mt-4">
+                                        No certifications added yet.
+                                    </p>
+                                )}
+                            </section>
+
                             {/* Testimonials Section */}
                             <section class="pb-6 pt-6 border-b border-gray-200">
                                 <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
                                     Testimonials
                                 </h3>
                                 <div class="space-y-4">
-                                    <For each={formData().testimonials}>
+                                    <For each={testimonials()}>
                                         {(testimonial, index) => (
                                             <TestimonialInput
                                                 testimonial={testimonial}
                                                 index={index}
                                                 arrayName="testimonials" // Pass arrayName
-                                                onInput={
-                                                    handleArrayObjectInputChange
-                                                }
-                                                onRemove={
-                                                    removeArrayObjectInput
-                                                }
+                                                formData={formData}
+                                                setFormData={setFormData}
                                             />
                                         )}
                                     </For>
@@ -1141,18 +958,14 @@ export const EditProfileModal: Component<{
                                     Services Offered
                                 </h3>
                                 <div class="space-y-4">
-                                    <For each={formData().services_offered}>
+                                    <For each={offeredServices()}>
                                         {(service, index) => (
                                             <OfferedServiceInput
                                                 service={service}
                                                 index={index}
                                                 arrayName="services_offered" // Pass arrayName
-                                                onInput={
-                                                    handleArrayObjectInputChange
-                                                }
-                                                onRemove={
-                                                    removeArrayObjectInput
-                                                }
+                                                formData={formData}
+                                                setFormData={setFormData}
                                             />
                                         )}
                                     </For>
@@ -1174,18 +987,14 @@ export const EditProfileModal: Component<{
                                     Public Updates
                                 </h3>
                                 <div class="space-y-4">
-                                    <For each={formData().public_updates}>
+                                    <For each={publicUpdates()}>
                                         {(update, index) => (
                                             <PublicUpdateInput
                                                 update={update}
                                                 index={index}
                                                 arrayName="public_updates" // Pass arrayName
-                                                onInput={
-                                                    handleArrayObjectInputChange
-                                                }
-                                                onRemove={
-                                                    removeArrayObjectInput
-                                                }
+                                                formData={formData}
+                                                setFormData={setFormData}
                                             />
                                         )}
                                     </For>

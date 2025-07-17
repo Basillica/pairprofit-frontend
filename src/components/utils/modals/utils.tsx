@@ -17,6 +17,7 @@ export const TestimonialInput: Component<{
     arrayName: 'testimonials';
     formData: Accessor<ArtisanModel>;
     setFormData: Setter<ArtisanModel>;
+    readOnly?: boolean;
 }> = (props) => {
     const [localTestimonial, setLocalTestimonial] = createSignal(
         props.testimonial
@@ -71,7 +72,12 @@ export const TestimonialInput: Component<{
     };
 
     return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
+        <div
+            class={`flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end ${
+                props.readOnly! && 'pointer-events-none'
+            }`}
+        >
+            {' '}
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label
@@ -209,6 +215,7 @@ export const OfferedServiceInput: Component<{
     arrayName: 'services_offered';
     formData: Accessor<ArtisanModel>;
     setFormData: Setter<ArtisanModel>;
+    readOnly?: boolean;
 }> = (props) => {
     const [localOfferedService, setLocalOfferedService] = createSignal(
         props.service
@@ -263,7 +270,12 @@ export const OfferedServiceInput: Component<{
     };
 
     return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
+        <div
+            class={`flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end ${
+                props.readOnly! && 'pointer-events-none'
+            }`}
+        >
+            {' '}
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label
@@ -388,6 +400,7 @@ export const PublicUpdateInput: Component<{
     arrayName: 'public_updates';
     formData: Accessor<ArtisanModel>;
     setFormData: Setter<ArtisanModel>;
+    readOnly?: boolean;
 }> = (props) => {
     const [localPublicUpdate, setLocalPublicUpdate] = createSignal(
         props.update
@@ -442,7 +455,12 @@ export const PublicUpdateInput: Component<{
     };
 
     return (
-        <div class="flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end">
+        <div
+            class={`flex flex-col sm:flex-row gap-2 border border-gray-200 rounded-md p-3 items-end ${
+                props.readOnly! && 'pointer-events-none'
+            }`}
+        >
+            {' '}
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label

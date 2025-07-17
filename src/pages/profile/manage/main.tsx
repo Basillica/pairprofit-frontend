@@ -8,13 +8,18 @@ import {
     createResource,
 } from 'solid-js';
 import { StarRating } from './rating';
-import { EditProfileModal } from './edit';
-import { CreateProviderProfileComponent } from '../../../components/utils/modals';
+import {
+    DeleteItemModal,
+    EditProfileModal,
+} from '../../../components/utils/modals';
+import { CreateProviderProfile } from '../../../components/utils/modals';
 import { SecureLocalStorage } from '../../../lib/localstore';
 import { ArtisanModel } from '../../../models/profile';
 import { ArtisanApiHandler } from '../../../api/backend/profile';
 import { UserModel } from '../../../models/auth';
 import css_module from './style.module.css';
+import { ViewProfileModal } from '../../../components/utils/modals';
+import { BucketAPIHandler } from '../../../api/supabase';
 
 export const generateUUID = () => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
@@ -58,9 +63,16 @@ export const ManageServiceProfiles: Component<{}> = () => {
     const [activeProfileId, setActiveProfileIdInternal] = createSignal(
         SecureLocalStorage.getItem('x-pairprofit-active-profile')
     );
+    const [deleteProfileListing, setDeleteProfileListing] = createSignal(false);
     const [showEditModal, setShowEditModal] = createSignal(false);
+    const [showViewModal, setShowViewModal] = createSignal(false);
     const [showCreateModal, setShowCreateModal] = createSignal(false);
     const [editingProfile, setEditingProfile] = createSignal<ArtisanModel>();
+    const [viewingProfile, setViewingProfile] = createSignal<ArtisanModel>();
+    const [deleteCurrentProfile, setCurrentDeleteProfile] =
+        createSignal<ArtisanModel>();
+
+    const [isAppLoading, setAppLoading] = createSignal(false);
 
     onMount(async () => {
         const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
@@ -76,41 +88,44 @@ export const ManageServiceProfiles: Component<{}> = () => {
     // Initialize active profile if none is set, or if an existing active one is deleted
     // This also serves as the initial render logic in SolidJS
     createEffect(() => {
-        const currentActiveId = activeProfileId();
-        const profiles = userProfiles();
-        if (profiles.length > 0) {
-            const activeExists = profiles.some((p) => p.id === currentActiveId);
-            if (!activeExists) {
-                setActiveProfileIdInternal(profiles[0].id); // Default to first if current active is gone or none set
-            }
-        } else {
-            SecureLocalStorage.removeItem('x-pairprofit-active-profile'); // Clear if no profiles exist
-            setActiveProfileIdInternal(null);
+        const currentActiveId = SecureLocalStorage.getItem<string>(
+            'x-pairprofit-active-profile'
+        );
+        if (currentActiveId && userProfiles().length > 0) {
+            setActiveProfileIdInternal(currentActiveId);
         }
     });
 
     const setActiveProfile = (id: string) => {
         SecureLocalStorage.storeItem('x-pairprofit-active-profile', id);
         setActiveProfileIdInternal(id);
-        const activeProfile = userProfiles().find((p) => p.id === id);
-        if (activeProfile) {
-            alert(
-                `You are now acting as "${activeProfile.name} (${activeProfile.specialization})"`
-            );
-        } else {
-            alert('No active profile selected.');
-        }
     };
 
     const openEditModal = (profileId: string) => {
         const profile = userProfiles().find(
             (p: ArtisanModel) => p.id === profileId
         );
-        console.log(profile, profileId, '--------------');
         if (profile) {
             setEditingProfile(profile);
             setShowEditModal(true);
         }
+    };
+
+    const openViewModal = (profileId: string) => {
+        const profile = userProfiles().find(
+            (p: ArtisanModel) => p.id === profileId
+        );
+        if (profile) {
+            setViewingProfile(profile);
+            setShowViewModal(true);
+        }
+    };
+
+    const openDeleteListing = (listingID: string) => {
+        setCurrentDeleteProfile(
+            userProfiles()!.find((el) => el.id === listingID)!
+        );
+        setDeleteProfileListing(true);
     };
 
     const closeEditModal = () => {
@@ -118,30 +133,63 @@ export const ManageServiceProfiles: Component<{}> = () => {
         setEditingProfile();
     };
 
-    const saveProfileChanges = (updatedProfile: ArtisanModel) => {
-        setUserProfiles((prevProfiles) =>
-            prevProfiles.map((p) =>
-                p.id === updatedProfile.id ? updatedProfile : p
-            )
-        );
-        alert('Profile updated successfully! (Check console for updated data)');
-        console.log('Updated Profile:', updatedProfile);
-        // In a real application, you would send `updatedProfile` to your backend API here
+    const closeViewModal = () => {
+        setShowViewModal(false);
+        setViewingProfile();
     };
 
-    const deleteProfile = (profileId: string) => {
-        if (
-            confirm(
-                'Are you sure you want to delete this profile? This action cannot be undone.'
-            )
-        ) {
+    const saveProfileChanges = async (updatedProfile: ArtisanModel) => {
+        setAppLoading(true);
+        const api = new ArtisanApiHandler();
+        const result = await api.editListing(updatedProfile.id, updatedProfile);
+        if (result.success) {
             setUserProfiles((prevProfiles) =>
-                prevProfiles.filter((p) => p.id !== profileId)
+                prevProfiles.map((p) =>
+                    p.id === updatedProfile.id ? updatedProfile : p
+                )
             );
-            alert('Profile deleted successfully! (Check console)');
-            console.log('Remaining Profiles:', userProfiles());
-            // In a real application, you would send a delete request to your backend API here
         }
+        setAppLoading(false);
+    };
+
+    function getFilePath(url: string): string | null {
+        const profilesPath = '/profiles/';
+        const startIndex = url.indexOf(profilesPath);
+
+        if (startIndex !== -1) {
+            // Add the length of "/profiles/" to get the start of the UUID
+            return url.substring(startIndex + profilesPath.length);
+        }
+        return null; // UUID part not found
+    }
+
+    const deleteProfile = async () => {
+        setDeleteProfileListing(false);
+        setAppLoading(true);
+
+        const supabase = new BucketAPIHandler();
+        const project_url = import.meta.env.VITE_SUPABASE_PROJECT_URL;
+        if (!project_url) {
+            console.error('VITE_SUPABASE_PROJECT_URL is missing.');
+            setAppLoading(false);
+            return;
+        }
+
+        let filePath = getFilePath(deleteCurrentProfile()!.id);
+        if (filePath) {
+            let result = await supabase.deleteFile('profiles', [filePath]);
+            console.log('the rseult ------', result);
+        }
+
+        const api = new ArtisanApiHandler();
+        const result = await api.deleteListing(deleteCurrentProfile()!.id);
+        if (result.success) {
+            setUserProfiles((prevProfiles) =>
+                prevProfiles.filter((p) => p.id !== deleteCurrentProfile()!.id)
+            );
+            console.log('done deleting profile');
+        }
+        setAppLoading(false);
     };
 
     return (
@@ -149,23 +197,34 @@ export const ManageServiceProfiles: Component<{}> = () => {
             class="w-full bg-white p-8 rounded-lg shadow-lg"
             style={'min-height: 90vh'}
         >
-            {artisanProfiles.loading && <Overlay />}
+            {(artisanProfiles.loading || isAppLoading()) && <Overlay />}
+
+            <ViewProfileModal
+                show={showViewModal()}
+                artisanProfile={viewingProfile}
+                onClose={closeViewModal}
+            />
+
             <EditProfileModal
                 show={showEditModal()}
-                editingProfile={editingProfile}
+                artisanProfile={editingProfile}
                 onClose={closeEditModal}
                 onSave={saveProfileChanges}
             />
 
-            <CreateProviderProfileComponent
+            <CreateProviderProfile
                 isOpen={showCreateModal}
                 closeModal={setShowCreateModal}
                 userProfiles={userProfiles}
                 setUserProfiles={setUserProfiles}
             />
 
-            {/* <div class="flex flex-wrap">
-    <div class="bg-gray-100 min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8"> */}
+            <DeleteItemModal
+                isOpen={deleteProfileListing}
+                continueDeletion={setDeleteProfileListing}
+                deleteListing={deleteProfile}
+                message="Are you sure that you want to delete this profile? All your contacts and message for this profile would be lost as well."
+            />
             <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-8">
                 Manage Your Service Profiles
             </h1>
@@ -217,8 +276,6 @@ export const ManageServiceProfiles: Component<{}> = () => {
                     >
                         <For each={userProfiles()}>
                             {(profile: ArtisanModel) => {
-                                const isActive =
-                                    profile.id === activeProfileId();
                                 return (
                                     <div
                                         classList={{
@@ -233,10 +290,18 @@ export const ManageServiceProfiles: Component<{}> = () => {
                                             transition: true,
                                             'duration-200': true,
                                             'hover:shadow-lg': true,
-                                            'border-4': isActive,
-                                            border: !isActive,
-                                            'border-blue-500': isActive,
-                                            'border-gray-200': !isActive,
+                                            'border-4':
+                                                profile.id ===
+                                                activeProfileId(),
+                                            border:
+                                                !profile.id ===
+                                                activeProfileId(),
+                                            'border-blue-500':
+                                                profile.id ===
+                                                activeProfileId(),
+                                            'border-gray-200':
+                                                !profile.id ===
+                                                activeProfileId(),
                                         }}
                                     >
                                         <img
@@ -269,19 +334,26 @@ export const ManageServiceProfiles: Component<{}> = () => {
                                         <p class="text-gray-600 text-sm mb-4 line-clamp-2">
                                             {profile.bio}
                                         </p>
-                                        <Show when={isActive}>
+                                        <Show
+                                            when={
+                                                profile.id === activeProfileId()
+                                            }
+                                        >
                                             <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-4">
                                                 Active Profile
                                             </span>
                                         </Show>
                                         <div class="flex flex-wrap justify-center gap-3 mt-auto w-full">
                                             {/* In a real SolidJS app, you'd use a router link if navigating within the SPA */}
-                                            <a
-                                                href={`/provider_profile/${profile.id}`}
+                                            <button
+                                                onClick={() =>
+                                                    openViewModal(profile.id)
+                                                }
+                                                // href={`/provider_profile/${profile.id}`}
                                                 class="flex-1 min-w-[100px] bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded-md hover:bg-gray-300 text-center"
                                             >
                                                 View Profile
-                                            </a>
+                                            </button>
                                             <button
                                                 onClick={() =>
                                                     openEditModal(profile.id)
@@ -292,13 +364,16 @@ export const ManageServiceProfiles: Component<{}> = () => {
                                             </button>
                                             <button
                                                 onClick={() =>
-                                                    deleteProfile(profile.id)
+                                                    openDeleteListing(
+                                                        profile.id
+                                                    )
                                                 }
                                                 class="flex-1 min-w-[100px] bg-red-500 text-white text-sm py-2 px-3 rounded-md hover:bg-red-600"
                                             >
                                                 Delete
                                             </button>
-                                            <Show when={!isActive}>
+                                            {profile.id !==
+                                                activeProfileId() && (
                                                 <button
                                                     onClick={() =>
                                                         setActiveProfile(
@@ -309,7 +384,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
                                                 >
                                                     Activate
                                                 </button>
-                                            </Show>
+                                            )}
                                         </div>
                                     </div>
                                 );

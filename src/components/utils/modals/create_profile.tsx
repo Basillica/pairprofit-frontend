@@ -51,7 +51,7 @@ interface FilterOption {
  * - isOpen: Accessor<boolean> - Controls the visibility of the modal.
  * - closeModal: Setter<boolean> - Callback function to close the modal.
  */
-export const CreateProviderProfileComponent: Component<{
+export const CreateProviderProfile: Component<{
     isOpen: Accessor<boolean>;
     closeModal: Setter<boolean>;
     userProfiles: Accessor<ArtisanModel[]>;
@@ -84,7 +84,7 @@ export const CreateProviderProfileComponent: Component<{
         OfferedService[]
     >([]);
     const [uploadedFiles, setUploadedFiles] = createSignal<
-        { file: File; previewUrl: string; mimeType: string }[]
+        { file: File; fileName: string; mimeType: string }[]
     >([]);
     const [publicUpdates, setPublicUpdates] = createSignal<PublicUpdate[]>([]);
     const [newCertificationInput, setNewCertificationInput] = createSignal('');
@@ -205,7 +205,7 @@ export const CreateProviderProfileComponent: Component<{
         const file = files ? files[0] : null;
         let newFilesToUpload: {
             file: File;
-            previewUrl: string;
+            fileName: string;
             mimeType: string;
         }[] = [];
 
@@ -220,7 +220,7 @@ export const CreateProviderProfileComponent: Component<{
             }
             newFilesToUpload.push({
                 file: file,
-                previewUrl: file.name,
+                fileName: file.name,
                 mimeType: file.type,
             });
             const reader = new FileReader();
@@ -309,7 +309,7 @@ export const CreateProviderProfileComponent: Component<{
 
         // uplaod files
         const uploadPromises = uploadedFiles().map(async (element) => {
-            const filePath = `${user.id}/${element.previewUrl}`;
+            const filePath = `${user.id}/${element.fileName}`;
             const file_url = await supabase.uploadFile(
                 'profiles',
                 filePath,
@@ -320,7 +320,7 @@ export const CreateProviderProfileComponent: Component<{
                 return {
                     type: element.mimeType,
                     url: `${project_url}/storage/v1/object/public/profiles/${file_url}`,
-                    name: element.previewUrl,
+                    name: element.fileName,
                 };
             }
             return null;
