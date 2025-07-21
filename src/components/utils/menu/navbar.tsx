@@ -11,7 +11,7 @@ import { useNavigate } from '@solidjs/router';
 import { PostServiceRequestForm } from '../modals';
 import { useAppContext } from '../../../state';
 import { authService } from '../../../oauth/manager';
-import { MenuItem, MenuItems } from './menuitems';
+import { MenuItem, GetMenuItems } from './menuitems';
 import logo from './../../../assets/A.png';
 
 // --- SubMenu Component ---
@@ -111,8 +111,9 @@ export const NavBar: Component<{
     const [addRequest, setAddRequest] = createSignal<boolean>(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = createSignal(false);
     const [openDropdowns, setOpenDropdowns] = createSignal<string[]>([]);
+    const [isUserAuthenticated, setIsUserAuthenticated] = createSignal(false);
     const { userType } = useAppContext();
-    // Function to close all open dropdowns
+
     const closeAllMenus = () => {
         setOpenDropdowns([]);
         setIsMobileMenuOpen(false); // Close mobile menu as well
@@ -123,6 +124,7 @@ export const NavBar: Component<{
             let authUser = authService.getAuthUser();
             if (authUser) {
                 userType.setAuthUser(authUser);
+                setIsUserAuthenticated(true);
             }
         }
     });
@@ -218,7 +220,7 @@ export const NavBar: Component<{
 
             {/* Main Navigation - Hidden on mobile, shown on desktop */}
             <div class="hidden md:flex items-center space-x-4 z-999">
-                {MenuItems.map((item) => (
+                {GetMenuItems(isUserAuthenticated()).map((item) => (
                     <div class="relative group">
                         {item.children ? (
                             <button
@@ -542,7 +544,7 @@ export const NavBar: Component<{
                         </button>
                     </div>
                     <ul class="space-y-2">
-                        <For each={MenuItems}>
+                        <For each={GetMenuItems(isUserAuthenticated())}>
                             {(item) => (
                                 <SubMenu
                                     item={item}

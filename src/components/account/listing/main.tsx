@@ -54,17 +54,6 @@ export const ServiceProviderListings = (): JSX.Element => {
 
     const [artisanCount, setArtisanCount] = createSignal(0);
 
-    const generateUUID = () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
-            /[xy]/g,
-            function (c) {
-                const r = (Math.random() * 16) | 0,
-                    v = c == 'x' ? r : (r & 0x3) | 0x8;
-                return v.toString(16);
-            }
-        );
-    };
-
     const fetchArtisans = async (
         props: ListingsFilter
     ): Promise<ArtisanModel[]> => {
@@ -75,103 +64,7 @@ export const ServiceProviderListings = (): JSX.Element => {
             setArtisanCount(result.data.count);
             listings = result.data.listings as ArtisanModel[];
         }
-        listings.push({
-            id: 'provider1',
-            user_id: generateUUID(),
-            name: 'John Doe',
-            category: 'Home Improvement', // More general category
-            sub_category: 'Carpenter',
-            profile_picture:
-                'https://images.unsplash.com/photo-1549068106-b024baf5062d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-            followers: 750, // More specific placeholder
-            specialization: 'Carpenter',
-            certifications: [
-                'Master Carpenter Certification, Woodworking Guild Member',
-            ],
-            bio: 'Experienced woodworker specializing in custom furniture and intricate installations. I prioritize quality and client satisfaction, delivering durable and beautiful results.',
-            overall_rating: 4.8,
-            total_reviews: 120,
-            location: 'Nuremberg, Germany',
-            years_in_business: 15,
-            business_name: "Doe's Custom Woodwork",
-            business_registration: 'DE123456789',
-            contact_preferences: [
-                'Platform Chat (Recommended)',
-                'Email',
-                'Service Radius: 50km',
-            ],
-            rating_breakdown: {
-                '5': 105,
-                '4': 10,
-                '3': 5,
-                '2': 0,
-                '1': 0,
-            },
-            testimonials: [
-                {
-                    id: 101,
-                    reviewer: 'Anna Schmidt',
-                    rating: 5,
-                    date: '2024-06-15',
-                    comment:
-                        'John built us a beautiful custom dining table. The craftsmanship is superb and he was a pleasure to work with!',
-                    service_title: 'Custom Dining Table Build',
-                },
-                {
-                    id: 102,
-                    reviewer: 'Markus Bauer',
-                    rating: 5,
-                    date: '2024-05-20',
-                    comment:
-                        'Excellent deck repair service. Very professional and completed the work quickly.',
-                    service_title: 'Deck Repair',
-                },
-            ],
-            services_offered: [
-                {
-                    id: generateUUID(),
-                    title: 'Custom Furniture Design & Build',
-                    category: 'Carpentry',
-                    price: 'Starting from €800',
-                    link: '/services/custom-furniture',
-                },
-                {
-                    id: generateUUID(),
-                    title: 'Deck Construction & Repair',
-                    category: 'Outdoor Living',
-                    price: 'Quote based on project',
-                    link: '/services/deck-construction',
-                },
-                {
-                    id: generateUUID(),
-                    title: 'Cabinet Installation',
-                    category: 'Interior Finishing',
-                    price: '€60/hour',
-                    link: '/services/cabinet-installation',
-                },
-            ],
-            public_updates: [
-                {
-                    id: generateUUID(),
-                    date: '2025-07-01',
-                    type: 'Project Update',
-                    title: "Completed the 'Oak Haven' Kitchen Cabinetry",
-                    content:
-                        'Just finished a stunning custom oak cabinetry project in Fürth. The clients are thrilled with their new kitchen space!',
-                    image: 'https://images.unsplash.com/photo-1600440051185-3b9b4f6e3c0f?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                },
-                {
-                    id: generateUUID(),
-                    date: '2025-06-20',
-                    type: 'News',
-                    title: 'New Sustainable Wood Sourcing Initiative',
-                    content:
-                        "We're excited to announce our partnership with local sustainable forests to source all our wood, reinforcing our commitment to eco-friendly practices.",
-                    image: null,
-                },
-            ],
-        });
-        setArtisanCount(listings.length);
+        setArtisanCount(result.data.count);
         return listings;
     };
 
@@ -190,11 +83,13 @@ export const ServiceProviderListings = (): JSX.Element => {
         rating: 5,
         location: '',
     });
-    const [_, setViewListing] = createSignal(false);
-    const [listings] = createResource(filterProps, fetchArtisans);
+    const [profileListings] = createResource(filterProps, fetchArtisans);
+
     const openListing = (listingID: string) => {
-        setCurrentListing(listings.latest!.find((el) => el.id === listingID)!);
-        setViewListing(true);
+        setCurrentListing(
+            profileListings.latest!.find((el) => el.id === listingID)!
+        );
+        setViewProfile(true);
     };
     const [apiCategories, setApiCategories] =
         createSignal<ApiCategoriesResponse>({});
@@ -357,7 +252,7 @@ export const ServiceProviderListings = (): JSX.Element => {
                 )}
 
                 <div class="flex flex-wrap" style={'margin-top: 20px;'}>
-                    <For each={listings.latest}>
+                    <For each={profileListings.latest}>
                         {(profile) => (
                             <div class="md:w-6/12 px-2 lg:w-2/10 px-2 mb-2">
                                 <div class={css_class.profile_card}>
@@ -426,8 +321,11 @@ export const ServiceProviderListings = (): JSX.Element => {
                                             </div>
                                         </div>
 
-                                        <div class="mb-4 text-center text-gray-700 text-sm provider-bio">
-                                            {profile.bio.slice(0, 180)} ...
+                                        <div class="mb-4 text-center text-gray-700 text-sm provider-bio h-10">
+                                            {profile.bio.length <= 90
+                                                ? profile.bio
+                                                : profile.bio.slice(0, 90)}{' '}
+                                            ...
                                         </div>
 
                                         <div class="mt-auto text-center">

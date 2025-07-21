@@ -191,10 +191,11 @@
 }
 
 .attachment_container {
-    height: 4.5rem;
+    height: 6rem;
     overflow-y: auto;
     position: relative;
     padding-bottom: 0.5rem;
+    background-color: rgb(244, 244, 248);
 }
 
 .attachment_container::-webkit-scrollbar {

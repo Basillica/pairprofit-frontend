@@ -8,15 +8,6 @@ export const AuthLayout: Component = (props: any) => {
     const [openLogout, setOpenLogout] = createSignal(false);
     const navigate = useNavigate();
 
-    // createEffect(
-    //     (prev) => {
-    //         if (authUser()! !== prev && !authUser()!) {
-    //             navigate('/login');
-    //         }
-    //     },
-    //     [authUser()]
-    // );
-
     const handleLogout = () => {
         authService.clearAuthToken();
         SecureLocalStorage.removeItem('x-auth-device-verified');

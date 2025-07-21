@@ -46,7 +46,8 @@ render(
             <Route path="/sw.js" />
             <Route path="/brevo-frame.html" />
             <Route path="/" component={AuthLayout}>
-                <Route path="/listings" component={ServiceListings} />
+                <Route path="/listings" component={ServiceProviderListings} />
+                <Route path="/requests" component={ServiceListings} />
                 <Route path="/notifications" component={NotificationsPage} />
                 <Route path="/logger" component={LoggerPage} />
                 <Route path="/contact">
@@ -68,7 +69,6 @@ render(
                     />
                 </Route>
                 <Route path="/profiles">
-                    <Route path="/" component={ServiceProviderListings} />
                     <Route path="/manage" component={ManageServiceProfiles} />
                     <Route path="/kanban" component={KanbanBoard} />
                     <Route path="/dashboard" component={ProfileDashboard} />

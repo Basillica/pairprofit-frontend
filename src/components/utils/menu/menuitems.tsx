@@ -151,195 +151,213 @@ export const authenticatedMenuItems: MenuItem[] = [
     // },
 ];
 
-export const MenuItems: MenuItem[] = [
-    // --- Public / Unauthenticated Routes ---
-    {
-        id: 'home',
-        label: 'Home',
-        icon: 'fas fa-home',
-        children: [
-            {
-                id: 'home',
-                label: 'Home',
-                path: '/',
-                icon: 'fas fa-home',
-            },
-            {
-                id: 'about',
-                label: 'About Us',
-                path: '/about',
-                icon: 'fas fa-info-circle',
-            },
-            {
-                id: 'login',
-                label: 'Login',
-                path: '/login',
-                icon: 'fas fa-sign-in-alt',
-            },
-            {
-                id: 'listings-public',
-                label: 'Explore Services',
-                path: '/listings',
-                icon: 'fas fa-search',
-            },
-        ],
-    },
-    // --- Authenticated Routes ---
-    {
-        id: 'contact',
-        label: 'Contact',
-        icon: 'fas fa-address-book',
-        children: [
-            {
-                id: 'contact-list',
-                label: 'Contact List',
-                path: '/contact/list',
-                icon: 'fas fa-comment-dots',
-            },
+export const GetMenuItems = (isAuth?: boolean): MenuItem[] => {
+    return [
+        // --- Public / Unauthenticated Routes ---
+        isAuth
+            ? {
+                  id: 'home',
+                  label: 'Home',
+                  icon: 'fas fa-home',
+                  path: '/listings',
+                  children: [
+                      {
+                          id: 'listings',
+                          label: 'Service Profiles',
+                          path: '/listings',
+                          icon: 'fas fa-home',
+                      },
+                  ],
+              }
+            : {
+                  id: 'home',
+                  label: 'Home',
+                  icon: 'fas fa-home',
+                  path: '/listings',
+                  children: [
+                      {
+                          id: 'home',
+                          label: 'Home',
+                          path: '/',
+                          icon: 'fas fa-home',
+                      },
+                      {
+                          id: 'about',
+                          label: 'About Us',
+                          path: '/about',
+                          icon: 'fas fa-info-circle',
+                      },
+                      {
+                          id: 'login',
+                          label: 'Login',
+                          path: '/login',
+                          icon: 'fas fa-sign-in-alt',
+                      },
+                      {
+                          id: 'listings-public',
+                          label: 'Explore Services',
+                          path: '/listings',
+                          icon: 'fas fa-search',
+                      },
+                  ],
+              },
+        // --- Authenticated Routes ---
+        {
+            id: 'contact',
+            label: 'Contact',
+            icon: 'fas fa-address-book',
+            children: [
+                {
+                    id: 'contact-list',
+                    label: 'Contact List',
+                    path: '/contact/list',
+                    icon: 'fas fa-comment-dots',
+                },
 
-            {
-                id: 'notifications',
-                label: 'Notifications',
-                path: '/notifications',
-                icon: 'fas fa-bell',
-            },
-            {
-                id: 'logger',
-                label: 'Logger',
-                path: '/logger',
-                icon: 'fas fa-clipboard-list',
-            },
-            {
-                id: 'email',
-                label: 'Email',
-                icon: 'fas fa-comments',
-                children: [
-                    {
-                        id: 'inbox',
-                        label: 'Email Inbox',
-                        path: '/contact/email/inbox',
-                        icon: 'fas fa-inbox',
-                    },
-                    {
-                        id: 'email-compose',
-                        label: 'Compose Email',
-                        path: '/contact/email/compose',
-                        icon: 'fas fa-paper-plane',
-                    },
-                ],
-            },
-            {
-                id: 'in-app-chat',
-                label: 'In-App Chat',
-                path: '/contact/chat',
-                icon: 'fas fa-comment-dots',
-            },
-            {
-                id: 'in-app-call',
-                label: 'In-App Call',
-                path: '/contact/call',
-                icon: 'fas fa-comment-dots',
-            },
+                {
+                    id: 'notifications',
+                    label: 'Notifications',
+                    path: '/notifications',
+                    icon: 'fas fa-bell',
+                },
+                {
+                    id: 'logger',
+                    label: 'Logger',
+                    path: '/logger',
+                    icon: 'fas fa-clipboard-list',
+                },
+                {
+                    id: 'email',
+                    label: 'Email',
+                    icon: 'fas fa-comments',
+                    children: [
+                        {
+                            id: 'inbox',
+                            label: 'Email Inbox',
+                            path: '/contact/email/inbox',
+                            icon: 'fas fa-inbox',
+                        },
+                        {
+                            id: 'email-compose',
+                            label: 'Compose Email',
+                            path: '/contact/email/compose',
+                            icon: 'fas fa-paper-plane',
+                        },
+                    ],
+                },
+                {
+                    id: 'in-app-chat',
+                    label: 'In-App Chat',
+                    path: '/contact/chat',
+                    icon: 'fas fa-comment-dots',
+                },
+                {
+                    id: 'in-app-call',
+                    label: 'In-App Call',
+                    path: '/contact/call',
+                    icon: 'fas fa-comment-dots',
+                },
 
-            // {
-            //     id: 'communication',
-            //     label: 'Communication',
-            //     icon: 'fas fa-comments',
-            //     children: [
-            //         {
-            //             id: 'chat-app',
-            //             label: 'Chat',
-            //             path: '/chat',
-            //             icon: 'fas fa-comment-dots',
-            //         },
-            //         {
-            //             id: 'mail-app',
-            //             label: 'All Mail',
-            //             path: '/mail',
-            //             icon: 'fas fa-mail-bulk',
-            //         },
-            //         {
-            //             id: 'compose-mail',
-            //             label: 'Compose Mail',
-            //             path: '/mailer',
-            //             icon: 'fas fa-paper-plane',
-            //         },
-            //         {
-            //             id: 'lovely-chat',
-            //             label: 'Direct Messages',
-            //             path: '/profile/message',
-            //             icon: 'fas fa-envelope-open-text',
-            //         },
-            //         {
-            //             id: 'in-app-call',
-            //             label: 'In-App Call',
-            //             path: '/profile/call',
-            //             icon: 'fas fa-solid fa-phone-volume',
-            //         },
-            //         {
-            //             id: 'email-inbox',
-            //             label: 'Email Inbox',
-            //             path: '/profile/inbox',
-            //             icon: 'fas fa-inbox',
-            //         },
-            //     ],
-            // },
-        ],
-    },
-    {
-        id: 'profile-management',
-        label: 'Profile Management',
-        icon: 'fas fa-user-circle',
-        children: [
-            {
-                id: 'profile-dashboard',
-                label: 'My Dashboard',
-                path: '/profile/dashboard',
-                icon: 'fas fa-chart-line',
-            },
-            {
-                id: 'account-settings',
-                label: 'Account Settings',
-                path: '/profile/setting',
-                icon: 'fas fa-cogs',
-            },
-        ],
-    },
-    {
-        id: 'service-provider-management',
-        label: 'Service Provider',
-        icon: 'fas fa-hands-helping',
-        children: [
-            {
-                id: 'provider-listings',
-                label: 'Service Listings',
-                path: '/profiles',
-                icon: 'fas fa-list',
-            },
-            {
-                id: 'manage-service-profiles',
-                label: 'Manage Profiles',
-                path: '/profiles/manage',
-                icon: 'fas fa-user-tie',
-            },
-            {
-                id: 'kanban-board',
-                label: 'Kanban Board',
-                path: '/profiles/kanban',
-                icon: 'fas fa-th-list',
-            },
-            {
-                id: 'calendar',
-                label: 'Calendar',
-                path: '/profiles/calendar',
-                icon: 'fas fa-calendar-alt',
-            },
-            {
-                id: 'calendar',
-                label: 'Dashboard',
-                path: '/profiles/dashboard',
-                icon: 'fas fa-calendar-alt',
-            },
-        ],
-    },
-];
+                // {
+                //     id: 'communication',
+                //     label: 'Communication',
+                //     icon: 'fas fa-comments',
+                //     children: [
+                //         {
+                //             id: 'chat-app',
+                //             label: 'Chat',
+                //             path: '/chat',
+                //             icon: 'fas fa-comment-dots',
+                //         },
+                //         {
+                //             id: 'mail-app',
+                //             label: 'All Mail',
+                //             path: '/mail',
+                //             icon: 'fas fa-mail-bulk',
+                //         },
+                //         {
+                //             id: 'compose-mail',
+                //             label: 'Compose Mail',
+                //             path: '/mailer',
+                //             icon: 'fas fa-paper-plane',
+                //         },
+                //         {
+                //             id: 'lovely-chat',
+                //             label: 'Direct Messages',
+                //             path: '/profile/message',
+                //             icon: 'fas fa-envelope-open-text',
+                //         },
+                //         {
+                //             id: 'in-app-call',
+                //             label: 'In-App Call',
+                //             path: '/profile/call',
+                //             icon: 'fas fa-solid fa-phone-volume',
+                //         },
+                //         {
+                //             id: 'email-inbox',
+                //             label: 'Email Inbox',
+                //             path: '/profile/inbox',
+                //             icon: 'fas fa-inbox',
+                //         },
+                //     ],
+                // },
+            ],
+        },
+        {
+            id: 'profile-management',
+            label: 'Profile Management',
+            icon: 'fas fa-user-circle',
+            children: [
+                {
+                    id: 'profile-dashboard',
+                    label: 'My Dashboard',
+                    path: '/profile/dashboard',
+                    icon: 'fas fa-chart-line',
+                },
+                {
+                    id: 'account-settings',
+                    label: 'Account Settings',
+                    path: '/profile/setting',
+                    icon: 'fas fa-cogs',
+                },
+            ],
+        },
+        {
+            id: 'service-provider-management',
+            label: 'Service Provider',
+            icon: 'fas fa-hands-helping',
+            children: [
+                {
+                    id: 'provider-listings',
+                    label: 'Service Requests',
+                    path: '/requests',
+                    icon: 'fas fa-list',
+                },
+                {
+                    id: 'manage-service-profiles',
+                    label: 'Manage Profiles',
+                    path: '/profiles/manage',
+                    icon: 'fas fa-user-tie',
+                },
+                {
+                    id: 'kanban-board',
+                    label: 'Kanban Board',
+                    path: '/profiles/kanban',
+                    icon: 'fas fa-th-list',
+                },
+                {
+                    id: 'calendar',
+                    label: 'Calendar',
+                    path: '/profiles/calendar',
+                    icon: 'fas fa-calendar-alt',
+                },
+                {
+                    id: 'calendar',
+                    label: 'Dashboard',
+                    path: '/profiles/dashboard',
+                    icon: 'fas fa-calendar-alt',
+                },
+            ],
+        },
+    ];
+};

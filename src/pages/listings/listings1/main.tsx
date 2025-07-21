@@ -213,10 +213,11 @@ export const ServiceListingA: Component<{
                                     )}
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900 mb-1 leading-tight pr-14">
-                                    Custom Software Development
+                                    {service.sub_category} Request
                                 </h3>
                                 <p class="text-sm text-gray-600 mb-3">
-                                    Service &bull; IT & Tech
+                                    {service.category} &bull;{' '}
+                                    {service.sub_category}
                                 </p>
                                 <div class="flex items-center text-gray-700 text-sm mb-4">
                                     <i
@@ -238,8 +239,11 @@ export const ServiceListingA: Component<{
                                 <p class="text-sm text-gray-700 leading-relaxed mb-4 card-description">
                                     {service.description}
                                 </p>
+                                <p class="text-sm text-gray-400 leading-relaxed mb-4 card-description">
+                                    <b>Attachments</b>
+                                </p>
                                 <div
-                                    class={`${css_module.attachment_container} flex flex-wrap gap-2 mb-4`}
+                                    class={`${css_module.attachment_container} flex flex-wrap gap-2 mb-1`}
                                 >
                                     {service.attachments.length > 0 && (
                                         <For
