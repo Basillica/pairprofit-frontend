@@ -187,7 +187,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     };
 
     return (
-        <>
+        <div class="containers">
             <div>
                 <ProviderProfileDetail
                     isOpen={viewProfile}
@@ -241,20 +241,25 @@ export const ServiceProviderListings = (): JSX.Element => {
                 </div>
 
                 {openFilterBar() && (
-                    <FilterBar
-                        categories={categories}
-                        subCategories={subCategories}
-                        filterOption={filterOption}
-                        setFilterOption={setFilterOption}
-                        onApplyFilters={handleApplyFilters}
-                        handleInputChange={handleInputChange}
-                    />
+                    <div style={'margin-bottom: 5px; padding: 3px'}>
+                        <FilterBar
+                            categories={categories}
+                            subCategories={subCategories}
+                            filterOption={filterOption}
+                            setFilterOption={setFilterOption}
+                            onApplyFilters={handleApplyFilters}
+                            handleInputChange={handleInputChange}
+                        />
+                    </div>
                 )}
 
-                <div class="flex flex-wrap" style={'margin-top: 20px;'}>
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+                    style={'margin-top: 10px;'}
+                >
                     <For each={profileListings.latest}>
                         {(profile) => (
-                            <div class="md:w-6/12 px-2 lg:w-2/10 px-2 mb-2">
+                            <div>
                                 <div class={css_class.profile_card}>
                                     <div class=" p-6 pb-2 bg-gradient-to-br from-blue-600 to-blue-800 text-white flex-shrink-0">
                                         <div class="flex justify-center -mb-12">
@@ -355,7 +360,7 @@ export const ServiceProviderListings = (): JSX.Element => {
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
             />
-        </>
+        </div>
     );
 };
 

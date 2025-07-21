@@ -99,6 +99,8 @@ export function NotificationsPage() {
     const [notifications, setNotifications] =
         createSignal<Notification[]>(initialNotifications);
     const [filter, setFilter] = createSignal<string>('all');
+    const [selectedNotification, setSelectedNotification] =
+        createSignal<Notification | null>(null);
 
     const filteredNotifications = () => {
         let currentNotifications = [...notifications()];
@@ -129,22 +131,17 @@ export function NotificationsPage() {
         setNotifications((prev) =>
             prev.map((notif) => ({ ...notif, isRead: status }))
         );
-        alert(
-            `All notifications marked as ${
-                status ? 'read' : 'unread'
-            }. (Simulated)`
-        );
     };
 
     const handleNotificationClick = (notif: Notification) => {
-        alert(
-            `Simulating click on notification: "${notif.title}". ${
-                notif.link ? `Would navigate to: ${notif.link}` : ''
-            }`
-        );
+        setSelectedNotification(notif);
         if (!notif.isRead) {
             handleToggleReadStatus(notif.id);
         }
+    };
+
+    const handleCloseNotificationCard = () => {
+        setSelectedNotification(null);
     };
 
     return (
@@ -266,43 +263,149 @@ export function NotificationsPage() {
                 </p>
             </div>
 
+            <Show when={selectedNotification()}>
+                <NotificationDetailCard
+                    notification={selectedNotification()!}
+                    onClose={handleCloseNotificationCard}
+                />
+            </Show>
+
             <style>{`
-        .notifications-container {
-          max-height: calc(100vh - 200px);
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: #a0aec0 #edf2f7;
-        }
-        .notifications-container::-webkit-scrollbar {
-          width: 8px;
-        }
-        .notifications-container::-webkit-scrollbar-track {
-          background: #edf2f7;
-          border-radius: 10px;
-        }
-        .notifications-container::-webkit-scrollbar-thumb {
-          background-color: #a0aec0;
-          border-radius: 10px;
-          border: 2px solid #edf2f7;
-        }
+                .notifications-container {
+                max-height: calc(100vh - 200px);
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #a0aec0 #edf2f7;
+                }
+                .notifications-container::-webkit-scrollbar {
+                width: 8px;
+                }
+                .notifications-container::-webkit-scrollbar-track {
+                background: #edf2f7;
+                border-radius: 10px;
+                }
+                .notifications-container::-webkit-scrollbar-thumb {
+                background-color: #a0aec0;
+                border-radius: 10px;
+                border: 2px solid #edf2f7;
+                }
 
-        .notification-item {
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-        }
+                .notification-item {
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+                }
 
-        .notification-item.unread {
-          background-color: #eff6ff;
-          border-left: 4px solid #3b82f6;
-        }
-        .notification-item.read {
-          background-color: #ffffff;
-          border-left: 4px solid transparent;
-        }
-        .notification-item:hover {
-          background-color: #e2e8f0;
-        }
-      `}</style>
+                .notification-item.unread {
+                background-color: #eff6ff;
+                border-left: 4px solid #3b82f6;
+                }
+                .notification-item.read {
+                background-color: #ffffff;
+                border-left: 4px solid transparent;
+                }
+                .notification-item:hover {
+                background-color: #e2e8f0;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+function getNotificationTypeTitle(type: NotificationType): string {
+    switch (type) {
+        case 'message':
+            return 'New Message';
+        case 'job':
+            return 'Job Update';
+        case 'review':
+            return 'New Review';
+        case 'payment':
+            return 'Payment Received';
+        case 'system':
+            return 'System Alert';
+        case 'general':
+            return 'General Notification';
+        default:
+            return 'Notification';
+    }
+}
+
+interface NotificationDetailCardProps {
+    notification: Notification;
+    onClose: () => void; // Callback to close the card
+}
+
+export function NotificationDetailCard(props: NotificationDetailCardProps) {
+    const { notification, onClose } = props;
+
+    return (
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-auto p-6 relative">
+                <button
+                    onClick={onClose}
+                    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    aria-label="Close notification details"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                    </svg>
+                </button>
+
+                <h2 class="text-2xl font-bold text-gray-900 mb-4 break-words">
+                    {notification.title}
+                </h2>
+
+                <div class="text-sm text-gray-600 mb-4">
+                    <span class="font-semibold">Type:</span>{' '}
+                    {getNotificationTypeTitle(notification.type)}
+                </div>
+
+                <p class="text-gray-800 mb-6 leading-relaxed break-words">
+                    {notification.message}
+                </p>
+
+                <div class="text-xs text-gray-500 mb-4">
+                    <span class="font-semibold">Received:</span>{' '}
+                    {notification.timestamp.toLocaleString()}
+                </div>
+
+                <Show when={notification.link}>
+                    <a
+                        href={notification.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onClick={onClose} // Close the card when the link is clicked
+                    >
+                        View Details
+                        <svg
+                            class="ml-2 -mr-1 w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+                        </svg>
+                    </a>
+                </Show>
+
+                <div class="mt-4 text-xs text-gray-400">
+                    <span class="font-semibold">Status:</span>{' '}
+                    {notification.isRead ? 'Read' : 'Unread'}
+                </div>
+            </div>
         </div>
     );
 }

@@ -249,9 +249,6 @@ export const ProviderProfileDetail: Component<{
                                         Reviews)
                                     </span>
                                 </div>
-                                {/* <button class="w-full sm:w-auto bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-lg font-medium shadow-md">
-                  Chat with Provider
-                </button> */}
                             </div>
                         </header>
 
@@ -267,36 +264,63 @@ export const ProviderProfileDetail: Component<{
                                     <strong class="font-semibold">
                                         Location:
                                     </strong>{' '}
-                                    {props.listing()?.location}
+                                    <a class="mb-2 p-2 bg-blue-100 rounded-md shadow-sm text-blue-800 font-medium [&::marker]:text-blue-600">
+                                        {' '}
+                                        {props.listing()?.location}
+                                    </a>
                                 </p>
                                 <p>
                                     <strong class="font-semibold">
                                         Years in Business:
                                     </strong>{' '}
-                                    {props.listing()?.years_in_business}
+                                    <a class="mb-2 p-2 bg-blue-100 rounded-md shadow-sm text-blue-800 font-medium [&::marker]:text-blue-600">
+                                        {' '}
+                                        {props.listing()?.years_in_business}
+                                    </a>
                                 </p>
                                 <p>
                                     <strong class="font-semibold">
                                         Business Name:
                                     </strong>{' '}
-                                    {props.listing()?.business_name}
+                                    <a class="mb-2 p-2 bg-blue-100 rounded-md shadow-sm text-blue-800 font-medium [&::marker]:text-blue-600">
+                                        {' '}
+                                        {props.listing()?.business_name}
+                                    </a>
                                 </p>
                                 <p>
                                     <strong class="font-semibold">
                                         Business Registration:
                                     </strong>{' '}
-                                    {props.listing()?.business_registration}
+                                    <a class="mb-2 p-2 bg-blue-100 rounded-md shadow-sm text-blue-800 font-medium [&::marker]:text-blue-600">
+                                        {' '}
+                                        {props.listing()?.business_registration}
+                                    </a>
                                 </p>
                             </div>
                             <div class="mt-4">
                                 <h3 class="text-lg font-semibold text-gray-800">
                                     Contact Preferences:
                                 </h3>
-                                <p class="text-gray-700">
-                                    {props
-                                        .listing()
-                                        ?.contact_preferences.join(', ')}
-                                </p>
+                                <ul class="list-disc ml-6 mt-5 text-gray-800">
+                                    {' '}
+                                    <For
+                                        each={
+                                            props.listing()?.contact_preferences
+                                        }
+                                        fallback={
+                                            <div>
+                                                No contact preferences
+                                                available.
+                                            </div>
+                                        }
+                                    >
+                                        {(item) => (
+                                            <li class="mb-2 p-2 bg-blue-100 rounded-md shadow-sm text-blue-800 font-medium [&::marker]:text-blue-600">
+                                                {item}
+                                            </li>
+                                        )}
+                                    </For>
+                                </ul>
                             </div>
                         </section>
 
