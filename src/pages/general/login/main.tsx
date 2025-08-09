@@ -104,7 +104,7 @@ export const LoginPage = () => {
     const [currentProcess, setCurrentProcess] =
         createSignal<ProcessType>('LoginCard');
     const {
-        userType: { setAuthUser },
+        userType: { setAuthUser, setUserID },
     } = useAppContext();
     const [isLoading, setIsLoading] = createSignal(false);
     const [confirmPasswordReset, setConfirmPasswordReset] = createSignal<{
@@ -298,6 +298,7 @@ export const LoginPage = () => {
         authService.setAuthToken(result.data.token, result.data.tokenAge);
         authService.setAuthUser(result.data.user);
         setAuthUser(result.data.user);
+        setUserID(result.data.user.id);
         setIsLoading(false);
         navigate('/listings');
     };
@@ -375,6 +376,7 @@ export const LoginPage = () => {
             authService.setAuthToken(result.data.token, result.data.tokenAge);
             authService.setAuthUser(result.data.user);
             setAuthUser(result.data.user);
+            setUserID(result.data.user.id);
             setIsLoading(false);
             navigate('/listings');
         }
@@ -425,6 +427,7 @@ export const LoginPage = () => {
         authService.setAuthToken(result.data.token, result.data.tokenAge);
         authService.setAuthUser(result.data.user);
         setAuthUser(result.data.user);
+        setUserID(result.data.user.id);
         authService.setDeviceVerified('True');
         setIsLoading(false);
         notification.showAppNotification('success', 'successfully logged in');
@@ -470,6 +473,7 @@ export const LoginPage = () => {
         authService.setAuthToken(result.data.token, result.data.tokenAge);
         authService.setAuthUser(result.data.user);
         setAuthUser(result.data.user);
+        setUserID(result.data.user.id);
         authService.setDeviceVerified('True');
         setIsLoading(false);
         notification.showAppNotification('success', 'successfully logged in');

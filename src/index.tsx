@@ -26,6 +26,8 @@ import {
 import './App.css';
 import { ServiceProviderListings } from './components/account';
 import { HomePage } from './pages/profile';
+import { GetEnvConfig } from './environments';
+import { UserLocationMap } from './pages/leaf';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -34,49 +36,64 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
     );
 }
 
+const config = GetEnvConfig();
+
 render(
     () => (
-        <Router root={RootLayout}>
-            <Route path="/" component={HomePage} />
-            <Route path="/about" component={AboutUs} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="/public/profile" />{' '}
-            <Route path="/caller" component={CallerPage} />
-            <Route path="/caller2" component={CallerPageV2} />
-            <Route path="/sw.js" />
-            <Route path="/brevo-frame.html" />
-            <Route path="/" component={AuthLayout}>
-                <Route path="/listings" component={ServiceProviderListings} />
-                <Route path="/requests" component={ServiceListings} />
-                <Route path="/notifications" component={NotificationsPage} />
-                <Route path="/logger" component={LoggerPage} />
-                <Route path="/contact">
-                    <Route path="/email">
-                        <Route path="/inbox" component={MailApp} />
-                        <Route path="/compose" component={ComposeMailApp} />
-                    </Route>
-                    <Route path="/chat" component={ChatApp} />
-                    <Route path="/list" component={ContactList} />
-                    <Route path="/call" component={CallerPageV3} />
-                    {/* <Route path="/inbox" component={EmailInbox} />  */}
-                    {/* <Route path="/message" component={LovelyChat} /> */}
-                </Route>
-                <Route path="/profile">
-                    <Route path="/setting" component={AccountSettings} />
+        <div>
+            <title>{config?.title}</title>
+            <Router root={RootLayout}>
+                <Route path="/" component={HomePage} />
+                <Route path="/about" component={AboutUs} />
+                <Route path="/login" component={LoginPage} />
+                <Route path="/public/profile" />{' '}
+                <Route path="/caller" component={CallerPage} />
+                <Route path="/caller2" component={CallerPageV2} />
+                <Route path="/sw.js" />
+                <Route path="/brevo-frame.html" />
+                <Route path={'/location'} component={UserLocationMap} />
+                <Route path="/" component={AuthLayout}>
                     <Route
-                        path="/dashboard"
-                        component={ServiceProviderDashboard}
+                        path="/listings"
+                        component={ServiceProviderListings}
                     />
+                    <Route path="/requests" component={ServiceListings} />
+                    <Route
+                        path="/notifications"
+                        component={NotificationsPage}
+                    />
+                    <Route path="/logger" component={LoggerPage} />
+                    <Route path="/contact">
+                        <Route path="/email">
+                            <Route path="/inbox" component={MailApp} />
+                            <Route path="/compose" component={ComposeMailApp} />
+                        </Route>
+                        <Route path="/chat" component={ChatApp} />
+                        <Route path="/list" component={ContactList} />
+                        <Route path="/call" component={CallerPageV3} />
+                        {/* <Route path="/inbox" component={EmailInbox} />  */}
+                        {/* <Route path="/message" component={LovelyChat} /> */}
+                    </Route>
+                    <Route path="/profile">
+                        <Route path="/setting" component={AccountSettings} />
+                        <Route
+                            path="/dashboard"
+                            component={ServiceProviderDashboard}
+                        />
+                    </Route>
+                    <Route path="/profiles">
+                        <Route
+                            path="/manage"
+                            component={ManageServiceProfiles}
+                        />
+                        <Route path="/kanban" component={KanbanBoard} />
+                        <Route path="/dashboard" component={ProfileDashboard} />
+                        <Route path="/calendar" component={Calendar} />
+                    </Route>
                 </Route>
-                <Route path="/profiles">
-                    <Route path="/manage" component={ManageServiceProfiles} />
-                    <Route path="/kanban" component={KanbanBoard} />
-                    <Route path="/dashboard" component={ProfileDashboard} />
-                    <Route path="/calendar" component={Calendar} />
-                </Route>
-            </Route>
-            <Route path="*404" component={Page404} />
-        </Router>
+                <Route path="*404" component={Page404} />
+            </Router>
+        </div>
     ),
     root!
 );

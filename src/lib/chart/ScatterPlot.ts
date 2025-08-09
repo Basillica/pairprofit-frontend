@@ -1,7 +1,7 @@
-import { ChartConfiguration, ChartTypeRegistry } from "chart.js";
-import { BaseChartClass } from "./BaseChartClass";
-import { resetZoom } from "chartjs-plugin-zoom";
-import { ChartProps } from "./LineChart";
+import { ChartConfiguration, ChartTypeRegistry } from 'chart.js';
+import { BaseChartClass } from './BaseChartClass';
+import { resetZoom } from 'chartjs-plugin-zoom';
+import { ChartProps } from './LineChart';
 
 export class ScatterPlot extends BaseChartClass {
     private zoom: boolean;
@@ -15,7 +15,7 @@ export class ScatterPlot extends BaseChartClass {
 
     getConfig(): ChartConfiguration {
         return {
-            type: "scatter" as keyof ChartTypeRegistry,
+            type: 'scatter' as keyof ChartTypeRegistry,
             data: this.setupData(),
             options: {
                 responsive: true,
@@ -23,24 +23,24 @@ export class ScatterPlot extends BaseChartClass {
                 plugins: {
                     legend: {
                         display: true,
-                        position: "bottom",
-                        align: "start",
+                        position: 'bottom',
+                        align: 'start',
                         maxHeight: 20,
                         maxWidth: 20,
                     },
                     title: {
                         display: true,
-                        text: "Scatter Chart",
+                        text: 'Scatter Chart',
                     },
                     zoom: {
                         zoom: {
                             drag: {
                                 enabled: this.zoom,
-                                backgroundColor: "#FAAA001A",
-                                borderColor: "#FAAA00",
+                                backgroundColor: '#FAAA001A',
+                                borderColor: '#FAAA00',
                                 borderWidth: 2,
                             },
-                            mode: "x",
+                            mode: 'x',
                             onZoom: this.zoomAction,
                         },
                     },
@@ -53,16 +53,22 @@ export class ScatterPlot extends BaseChartClass {
         return {
             datasets: [
                 {
-                    label: "Dataset 1",
+                    label: 'Dataset 1',
                     data: this.bubbles(), //[232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232],
                     borderColor: this.CHART_COLORS.red,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.red, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.red,
+                        0.5
+                    ),
                 },
                 {
-                    label: "Dataset 2",
+                    label: 'Dataset 2',
                     data: this.bubbles(), //[43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657],
                     borderColor: this.CHART_COLORS.blue,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.blue, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.blue,
+                        0.5
+                    ),
                 },
             ],
         };
@@ -71,7 +77,7 @@ export class ScatterPlot extends BaseChartClass {
     getActions() {
         return [
             {
-                name: "Reset Zoom",
+                name: 'Reset Zoom',
                 handler(chart: any) {
                     resetZoom(chart, chart.options.plugins.zoom.zoom.mode);
                 },

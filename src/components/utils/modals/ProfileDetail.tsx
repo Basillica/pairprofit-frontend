@@ -2,6 +2,7 @@ import { For, Show, Component, Accessor, Setter, createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import { ArtisanModel } from '../../../models/profile';
 import modal_styles from './style.module.css';
+import { useAppContext } from '../../../state';
 
 /**
  * @typedef {object} Review
@@ -106,6 +107,7 @@ export const ProviderProfileDetail: Component<{
     const [emailSubject, setEmailSubject] = createSignal('');
     const [emailMessage, setEmailMessage] = createSignal('');
     const [activeTab, setActiveTab] = createSignal('chat');
+    const { sendMessage, userType } = useAppContext();
 
     const handleClose = () => {
         props.closeModal(false);
@@ -117,12 +119,15 @@ export const ProviderProfileDetail: Component<{
 
     const handleSendMessage = () => {
         const message = chatMessage().trim();
-        if (message) {
-            console.log('Sending message:', message);
-            setChatMessage('');
-        } else {
-            alert('Please type a message.');
-        }
+        sendMessage({
+            type: 'chat_message',
+            sender_id: userType.userID(),
+            receiver_id: props.listing()?.user_id,
+            message: message,
+            timestamp: new Date().toISOString(),
+            message_content: 'text',
+        });
+        setChatMessage('');
     };
 
     const handleSubmitCallback = (
@@ -549,7 +554,7 @@ export const ProviderProfileDetail: Component<{
                                 Contact the Provider
                             </h2>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
                                 <button
                                     type="button"
                                     onClick={() => handleTabClick('chat')}
@@ -586,8 +591,23 @@ export const ProviderProfileDetail: Component<{
                                     }
                                               py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
                                 >
-                                    <span class="block text-xl">📧</span> Send
-                                    an Email
+                                    <span class="block text-xl">📧</span>
+                                    Send an Email
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        handleTabClick('in-app-call')
+                                    }
+                                    class={`${
+                                        activeTab() === 'in-app-call'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-800'
+                                    }
+                                              py-3 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
+                                >
+                                    <span class="block text-xl">📧</span>
+                                    In-App Call
                                 </button>
                             </div>
 

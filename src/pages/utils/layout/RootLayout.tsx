@@ -2,9 +2,11 @@ import { createSignal } from 'solid-js';
 import { AppContextProvider } from '../../../state';
 import { OAuthContextProvider } from '../../../oauth';
 import layout_css from './style.module.css';
+import { GetEnvConfig } from '../../../environments';
 
 export const RootLayout = (props: any) => {
     const [query] = createSignal('');
+    const config = GetEnvConfig();
 
     return (
         <>
@@ -17,7 +19,7 @@ export const RootLayout = (props: any) => {
                     'min-height': '100vh',
                 }}
             >
-                <AppContextProvider url="" query={query}>
+                <AppContextProvider url={config.WEBSOCKET_URL} query={query}>
                     <OAuthContextProvider>
                         <div
                             id="content"

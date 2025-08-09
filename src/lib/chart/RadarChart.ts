@@ -1,7 +1,7 @@
-import { ChartConfiguration, ChartTypeRegistry } from "chart.js";
-import { BaseChartClass } from "./BaseChartClass";
-import { resetZoom } from "chartjs-plugin-zoom";
-import { ChartProps } from "./LineChart";
+import { ChartConfiguration, ChartTypeRegistry } from 'chart.js';
+import { BaseChartClass } from './BaseChartClass';
+import { resetZoom } from 'chartjs-plugin-zoom';
+import { ChartProps } from './LineChart';
 
 export class RadarChart extends BaseChartClass {
     private zoom: boolean;
@@ -14,19 +14,19 @@ export class RadarChart extends BaseChartClass {
 
     getConfig(): ChartConfiguration {
         return {
-            type: "radar",
+            type: 'radar',
             data: this.setupData(),
             options: {
                 responsive: true,
                 plugins: {
                     title: {
                         display: true,
-                        text: "Chart.js Radar Chart",
+                        text: 'Chart.js Radar Chart',
                     },
                     legend: {
                         display: true,
-                        position: "bottom",
-                        align: "start",
+                        position: 'bottom',
+                        align: 'start',
                         maxHeight: 20,
                         maxWidth: 20,
                     },
@@ -34,11 +34,11 @@ export class RadarChart extends BaseChartClass {
                         zoom: {
                             drag: {
                                 enabled: this.zoom,
-                                backgroundColor: "#FAAA001A",
-                                borderColor: "#FAAA00",
+                                backgroundColor: '#FAAA001A',
+                                borderColor: '#FAAA00',
                                 borderWidth: 2,
                             },
-                            mode: "x",
+                            mode: 'x',
                             onZoom: this.zoomAction,
                         },
                     },
@@ -52,16 +52,26 @@ export class RadarChart extends BaseChartClass {
             labels: this.getMonths(),
             datasets: [
                 {
-                    label: "Dataset 1",
-                    data: [232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232],
+                    label: 'Dataset 1',
+                    data: [
+                        232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232,
+                    ],
                     borderColor: this.CHART_COLORS.red,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.red, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.red,
+                        0.5
+                    ),
                 },
                 {
-                    label: "Dataset 2",
-                    data: [43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657],
+                    label: 'Dataset 2',
+                    data: [
+                        43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657,
+                    ],
                     borderColor: this.CHART_COLORS.blue,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.blue, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.blue,
+                        0.5
+                    ),
                 },
             ],
         };
@@ -70,7 +80,7 @@ export class RadarChart extends BaseChartClass {
     getActions() {
         return [
             {
-                name: "Reset Zoom",
+                name: 'Reset Zoom',
                 handler(chart: any) {
                     resetZoom(chart, chart.options.plugins.zoom.zoom.mode);
                 },

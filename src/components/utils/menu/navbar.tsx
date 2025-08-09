@@ -124,6 +124,7 @@ export const NavBar: Component<{
             let authUser = authService.getAuthUser();
             if (authUser) {
                 userType.setAuthUser(authUser);
+                userType.setUserID(authUser.id);
                 setIsUserAuthenticated(true);
             }
         }

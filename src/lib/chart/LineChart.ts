@@ -1,6 +1,6 @@
-import { ChartConfiguration, ChartTypeRegistry, ChartEvent } from "chart.js";
-import { BaseChartClass } from "./BaseChartClass";
-import { resetZoom } from "chartjs-plugin-zoom";
+import { ChartConfiguration, ChartTypeRegistry, ChartEvent } from 'chart.js';
+import { BaseChartClass } from './BaseChartClass';
+import { resetZoom } from 'chartjs-plugin-zoom';
 
 type IgnoreRangeType = {
     type: keyof ChartTypeRegistry;
@@ -86,13 +86,13 @@ export class LineChart extends BaseChartClass {
     handleDrag(event: any) {
         if (this.element) {
             switch (event.type) {
-                case "mousemove":
+                case 'mousemove':
                     return this.handleElementDragging(event);
-                case "mouseout":
-                case "mouseup":
+                case 'mouseout':
+                case 'mouseup':
                     this.lastEvent = undefined;
                     break;
-                case "mousedown":
+                case 'mousedown':
                     this.lastEvent = event;
                     break;
                 default:
@@ -115,16 +115,16 @@ export class LineChart extends BaseChartClass {
         for (let index = 0; index < ranges.length; index++) {
             const element = ranges[index];
             ignoreRanges.push({
-                type: "box" as keyof ChartTypeRegistry,
-                backgroundColor: "rgba(250, 170, 0, 0.05)",
-                borderColor: "#FAAA00",
+                type: 'box' as keyof ChartTypeRegistry,
+                backgroundColor: 'rgba(250, 170, 0, 0.05)',
+                borderColor: '#FAAA00',
                 borderWidth: 1,
-                xMax: "December",
-                xMin: "January",
+                xMax: 'December',
+                xMin: 'January',
                 yMax: element.yMax,
                 yMin: element.yMin,
-                xScaleID: "x",
-                yScaleID: "y",
+                xScaleID: 'x',
+                yScaleID: 'y',
             });
         }
         return ignoreRanges;
@@ -132,7 +132,7 @@ export class LineChart extends BaseChartClass {
 
     getConfig(): ChartConfiguration {
         return {
-            type: "line" as keyof ChartTypeRegistry,
+            type: 'line' as keyof ChartTypeRegistry,
             // data: this.setupData(),
             // plugins: [this.dragger()],
             options: {
@@ -156,36 +156,36 @@ export class LineChart extends BaseChartClass {
                 // events: ["mousedown", "mouseup", "mousemove", "mouseout"],
 
                 responsive: true,
-                onHover: (e: any) => console.log(),
+                onHover: (e: any) => console.log(e),
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: true,
-                        position: "bottom",
-                        align: "start",
+                        position: 'bottom',
+                        align: 'start',
                         maxHeight: 20,
                         maxWidth: 20,
                     },
                     title: {
                         display: true,
-                        text: "Line Chart",
+                        text: 'Line Chart',
                     },
                     zoom: {
                         zoom: {
                             drag: {
                                 enabled: this.zoom,
-                                backgroundColor: "#FAAA001A",
-                                borderColor: "#FAAA00",
+                                backgroundColor: '#FAAA001A',
+                                borderColor: '#FAAA00',
                                 borderWidth: 2,
                             },
-                            mode: "x",
+                            mode: 'x',
                             onZoom: this.zoomAction,
                         },
                     },
                     // @ts-ignore
                     annotation: {
                         common: {
-                            drawTime: "beforeDatasetsDraw",
+                            drawTime: 'beforeDatasetsDraw',
                         },
                         // @ts-ignore
                         annotations: { ...this.getAnnotations() },
@@ -200,16 +200,26 @@ export class LineChart extends BaseChartClass {
             labels: this.getMonths(),
             datasets: [
                 {
-                    label: "Dataset 1",
-                    data: [232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232],
+                    label: 'Dataset 1',
+                    data: [
+                        232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232,
+                    ],
                     borderColor: this.CHART_COLORS.red,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.red, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.red,
+                        0.5
+                    ),
                 },
                 {
-                    label: "Dataset 2",
-                    data: [43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657],
+                    label: 'Dataset 2',
+                    data: [
+                        43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657,
+                    ],
                     borderColor: this.CHART_COLORS.blue,
-                    backgroundColor: this.transparentize(this.CHART_COLORS.blue, 0.5),
+                    backgroundColor: this.transparentize(
+                        this.CHART_COLORS.blue,
+                        0.5
+                    ),
                 },
             ],
         };
@@ -220,25 +230,31 @@ export class LineChart extends BaseChartClass {
         let smooth = false;
         return [
             {
-                name: "Randomize",
+                name: 'Randomize',
                 handler(chart: any) {
                     chart.data.datasets.forEach((dataset: any) => {
-                        dataset.data = [43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234, 657];
+                        dataset.data = [
+                            43, 343, 656, 34, 767, 899, 67, 789, 56, 56, 234,
+                            657,
+                        ];
                     });
                     chart.update();
                 },
             },
             {
-                name: "Update",
+                name: 'Update',
                 handler(chart: any) {
                     chart.data.datasets.forEach((dataset: any) => {
-                        dataset.data = [232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433, 232];
+                        dataset.data = [
+                            232, 454, 656, 767, 687, 5, 343, 34, 456, 365, 433,
+                            232,
+                        ];
                     });
                     chart.update();
                 },
             },
             {
-                name: "Smooth",
+                name: 'Smooth',
                 handler(chart: any) {
                     smooth = !smooth;
                     chart.options.elements.line.tension = smooth ? 0.4 : 0;
@@ -246,7 +262,7 @@ export class LineChart extends BaseChartClass {
                 },
             },
             {
-                name: "Reset Zoom",
+                name: 'Reset Zoom',
                 handler(chart: any) {
                     resetZoom(chart, chart.options.plugins.zoom.zoom.mode);
                 },
@@ -271,16 +287,16 @@ export class LineChart extends BaseChartClass {
         for (let index = 0; index < ranges.length; index++) {
             const element = ranges[index];
             annotations.push({
-                type: "box" as keyof ChartTypeRegistry,
-                backgroundColor: "rgba(250, 170, 0, 0.05)",
-                borderColor: "#FAAA00",
+                type: 'box' as keyof ChartTypeRegistry,
+                backgroundColor: 'rgba(250, 170, 0, 0.05)',
+                borderColor: '#FAAA00',
                 borderWidth: 1,
-                xMax: "",
-                xMin: "January",
+                xMax: '',
+                xMin: 'January',
                 yMax: element.yMax,
                 yMin: element.yMin,
-                xScaleID: "x",
-                yScaleID: "y",
+                xScaleID: 'x',
+                yScaleID: 'y',
             });
         }
 

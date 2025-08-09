@@ -43,7 +43,6 @@ export const ServiceProviderListings = (): JSX.Element => {
     );
     const [viewProfile, setViewProfile] = createSignal(false);
     const [currentListing, setCurrentListing] = createSignal<ArtisanModel>();
-
     const handlePageChange = (offset: number, limit: number) => {
         setFilterProps({
             ...filterProps(),
