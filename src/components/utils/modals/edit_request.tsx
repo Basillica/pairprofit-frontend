@@ -10,7 +10,7 @@ import {
 } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import modal_styles from './style.module.css';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { PublicHandler } from '../../../api';
 import { authService } from '../../../oauth/manager';
 import { useNavigate } from '@solidjs/router';
@@ -190,7 +190,7 @@ export const EditServiceRequestForm: Component<{
 
         let cachedCategores = SecureLocalStorage.getItem<{
             [key: string]: string[];
-        }>('x-pairprofit-categories');
+        }>(LocalStorageKey.PairProfitCategories);
         if (cachedCategores) {
             setApiCategories(cachedCategores);
             return;
@@ -202,7 +202,7 @@ export const EditServiceRequestForm: Component<{
             if (res.success) {
                 setApiCategories(res.data.categories);
                 SecureLocalStorage.storeItem(
-                    'x-pairprofit-categories',
+                    LocalStorageKey.PairProfitCategories,
                     res.data.categories
                 );
             } else {
@@ -313,7 +313,9 @@ export const EditServiceRequestForm: Component<{
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        const user = SecureLocalStorage.getItem<UserModel>(
+            LocalStorageKey.AppAuthUserModel
+        );
         if (!user) return;
 
         // start the process

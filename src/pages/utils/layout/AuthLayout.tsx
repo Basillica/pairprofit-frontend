@@ -2,7 +2,7 @@ import { Component, createSignal } from 'solid-js';
 import { LogoutModal, NavBar } from '../../../components';
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../../oauth/manager';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 
 export const AuthLayout: Component = (props: any) => {
     const [openLogout, setOpenLogout] = createSignal(false);
@@ -10,7 +10,7 @@ export const AuthLayout: Component = (props: any) => {
 
     const handleLogout = () => {
         authService.clearAuthToken();
-        SecureLocalStorage.removeItem('x-auth-device-verified');
+        SecureLocalStorage.removeItem(LocalStorageKey.AppAuthDeviceVerified);
         setOpenLogout(false);
         navigate('/login');
     };

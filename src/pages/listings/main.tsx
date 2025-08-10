@@ -15,7 +15,7 @@ import { ServiceListingsC } from './listings3';
 import { PublicHandler } from '../../api';
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../oauth/manager';
-import { SecureLocalStorage } from '../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../lib/localstore';
 import { ListingApiHandler } from '../../api/backend/listing';
 import { ListingPayload } from '../../models/listing';
 
@@ -149,7 +149,7 @@ export const ServiceListings = () => {
         }
 
         let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
-            'x-pairprofit-categories'
+            LocalStorageKey.PairProfitCategories
         );
         if (cachedCategores) {
             setApiCategories(cachedCategores);
@@ -163,7 +163,7 @@ export const ServiceListings = () => {
             if (res.success) {
                 setApiCategories(res.data.categories);
                 SecureLocalStorage.storeItem(
-                    'x-pairprofit-categories',
+                    LocalStorageKey.PairProfitCategories,
                     res.data.categories
                 );
                 console.log(res.data.categories);

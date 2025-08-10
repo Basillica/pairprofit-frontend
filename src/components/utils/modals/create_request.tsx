@@ -9,7 +9,7 @@ import {
 } from 'solid-js';
 import { Portal } from 'solid-js/web';
 import modal_styles from './style.module.css';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { PublicHandler } from '../../../api';
 import { authService } from '../../../oauth/manager';
 import { useNavigate } from '@solidjs/router';
@@ -185,7 +185,9 @@ export const PostServiceRequestForm: Component<{
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        const user = SecureLocalStorage.getItem<UserModel>(
+            LocalStorageKey.AppAuthUserModel
+        );
         if (!user) return;
 
         const api = new ListingApiHandler();
@@ -279,7 +281,7 @@ export const PostServiceRequestForm: Component<{
 
         let cachedCategores = SecureLocalStorage.getItem<{
             [key: string]: string[];
-        }>('x-pairprofit-categories');
+        }>(LocalStorageKey.PairProfitCategories);
         if (cachedCategores) {
             setApiCategories(cachedCategores);
             return;
@@ -291,7 +293,7 @@ export const PostServiceRequestForm: Component<{
             if (res.success) {
                 setApiCategories(res.data.categories);
                 SecureLocalStorage.storeItem(
-                    'x-pairprofit-categories',
+                    LocalStorageKey.PairProfitCategories,
                     res.data.categories
                 );
             } else {
@@ -778,27 +780,9 @@ export const PostServiceRequestForm: Component<{
                                                             item.file.name
                                                         }
                                                     >
-                                                        <Show
-                                                            when={
-                                                                item.previewUrl
-                                                            }
-                                                            fallback={
-                                                                <span class="text-sm text-gray-500 px-2 py-1 text-center whitespace-nowrap text-wrap ">
-                                                                    {
-                                                                        item
-                                                                            .file
-                                                                            .name
-                                                                    }
-                                                                </span>
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={
-                                                                    item.previewUrl
-                                                                }
-                                                                alt="Preview"
-                                                            />
-                                                        </Show>
+                                                        <span class="text-sm text-gray-500 px-2 py-1 text-center whitespace-nowrap text-wrap ">
+                                                            {item.file.name}
+                                                        </span>
                                                         <button
                                                             type="button"
                                                             class={

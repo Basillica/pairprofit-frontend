@@ -1,43 +1,18 @@
-import { createSignal, For, Show } from 'solid-js';
+import { createSignal, For, onMount, Show } from 'solid-js';
+import { NotificationModel, NotificationType } from '../../models/notification';
+import { LocalStorageKey, SecureLocalStorage } from '../../lib/localstore';
+import { UserModel } from '../../models/auth';
+import { useAppContext } from '../../state';
+import { NotificationApiHandler } from '../../api/backend/notification';
 
-// --- Type Definitions ---
-// Define the types for your notification data
-export type NotificationType =
-    | 'message'
-    | 'job'
-    | 'review'
-    | 'payment'
-    | 'system'
-    | 'general';
-
-export interface Notification {
-    id: string;
-    type: NotificationType;
-    title: string;
-    message: string;
-    timestamp: Date;
-    isRead: boolean;
-    link?: string; // Optional link
-}
-
-export interface Notification {
-    id: string;
-    type: NotificationType;
-    title: string;
-    message: string;
-    timestamp: Date;
-    isRead: boolean;
-    link?: string;
-}
-
-const initialNotifications: Notification[] = [
+const initialNotifications: NotificationModel[] = [
     {
         id: 'notif_1',
         type: 'message',
         title: 'New Message from John Doe',
         message:
             'John Doe sent you a new message regarding your carpentry request.',
-        timestamp: new Date('2025-06-08T14:30:00Z'),
+        timestamp: new Date('2025-08-10T14:30:00Z'),
         isRead: false,
         link: '#chat_page_with_john',
     },
@@ -47,9 +22,89 @@ const initialNotifications: Notification[] = [
         title: 'Job "Kitchen Renovation" Accepted!',
         message:
             'Your proposal for the kitchen renovation has been accepted by Jane Smith.',
-        timestamp: new Date('2025-06-08T10:15:00Z'),
+        timestamp: new Date('2025-08-10T10:15:00Z'),
         isRead: false,
         link: '#job_details_kitchen',
+    },
+    {
+        id: 'notif_3',
+        type: 'review',
+        title: 'New Review on Your Profile',
+        message:
+            'You have received a new 5-star review from Alex Johnson for your excellent work on his job.',
+        timestamp: new Date('2025-08-09T18:00:00Z'),
+        isRead: false,
+        link: '#profile_reviews',
+    },
+    {
+        id: 'notif_4',
+        type: 'payment',
+        title: 'Payment Received: $500',
+        message:
+            'Your payment of $500 for the "Kitchen Renovation" job has been successfully processed.',
+        timestamp: new Date('2025-08-09T09:00:00Z'),
+        isRead: true,
+        link: '#payment_history',
+    },
+    {
+        id: 'notif_5',
+        type: 'system',
+        title: 'System Update Complete',
+        message:
+            'The platform has been updated with new features and performance improvements. You can now use the advanced search filters.',
+        timestamp: new Date('2025-08-08T08:00:00Z'),
+        isRead: true,
+        link: '#new_features_guide',
+    },
+    {
+        id: 'notif_6',
+        type: 'contact',
+        title: 'New Contact Request',
+        message:
+            'Sarah Lee has added you as a contact. Review their profile to connect.',
+        timestamp: new Date('2025-08-07T12:00:00Z'),
+        isRead: false,
+        link: '#contacts',
+    },
+    {
+        id: 'notif_7',
+        type: 'appointment',
+        title: 'Appointment Confirmed',
+        message:
+            'Your appointment with Michael Brown on August 12 at 2:00 PM is confirmed.',
+        timestamp: new Date('2025-08-06T15:30:00Z'),
+        isRead: false,
+        link: '#appointments',
+    },
+    {
+        id: 'notif_8',
+        type: 'email',
+        title: 'Important Email: Account Verification',
+        message:
+            'Please verify your email address to ensure full access to all features.',
+        timestamp: new Date('2025-08-05T11:00:00Z'),
+        isRead: true,
+        link: '#account_settings',
+    },
+    {
+        id: 'notif_9',
+        type: 'goal',
+        title: 'Goal Achieved: 10 Jobs Completed!',
+        message:
+            'Congratulations! You have completed your goal of finishing 10 jobs this month. Keep up the great work!',
+        timestamp: new Date('2025-08-04T17:00:00Z'),
+        isRead: false,
+        link: '#goals_dashboard',
+    },
+    {
+        id: 'notif_10',
+        type: 'general',
+        title: 'Welcome to Our Platform!',
+        message:
+            'We are excited to have you on board. Explore your dashboard to get started.',
+        timestamp: new Date('2025-08-03T09:45:00Z'),
+        isRead: true,
+        link: '#dashboard',
     },
 ];
 
@@ -65,6 +120,15 @@ function getNotificationIcon(type: NotificationType): string {
             return `<svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 002-2V4H4zm10 2a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h10z" clip-rule="evenodd"></path></svg>`;
         case 'system':
             return `<svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>`;
+        case 'contact':
+            return `<svg class="w-6 h-6 text-indigo-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>`;
+        case 'appointment':
+            return `<svg class="w-6 h-6 text-pink-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>`;
+        case 'email':
+            return `<svg class="w-6 h-6 text-orange-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`;
+        case 'goal':
+            return `<svg class="w-6 h-6 text-teal-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+        case 'general':
         default:
             return `<svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l3 3a1 1 0 001.414-1.414L11 9.586V6z" clip-rule="evenodd"></path></svg>`;
     }
@@ -97,11 +161,14 @@ function formatRelativeTime(date: Date): string {
 
 export function NotificationsPage() {
     const [notifications, setNotifications] =
-        createSignal<Notification[]>(initialNotifications);
+        createSignal<NotificationModel[]>(initialNotifications);
     const [filter, setFilter] = createSignal<string>('all');
     const [selectedNotification, setSelectedNotification] =
-        createSignal<Notification | null>(null);
-
+        createSignal<NotificationModel | null>(null);
+    const {
+        userType: { authUser, setAuthUser },
+    } = useAppContext();
+    const notificationApi = new NotificationApiHandler();
     const filteredNotifications = () => {
         let currentNotifications = [...notifications()];
         const currentFilter = filter();
@@ -119,21 +186,58 @@ export function NotificationsPage() {
         );
     };
 
-    const handleToggleReadStatus = (id: string) => {
-        setNotifications((prev) =>
-            prev.map((notif) =>
-                notif.id === id ? { ...notif, isRead: !notif.isRead } : notif
-            )
+    onMount(async () => {
+        if (!authUser()) {
+            const user = SecureLocalStorage.getItem<UserModel>(
+                LocalStorageKey.AppAuthUserModel
+            );
+            if (!user) return;
+            setAuthUser(user);
+        }
+
+        const result = await notificationApi.getUserNotifications(
+            authUser()!.id
         );
+        if (result.success) {
+            setNotifications([...initialNotifications, ...result.data]);
+        }
+    });
+
+    const handleToggleReadStatus = async (notificationID: string) => {
+        const notification = notifications().find(
+            (c) => c.id === notificationID
+        )!;
+        if (!notification) return;
+
+        let result = await notificationApi.toggleReadStatus(
+            notification.id,
+            !notification.isRead
+        );
+
+        if (result.success) {
+            setNotifications((prevNotifs) =>
+                prevNotifs.map((notification) =>
+                    notification.id === notificationID
+                        ? { ...notification, isRead: !notification.isRead }
+                        : notification
+                )
+            );
+        }
     };
 
-    const handleMarkAll = (status: boolean) => {
-        setNotifications((prev) =>
-            prev.map((notif) => ({ ...notif, isRead: status }))
+    const handleMarkAll = async (status: boolean) => {
+        let result = await notificationApi.toggleAllReadStatus(
+            authUser()!.id,
+            status
         );
+        if (result.success) {
+            setNotifications((prev) =>
+                prev.map((notif) => ({ ...notif, isRead: status }))
+            );
+        }
     };
 
-    const handleNotificationClick = (notif: Notification) => {
+    const handleNotificationClick = (notif: NotificationModel) => {
         setSelectedNotification(notif);
         if (!notif.isRead) {
             handleToggleReadStatus(notif.id);
@@ -178,6 +282,11 @@ export function NotificationsPage() {
                         <option value="review">Reviews</option>
                         <option value="payment">Payments</option>
                         <option value="system">System Alerts</option>
+                        <option value="contact">Contact Alerts</option>
+                        <option value="appointment">Appointment Alerts</option>
+                        <option value="email">Email Alerts</option>
+                        <option value="goal">Goal Alerts</option>
+                        <option value="general">General Alerts</option>
                     </select>
                 </div>
 
@@ -324,14 +433,14 @@ function getNotificationTypeTitle(type: NotificationType): string {
         case 'system':
             return 'System Alert';
         case 'general':
-            return 'General Notification';
+            return 'General NotificationModel';
         default:
-            return 'Notification';
+            return 'NotificationModel';
     }
 }
 
 interface NotificationDetailCardProps {
-    notification: Notification;
+    notification: NotificationModel;
     onClose: () => void; // Callback to close the card
 }
 
@@ -339,11 +448,12 @@ export function NotificationDetailCard(props: NotificationDetailCardProps) {
     const { notification, onClose } = props;
 
     return (
-        <div class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-auto p-6 relative">
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-70 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300">
+            <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-auto p-8 relative transform scale-100 transition-transform duration-300">
+                {/* Close Button */}
                 <button
                     onClick={onClose}
-                    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 rounded-full p-1"
                     aria-label="Close notification details"
                 >
                     <svg
@@ -362,35 +472,66 @@ export function NotificationDetailCard(props: NotificationDetailCardProps) {
                     </svg>
                 </button>
 
-                <h2 class="text-2xl font-bold text-gray-900 mb-4 break-words">
-                    {notification.title}
-                </h2>
-
-                <div class="text-sm text-gray-600 mb-4">
-                    <span class="font-semibold">Type:</span>{' '}
-                    {getNotificationTypeTitle(notification.type)}
+                {/* Header Section */}
+                <div class="flex items-center space-x-4 mb-4">
+                    {/* The icon can be dynamically rendered here if needed */}
+                    {/* <div innerHTML={getNotificationIcon(notification.type)} class="text-4xl"></div> */}
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">
+                        {notification.title}
+                    </h2>
                 </div>
 
-                <p class="text-gray-800 mb-6 leading-relaxed break-words">
-                    {notification.message}
-                </p>
-
-                <div class="text-xs text-gray-500 mb-4">
-                    <span class="font-semibold">Received:</span>{' '}
-                    {notification.timestamp.toLocaleString()}
+                {/* Metadata Section */}
+                <div class="mb-6 space-y-1 text-sm text-gray-600 border-b border-gray-200 pb-4">
+                    <div class="flex items-center">
+                        <span class="font-semibold text-gray-800 w-24">
+                            Type:
+                        </span>
+                        <span class="capitalize">
+                            {getNotificationTypeTitle(notification.type)}
+                        </span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="font-semibold text-gray-800 w-24">
+                            Received:
+                        </span>
+                        <span>{notification.timestamp.toLocaleString()}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="font-semibold text-gray-800 w-24">
+                            Status:
+                        </span>
+                        <span
+                            class={
+                                notification.isRead
+                                    ? 'text-green-600'
+                                    : 'text-yellow-600 font-bold'
+                            }
+                        >
+                            {notification.isRead ? 'Read' : 'Unread'}
+                        </span>
+                    </div>
                 </div>
 
+                {/* Message Body */}
+                <div class="prose max-w-none text-gray-800 mb-6">
+                    <p class="leading-relaxed whitespace-pre-wrap">
+                        {notification.message}
+                    </p>
+                </div>
+
+                {/* Action Button */}
                 <Show when={notification.link}>
                     <a
                         href={notification.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        onClick={onClose} // Close the card when the link is clicked
+                        class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                        onClick={onClose}
                     >
                         View Details
                         <svg
-                            class="ml-2 -mr-1 w-4 h-4"
+                            class="ml-3 h-5 w-5"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg"
@@ -400,11 +541,6 @@ export function NotificationDetailCard(props: NotificationDetailCardProps) {
                         </svg>
                     </a>
                 </Show>
-
-                <div class="mt-4 text-xs text-gray-400">
-                    <span class="font-semibold">Status:</span>{' '}
-                    {notification.isRead ? 'Read' : 'Unread'}
-                </div>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosInstance } from 'axios';
 import { GetEnvConfig } from '../../environments';
-import { SecureLocalStorage } from '../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../lib/localstore';
 import { UserModel } from '../../models/auth';
 
 export type HttpResponse = {
@@ -51,11 +51,16 @@ export class ApiHandler {
             config.baseURL = this.base_url;
 
             let access_token =
-                SecureLocalStorage.getItem<string>('x-auth-token') ?? '';
+                SecureLocalStorage.getItem<string>(
+                    LocalStorageKey.AppAuthToken
+                ) ?? '';
             let token_exp =
-                SecureLocalStorage.getItem<string>('x-token-exp') ?? '0';
-            let user_data =
-                SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+                SecureLocalStorage.getItem<string>(
+                    LocalStorageKey.AppAuthExp
+                ) ?? '0';
+            let user_data = SecureLocalStorage.getItem<UserModel>(
+                LocalStorageKey.AppAuthUserModel
+            );
             config.headers.setAuthorization(`Bearer ${access_token}`);
             config.headers.set('X-Access-Token', access_token);
             config.headers.set('token-exp', token_exp);

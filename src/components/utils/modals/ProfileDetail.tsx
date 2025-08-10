@@ -3,55 +3,7 @@ import { Portal } from 'solid-js/web';
 import { ArtisanModel } from '../../../models/profile';
 import modal_styles from './style.module.css';
 import { useAppContext } from '../../../state';
-
-/**
- * @typedef {object} Review
- * @property {number} id
- * @property {string} reviewer
- * @property {number} rating
- * @property {string} date
- * @property {string} comment
- * @property {string} serviceTitle
- */
-
-/**
- * @typedef {object} ServiceOffered
- * @property {string} id
- * @property {string} title
- * @property {string} category
- * @property {string} price
- * @property {string} link
- */
-
-/**
- * @typedef {object} PublicUpdate
- * @property {string} id
- * @property {string} date
- * @property {string} type
- * @property {string} title
- * @property {string} content
- * @property {string | null} image
- */
-
-/**
- * @typedef {object} ProviderData
- * @property {string} id
- * @property {string} name
- * @property {string} profilePicture
- * @property {string} specialization
- * @property {string} bio
- * @property {number} overallRating
- * @property {number} totalReviews
- * @property {string} location
- * @property {string} yearsInBusiness
- * @property {string} businessName
- * @property {string} businessRegistration
- * @property {string[]} contactPreferences
- * @property {{ [key: number]: number }} ratingBreakdown
- * @property {Review[]} testimonials
- * @property {ServiceOffered[]} servicesOffered
- * @property {PublicUpdate[]} publicUpdates
- */
+import { EmailModel } from '../../../models/email';
 
 const StarRating: Component<{
     rating: number;
@@ -97,15 +49,57 @@ export const ProviderProfileDetail: Component<{
     listing: Accessor<ArtisanModel | undefined>;
 }> = (props) => {
     const totalReviews = () => props.listing()?.total_reviews;
+    const [emailFormData, setEmailFormData] = createSignal<EmailModel>({
+        id: '',
+        sender: '',
+        sender_initials: '',
+        sender_color: '',
+        sender_email: '',
+        subject: '',
+        preview: '',
+        date: '',
+        is_read: false,
+        has_attachment: false,
+        body: '',
+        cc: [],
+        bcc: [],
+    });
+
+    const emailhandleInputChange = (
+        e: InputEvent & {
+            currentTarget: HTMLInputElement;
+            target: HTMLInputElement;
+        }
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const { name, value } = e.target;
+        setEmailFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const emailhandleTextInputChange = (
+        e: InputEvent & {
+            currentTarget: HTMLTextAreaElement;
+            target: HTMLTextAreaElement;
+        }
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const { name, value } = e.target;
+        setEmailFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     const [chatMessage, setChatMessage] = createSignal('');
     const [callbackName, setCallbackName] = createSignal('');
     const [callbackPhone, setCallbackPhone] = createSignal('');
     const [callbackTime, setCallbackTime] = createSignal('');
     const [callbackMessage, setCallbackMessage] = createSignal('');
-    const [emailSenderName, setEmailSenderName] = createSignal('');
-    const [emailSenderEmail, setEmailSenderEmail] = createSignal('');
-    const [emailSubject, setEmailSubject] = createSignal('');
-    const [emailMessage, setEmailMessage] = createSignal('');
     const [activeTab, setActiveTab] = createSignal('chat');
     const { sendMessage, userType } = useAppContext();
 
@@ -163,27 +157,7 @@ export const ProviderProfileDetail: Component<{
         }
     ) => {
         event.preventDefault();
-        const senderName = emailSenderName().trim();
-        const senderEmail = emailSenderEmail().trim();
-        const subject = emailSubject().trim();
-        const message = emailMessage().trim();
-
-        if (senderName && senderEmail && subject && message) {
-            console.log('Email Request:', {
-                senderName,
-                senderEmail,
-                subject,
-                message,
-            });
-            alert('Email sent to provider! (Check console)');
-            // Clear form inputs
-            setEmailSenderName('');
-            setEmailSenderEmail('');
-            setEmailSubject('');
-            setEmailMessage('');
-        } else {
-            alert('Please fill in all email fields.');
-        }
+        console.log(emailFormData());
     };
 
     return (
@@ -760,80 +734,72 @@ export const ProviderProfileDetail: Component<{
                                     >
                                         <div>
                                             <label
-                                                for="emailSenderName"
+                                                for="sender"
                                                 class="block text-sm font-medium text-gray-700"
                                             >
                                                 Your Name
                                             </label>
                                             <input
                                                 type="text"
-                                                id="emailSenderName"
+                                                id="sender"
+                                                name="sender"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                                value={emailSenderName()}
-                                                onInput={(e) =>
-                                                    setEmailSenderName(
-                                                        e.currentTarget.value
-                                                    )
-                                                }
+                                                value={emailFormData().sender}
+                                                onInput={emailhandleInputChange}
                                             />
                                         </div>
                                         <div>
                                             <label
-                                                for="emailSenderEmail"
+                                                for="sender_email"
                                                 class="block text-sm font-medium text-gray-700"
                                             >
                                                 Your Email Address
                                             </label>
                                             <input
                                                 type="email"
-                                                id="emailSenderEmail"
+                                                name="sender_email"
+                                                id="sender_email"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                                 placeholder="your.email@example.com"
-                                                value={emailSenderEmail()}
-                                                onInput={(e) =>
-                                                    setEmailSenderEmail(
-                                                        e.currentTarget.value
-                                                    )
+                                                value={
+                                                    emailFormData().sender_email
                                                 }
+                                                onInput={emailhandleInputChange}
                                             />
                                         </div>
                                         <div>
                                             <label
-                                                for="emailSubject"
+                                                for="subject"
                                                 class="block text-sm font-medium text-gray-700"
                                             >
                                                 Subject
                                             </label>
                                             <input
                                                 type="text"
-                                                id="emailSubject"
+                                                id="subject"
+                                                name="subject"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                                 placeholder="Inquiry about your service"
-                                                value={emailSubject()}
-                                                onInput={(e) =>
-                                                    setEmailSubject(
-                                                        e.currentTarget.value
-                                                    )
-                                                }
+                                                value={emailFormData().subject}
+                                                onInput={emailhandleInputChange}
                                             />
                                         </div>
                                         <div>
                                             <label
-                                                for="emailMessage"
+                                                for="body"
                                                 class="block text-sm font-medium text-gray-700"
                                             >
                                                 Message
                                             </label>
                                             <textarea
-                                                id="emailMessage"
+                                                id="body"
+                                                name="body"
                                                 rows="6"
                                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                                 placeholder="Write your detailed message here..."
-                                                value={emailMessage()}
-                                                onInput={(e) =>
-                                                    setEmailMessage(
-                                                        e.currentTarget.value
-                                                    )
+                                                value={emailFormData().body}
+                                                onInput={
+                                                    emailhandleTextInputChange
                                                 }
                                             ></textarea>
                                         </div>

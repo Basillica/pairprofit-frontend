@@ -21,7 +21,7 @@ import {
     PublicUpdate,
     Testimonial,
 } from '../../../models/profile';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { UserModel } from '../../../models/auth';
 import { BucketAPIHandler } from '../../../api/supabase';
 
@@ -79,7 +79,7 @@ export const EditProfileModal: Component<{
 
     onMount(() => {
         let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
-            'x-pairprofit-categories'
+            LocalStorageKey.PairProfitCategories
         );
         if (cachedCategores) {
             setApiCategories(cachedCategores);
@@ -318,7 +318,9 @@ export const EditProfileModal: Component<{
         e: Event // Event type for form submission
     ) => {
         e.preventDefault(); // Prevent default browser form submission
-        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        const user = SecureLocalStorage.getItem<UserModel>(
+            LocalStorageKey.AppAuthUserModel
+        );
         if (!user) return;
         // Create a copy of formData to ensure all ArtisanModel fields are present
         // and non-editable fields are carried over from the original profile.

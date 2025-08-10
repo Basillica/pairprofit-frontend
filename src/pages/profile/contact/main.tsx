@@ -1,58 +1,63 @@
-import { createSignal, createMemo, For, Show } from 'solid-js';
+import { createSignal, createMemo, For, Show, onMount } from 'solid-js';
 import contact_styles from './style.module.css';
 import { Pagination } from '../../../components';
+import { ContactModel } from '../../../models/contact';
+import { ContactApiHandler } from '../../../api/backend/contact';
+import { LocalStorageKey, SecureLocalStorage } from '../../../lib/localstore';
+import { UserModel } from '../../../models/auth';
+import { useAppContext } from '../../../state';
 
 // Dummy Data for User Contacts (unchanged)
-const initialUserContacts = [
+const initialUserContacts: ContactModel[] = [
     {
-        id: 'contact_johndoe',
+        user_id: 'contact_johndoe',
         name: 'John Doe',
         role: 'Artisan (Carpenter)',
         avatar: 'https://images.unsplash.com/photo-1549068106-b024baf5062d?q=80&w=60&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        lastInteraction: new Date('2025-06-07T10:30:00Z'),
-        isFavorite: true,
-        isBlocked: false,
-        associatedArtisanId: 'artisan_xyz456',
+        last_interaction: new Date('2025-06-07T10:30:00Z'),
+        is_favorite: true,
+        is_blocked: false,
+        contact_id: 'artisan_xyz456',
     },
     {
-        id: 'contact_sarahchen',
+        user_id: 'contact_sarahchen',
         name: 'Sarah Chen',
         role: 'Artisan (Plumber)',
         avatar: 'https://picsum.photos/200?random=1',
-        lastInteraction: new Date('2025-06-06T14:06:00Z'),
-        isFavorite: false,
-        isBlocked: false,
-        associatedArtisanId: 'artisan_abc789',
+        last_interaction: new Date('2025-06-06T14:06:00Z'),
+        is_favorite: false,
+        is_blocked: false,
+        contact_id: 'artisan_abc789',
     },
     {
-        id: 'contact_janedoe',
+        user_id: 'contact_janedoe',
         name: 'Jane Smith',
         role: 'Customer',
         avatar: 'https://picsum.photos/200?random=2',
-        lastInteraction: new Date('2025-06-05T09:15:00Z'),
-        isFavorite: true,
-        isBlocked: false,
-        associatedCustomerId: 'customer_janedoe',
+        last_interaction: new Date('2025-06-05T09:15:00Z'),
+        is_favorite: true,
+        is_blocked: false,
+        contact_id: 'customer_janedoe',
     },
     {
-        id: 'contact_peterjones',
+        user_id: 'contact_peterjones',
         name: 'Peter Jones',
         role: 'Customer',
         avatar: 'https://picsum.photos/200?random=3',
-        lastInteraction: new Date('2025-06-03T16:00:00Z'),
-        isFavorite: false,
-        isBlocked: true,
-        associatedCustomerId: 'customer_peterjones',
+        last_interaction: new Date('2025-06-03T16:00:00Z'),
+        is_favorite: false,
+        is_blocked: true,
+        contact_id: 'customer_peterjones',
     },
     {
-        id: 'contact_marywhite',
+        user_id: 'contact_marywhite',
         name: 'Mary White',
         role: 'Artisan (Painter)',
         avatar: 'https://picsum.photos/200?random=4',
-        lastInteraction: new Date('2025-06-01T11:00:00Z'),
-        isFavorite: false,
-        isBlocked: false,
-        associatedArtisanId: 'artisan_marywhite',
+        last_interaction: new Date('2025-06-01T11:00:00Z'),
+        is_favorite: false,
+        is_blocked: false,
+        contact_id: 'artisan_marywhite',
     },
 ];
 
@@ -62,14 +67,32 @@ export const ContactList = () => {
     const [filterRole, setFilterRole] = createSignal('all');
     const [filterStatus, setFilterStatus] = createSignal('all');
     const [currentPage, setCurrentPage] = createSignal(1);
-    const ITEMS_PER_PAGE = 10;
-    const TOTAL_ITEMS = 53;
+    const {
+        userType: { authUser, setAuthUser },
+    } = useAppContext();
+    const NUMBER_OF_ITEMS_PER_PAGE = 20;
+    const contactApi = new ContactApiHandler();
 
     const [_, setCurrentPageData] = createSignal(1); // State to hold the current page in the parent
     const handlePageChange = (newPage: number) => {
         console.log(`Parent received page change to: ${newPage}`);
         setCurrentPageData(newPage);
     };
+
+    onMount(async () => {
+        if (!authUser()) {
+            const user = SecureLocalStorage.getItem<UserModel>(
+                LocalStorageKey.AppAuthUserModel
+            );
+            if (!user) return;
+            setAuthUser(user);
+        }
+
+        const result = await contactApi.getUserContacts(authUser()!.id);
+        if (result.success) {
+            setContacts([...initialUserContacts, ...result.data]);
+        }
+    });
 
     const formatRelativeDate = (date: Date) => {
         const now = new Date();
@@ -102,14 +125,15 @@ export const ContactList = () => {
 
             const matchesStatus =
                 status === 'all' ||
-                (status === 'favorite' && contact.isFavorite) ||
-                (status === 'blocked' && contact.isBlocked);
+                (status === 'favorite' && contact.is_favorite) ||
+                (status === 'blocked' && contact.is_blocked);
 
             return matchesSearch && matchesRole && matchesStatus;
         });
 
         filtered.sort(
-            (a, b) => b.lastInteraction.getTime() - a.lastInteraction.getTime()
+            (a, b) =>
+                b.last_interaction.getTime() - a.last_interaction.getTime()
         );
 
         return filtered;
@@ -120,7 +144,7 @@ export const ContactList = () => {
         contactId: string,
         profileId = ''
     ) => {
-        const contact = contacts().find((c) => c.id === contactId);
+        const contact = contacts().find((c) => c.user_id === contactId);
         if (!contact) return;
 
         if (actionType === 'message') {
@@ -144,32 +168,46 @@ export const ContactList = () => {
         }
     };
 
-    const toggleFavorite = (contactId: string) => {
-        setContacts((prevContacts) =>
-            prevContacts.map((c) =>
-                c.id === contactId ? { ...c, isFavorite: !c.isFavorite } : c
-            )
+    const toggleFavorite = async (contactId: string) => {
+        const contact = contacts().find((c) => c.user_id === contactId)!;
+        if (!contact) return;
+
+        let result = await contactApi.toggleFavorite(
+            contact.user_id,
+            contact.contact_id,
+            !contact.is_favorite
         );
-        const contact = contacts().find((c) => c.id === contactId)!;
-        console.log(
-            `${contact.name} has been ${
-                contact.isFavorite ? 'favorited' : 'unfavorited'
-            }.`
-        );
+
+        if (result.success) {
+            setContacts((prevContacts) =>
+                prevContacts.map((contact) =>
+                    contact.user_id === contactId
+                        ? { ...contact, is_favorite: !contact.is_favorite }
+                        : contact
+                )
+            );
+        }
     };
 
-    const toggleBlock = (contactId: string) => {
-        setContacts((prevContacts) =>
-            prevContacts.map((c) =>
-                c.id === contactId ? { ...c, isBlocked: !c.isBlocked } : c
-            )
+    const toggleBlock = async (contactId: string) => {
+        const contact = contacts().find((c) => c.user_id === contactId)!;
+        if (!contact) return;
+
+        let result = await contactApi.toggleBlocked(
+            contact.user_id,
+            contact.contact_id,
+            !contact.is_blocked
         );
-        const contact = contacts().find((c) => c.id === contactId)!;
-        console.log(
-            `${contact.name} has been ${
-                contact.isBlocked ? 'blocked' : 'unblocked'
-            }.`
-        );
+
+        if (result.success) {
+            setContacts((prevContacts) =>
+                prevContacts.map((contact) =>
+                    contact.user_id === contactId
+                        ? { ...contact, is_blocked: !contact.is_blocked }
+                        : contact
+                )
+            );
+        }
     };
 
     return (
@@ -241,12 +279,12 @@ export const ContactList = () => {
                                     </h3>
                                     <p class="text-sm text-gray-600">
                                         {contact.role}
-                                        <Show when={contact.isFavorite}>
+                                        <Show when={contact.is_favorite}>
                                             <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full ml-1">
                                                 Favorite
                                             </span>
                                         </Show>
-                                        <Show when={contact.isBlocked}>
+                                        <Show when={contact.is_blocked}>
                                             <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded-full ml-1">
                                                 Blocked
                                             </span>
@@ -255,7 +293,7 @@ export const ContactList = () => {
                                     <p class="text-xs text-gray-500 mt-1">
                                         Last interacted:{' '}
                                         {formatRelativeDate(
-                                            contact.lastInteraction
+                                            contact.last_interaction
                                         )}
                                     </p>
                                 </div>
@@ -265,7 +303,10 @@ export const ContactList = () => {
                                 <button
                                     class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm w-full sm:w-auto"
                                     onClick={() =>
-                                        simulateAction('message', contact.id)
+                                        simulateAction(
+                                            'message',
+                                            contact.user_id
+                                        )
                                     }
                                 >
                                     Message
@@ -275,10 +316,10 @@ export const ContactList = () => {
                                     onClick={() =>
                                         simulateAction(
                                             'view_profile',
-                                            contact.id,
+                                            contact.user_id,
                                             contact.role.includes('Artisan')
-                                                ? contact.associatedArtisanId
-                                                : contact.associatedCustomerId
+                                                ? contact.contact_id
+                                                : contact.contact_id
                                         )
                                     }
                                 >
@@ -286,17 +327,19 @@ export const ContactList = () => {
                                 </button>
                                 <button
                                     class="bg-orange-100 text-orange-700 px-3 py-2 rounded-md hover:bg-orange-200 text-sm w-full sm:w-auto"
-                                    onClick={() => toggleFavorite(contact.id)}
+                                    onClick={() =>
+                                        toggleFavorite(contact.user_id)
+                                    }
                                 >
-                                    {contact.isFavorite
+                                    {contact.is_favorite
                                         ? 'Unfavorite'
                                         : 'Favorite'}
                                 </button>
                                 <button
                                     class="bg-red-100 text-red-700 px-3 py-2 rounded-md hover:bg-red-200 text-sm w-full sm:w-auto"
-                                    onClick={() => toggleBlock(contact.id)}
+                                    onClick={() => toggleBlock(contact.user_id)}
                                 >
-                                    {contact.isBlocked ? 'Unblock' : 'Block'}
+                                    {contact.is_blocked ? 'Unblock' : 'Block'}
                                 </button>
                             </div>
                         </div>
@@ -305,8 +348,8 @@ export const ContactList = () => {
             </div>
 
             <Pagination
-                itemsPerPage={ITEMS_PER_PAGE}
-                totalItems={TOTAL_ITEMS}
+                itemsPerPage={NUMBER_OF_ITEMS_PER_PAGE}
+                totalItems={contacts().length}
                 onPageChange={handlePageChange}
                 initialPage={1} // Optional: start on a specific page
                 maxPagesToShow={5} // Optional: control how many page numbers are visible
@@ -314,8 +357,8 @@ export const ContactList = () => {
                 setCurrentPage={setCurrentPage}
             />
             <p class="text-gray-500 text-sm mt-8 text-center">
-                Note: Customers that you have either provided for or accepted
-                service from, will show up here as contacts.
+                <b>Note:</b> Customers that you have either provided for or
+                accepted service from, will show up here as contacts.
             </p>
         </div>
     );

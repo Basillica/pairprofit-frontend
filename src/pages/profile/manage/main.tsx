@@ -13,7 +13,7 @@ import {
     EditProfileModal,
 } from '../../../components/utils/modals';
 import { CreateProviderProfile } from '../../../components/utils/modals';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { ArtisanModel } from '../../../models/profile';
 import { ArtisanApiHandler } from '../../../api/backend/profile';
 import { UserModel } from '../../../models/auth';
@@ -61,7 +61,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
         artisanProfiles.latest ?? []
     );
     const [activeProfileId, setActiveProfileIdInternal] = createSignal(
-        SecureLocalStorage.getItem('x-pairprofit-active-profile')
+        SecureLocalStorage.getItem(LocalStorageKey.AuthUserActiveProfile)
     );
     const [deleteProfileListing, setDeleteProfileListing] = createSignal(false);
     const [showEditModal, setShowEditModal] = createSignal(false);
@@ -75,7 +75,9 @@ export const ManageServiceProfiles: Component<{}> = () => {
     const [isAppLoading, setAppLoading] = createSignal(false);
 
     onMount(async () => {
-        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        const user = SecureLocalStorage.getItem<UserModel>(
+            LocalStorageKey.AppAuthUserModel
+        );
         if (user) {
             setAuthUser(user);
             setFilterProps((prev) => ({
@@ -89,7 +91,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
     // This also serves as the initial render logic in SolidJS
     createEffect(() => {
         const currentActiveId = SecureLocalStorage.getItem<string>(
-            'x-pairprofit-active-profile'
+            LocalStorageKey.AuthUserActiveProfile
         );
         if (currentActiveId && userProfiles().length > 0) {
             setActiveProfileIdInternal(currentActiveId);
@@ -97,7 +99,7 @@ export const ManageServiceProfiles: Component<{}> = () => {
     });
 
     const setActiveProfile = (id: string) => {
-        SecureLocalStorage.storeItem('x-pairprofit-active-profile', id);
+        SecureLocalStorage.storeItem(LocalStorageKey.AuthUserActiveProfile, id);
         setActiveProfileIdInternal(id);
     };
 

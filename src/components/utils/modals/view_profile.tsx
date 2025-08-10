@@ -16,7 +16,7 @@ import {
     OfferedServiceInput,
     PublicUpdateInput,
 } from './utils';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 
 interface ApiCategoriesResponse {
     [key: string]: string[];
@@ -255,7 +255,7 @@ export const ViewProfileModal: Component<{
 
     onMount(() => {
         let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
-            'x-pairprofit-categories'
+            LocalStorageKey.PairProfitCategories
         );
         if (cachedCategores) {
             setApiCategories(cachedCategores);

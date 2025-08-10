@@ -13,7 +13,7 @@ import { ArtisanModel } from '../../../models/profile';
 import { ProviderProfileDetail } from '../../utils/modals';
 import { authService } from '../../../oauth/manager';
 import { useNavigate } from '@solidjs/router';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { PublicHandler } from '../../../api';
 import { ArtisanApiHandler } from '../../../api/backend/profile';
 
@@ -103,7 +103,7 @@ export const ServiceProviderListings = (): JSX.Element => {
         }
 
         let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
-            'x-pairprofit-categories'
+            LocalStorageKey.PairProfitCategories
         );
         if (cachedCategores) {
             setApiCategories(cachedCategores);
@@ -117,7 +117,7 @@ export const ServiceProviderListings = (): JSX.Element => {
             if (res.success) {
                 setApiCategories(res.data.categories);
                 SecureLocalStorage.storeItem(
-                    'x-pairprofit-categories',
+                    LocalStorageKey.PairProfitCategories,
                     res.data.categories
                 );
                 console.log(res.data.categories);

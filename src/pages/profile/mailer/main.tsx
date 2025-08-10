@@ -1,42 +1,51 @@
-import { createSignal, onMount, Show } from 'solid-js';
-import './mailer.css'; // Assuming you'll compile your Tailwind CSS into this file
+import { createSignal, For, onMount, Show } from 'solid-js';
+import './mailer.css';
+import modal_styles from './style.module.css';
 
 const globalStyles = `
-/* Custom Scrollbar Style for Webkit (Chrome, Safari) */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: #f3f4f6; /* bg-gray-100 equivalent */
-    border-radius: 10px;
-}
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f3f4f6; /* bg-gray-100 equivalent */
+        border-radius: 10px;
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* A lighter gray/slate for subtlety */
-    border-radius: 10px;
-    border: 3px solid #f3f4f6; /* Border matches track */
-}
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1; /* A lighter gray/slate for subtlety */
+        border-radius: 10px;
+        border: 3px solid #f3f4f6; /* Border matches track */
+    }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8; /* Darker on hover */
-}
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; /* Darker on hover */
+    }
 
-/* Custom Scrollbar Style for Firefox */
-.custom-scrollbar {
-    scrollbar-width: thin; /* "auto" or "none" */
-    scrollbar-color: #cbd5e1 #f3f4f6; /* thumb color track color */
-}
+    /* Custom Scrollbar Style for Firefox */
+    .custom-scrollbar {
+        scrollbar-width: thin; /* "auto" or "none" */
+        scrollbar-color: #cbd5e1 #f3f4f6; /* thumb color track color */
+    }
 `;
+
+interface ImageProps {
+    type: string;
+    url: string;
+    name: string;
+}
 
 export function ComposeMailApp() {
     const [showCcBcc, setShowCcBcc] = createSignal(false);
-    const [showImageInput, setShowImageInput] = createSignal(false);
     const [imageUrl, setImageUrl] = createSignal('');
     const [toRecipients, setToRecipients] = createSignal('');
     const [subject, setSubject] = createSignal('');
     const [emailBody, setEmailBody] = createSignal('');
+    const [uploadedFiles, setUploadedFiles] = createSignal<
+        { file: File; previewUrl: string; mimeType: string }[]
+    >([]);
+    const [attachments, setAttachments] = createSignal<ImageProps[]>([]);
 
     onMount(() => {
         const styleElement = document.createElement('style');
@@ -46,31 +55,6 @@ export function ComposeMailApp() {
 
     const handleToggleCcBcc = () => {
         setShowCcBcc(!showCcBcc());
-    };
-
-    const handleToggleImageInput = () => {
-        setShowImageInput(!showImageInput());
-        if (showImageInput()) {
-            // Clear input when hiding
-            setImageUrl('');
-        }
-    };
-
-    const insertImage = () => {
-        if (imageUrl()) {
-            // In a real HTML email, you'd want more careful handling of <img> tags.
-            // For this static preview, we'll just append it to the textarea.
-            // For a true rich text experience, this would manipulate contentEditable.
-            setEmailBody(
-                (prev) =>
-                    prev +
-                    `\n<img src="${imageUrl()}" alt="Embedded Image" style="max-width:100%; height:auto; display:block; margin: 10px 0;">\n`
-            );
-            setImageUrl(''); // Clear input
-            setShowImageInput(false); // Hide input again
-        } else {
-            alert('Please enter an image URL.');
-        }
     };
 
     const sendEmail = () => {
@@ -91,10 +75,76 @@ export function ComposeMailApp() {
             setSubject('');
             setEmailBody('');
             setImageUrl('');
-            setShowImageInput(false);
             setShowCcBcc(false); // Also clear cc/bcc visibility
             alert('Email discarded.');
         }
+    };
+
+    const handleFileChange = (
+        e: InputEvent & {
+            currentTarget: HTMLInputElement;
+            target: HTMLInputElement;
+        }
+    ) => {
+        const files: File[] = Array.from(e.target.files!);
+        const currentFiles: { file: File; previewUrl: string }[] =
+            uploadedFiles();
+
+        if (currentFiles.length + files.length + attachments()!.length > 5) {
+            alert('You can upload a maximum of 5 files.');
+            e.target.value = ''; // Clear input
+            return;
+        }
+
+        const newFilesToUpload: {
+            file: File;
+            previewUrl: string;
+            mimeType: string;
+        }[] = [];
+        files.forEach((file) => {
+            if (file.size > 5 * 1024 * 1024) {
+                // 5MB limit
+                alert(`File "${file.name}" is too large. Max 5MB per file.`);
+            } else {
+                newFilesToUpload.push({
+                    file: file,
+                    previewUrl: file.name,
+                    mimeType: file.type,
+                });
+            }
+        });
+
+        setUploadedFiles((prev) => [...prev, ...newFilesToUpload]);
+        e.target.value = '';
+    };
+
+    const handleRemoveImage = (name: string) => {
+        const newAttachments = attachments()?.filter((el) => el.name !== name);
+        let att: ImageProps[] = [];
+
+        newAttachments!.map((el) => {
+            att.push({
+                url: el.url,
+                type: el.type,
+                name: el.name,
+            });
+        });
+        setAttachments(att);
+    };
+
+    const removeFile = (fileNameToRemove: string) => {
+        setUploadedFiles((prev) => {
+            const updatedFiles = prev.filter(
+                (item) => item.file.name !== fileNameToRemove
+            );
+            // Revoke Object URLs to free memory
+            prev.forEach((item) => {
+                if (item.file.name === fileNameToRemove && item.previewUrl) {
+                    URL.revokeObjectURL(item.previewUrl);
+                }
+            });
+            return updatedFiles;
+        });
     };
 
     return (
@@ -171,7 +221,7 @@ export function ComposeMailApp() {
                                 type="text"
                                 id="to-recipients"
                                 placeholder="Recipients (comma-separated)"
-                                class="flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
+                                class="mx-3 flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
                                 value={toRecipients()}
                                 onInput={(e) => setToRecipients(e.target.value)}
                                 multiple
@@ -197,7 +247,7 @@ export function ComposeMailApp() {
                                 <input
                                     type="text"
                                     id="cc-recipients"
-                                    class="flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
+                                    class="mx-3 flex-1 p-2 mx-3 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
                                 />
                             </div>
                         </div>
@@ -212,7 +262,7 @@ export function ComposeMailApp() {
                                 <input
                                     type="text"
                                     id="bcc-recipients"
-                                    class="flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
+                                    class="mx-3 flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
                                 />
                             </div>
                         </div>
@@ -229,7 +279,7 @@ export function ComposeMailApp() {
                             <input
                                 type="text"
                                 id="subject"
-                                class="flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
+                                class="mx-3 flex-1 p-2 focus:outline-none focus:ring-0 text-gray-800 bg-transparent"
                                 placeholder="Enter subject here"
                                 value={subject()}
                                 onInput={(e) => setSubject(e.target.value)}
@@ -237,7 +287,7 @@ export function ComposeMailApp() {
                         </div>
                     </div>
 
-                    <div class="flex-1 min-h-[200px] border border-gray-200 rounded-lg p-4 bg-gray-50 focus-within:ring-2 focus-within:ring-blue-200 transition-shadow duration-200 flex flex-col">
+                    <div class="h-120 border border-gray-200 rounded-lg p-4 bg-gray-50 focus-within:ring-2 focus-within:ring-blue-200 transition-shadow duration-200 flex flex-col">
                         <div class="flex items-center space-x-3 text-gray-500 mb-3 border-b border-gray-200 pb-2">
                             <button
                                 title="Bold"
@@ -344,9 +394,48 @@ export function ComposeMailApp() {
                         ></textarea>
                     </div>
 
+                    <div
+                        id="imagePreviewContainer"
+                        class="image-preview-container"
+                    >
+                        <For each={uploadedFiles()}>
+                            {(item) => (
+                                <div
+                                    class={modal_styles.image_preview}
+                                    data-file-name={item.file.name}
+                                >
+                                    <Show
+                                        when={item.previewUrl}
+                                        fallback={
+                                            <span class="text-sm text-gray-500 px-2 py-1 text-center whitespace-nowrap text-wrap ">
+                                                {item.file.name}
+                                            </span>
+                                        }
+                                    >
+                                        <span class="text-sm text-gray-500 px-2 py-1 text-center whitespace-nowrap text-wrap ">
+                                            {item.file.name}
+                                        </span>
+                                    </Show>
+                                    <button
+                                        type="button"
+                                        class={modal_styles.remove_btn}
+                                        onClick={() =>
+                                            removeFile(item.file.name)
+                                        }
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
+                            )}
+                        </For>
+                    </div>
+
                     <div class="flex items-center justify-between pt-4 border-t border-gray-200">
                         <div class="flex items-center space-x-4">
-                            <button class="flex items-center space-x-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors duration-200 font-semibold">
+                            <label
+                                for="profilePictureUpload"
+                                class="relative inline-flex items-center space-x-2 cursor-pointer bg-blue-100 text-blue-700 py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                            >
                                 <svg
                                     class="w-5 h-5"
                                     fill="currentColor"
@@ -359,43 +448,17 @@ export function ComposeMailApp() {
                                     ></path>
                                 </svg>
                                 <span>Attach File</span>
-                            </button>
-                            <button
-                                onClick={handleToggleImageInput}
-                                class="flex items-center space-x-2 px-4 py-2 bg-teal-100 text-teal-700 rounded-full hover:bg-teal-200 transition-colors duration-200 font-semibold"
-                            >
-                                <svg
-                                    class="w-5 h-5"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-4 2 2 6-6V5h2v6.586l-2.707 2.707z"
-                                        clip-rule="evenodd"
-                                    ></path>
-                                </svg>
-                                <span>Add Image</span>
-                            </button>
-                        </div>
-                        <Show when={showImageInput()}>
-                            <div class="flex items-center space-x-2">
                                 <input
-                                    type="url"
-                                    id="image-url-input"
-                                    placeholder="Paste image URL here"
-                                    class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-700 w-64"
-                                    value={imageUrl()}
-                                    onInput={(e) => setImageUrl(e.target.value)}
+                                    id="profilePictureUpload"
+                                    name="profile_picture"
+                                    type="file"
+                                    class="sr-only"
+                                    multiple
+                                    accept="image/*, .pdf, .doc, .docx"
+                                    onInput={handleFileChange}
                                 />
-                                <button
-                                    onClick={insertImage}
-                                    class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
-                                >
-                                    Insert
-                                </button>
-                            </div>
-                        </Show>
+                            </label>
+                        </div>
                     </div>
                 </div>
 

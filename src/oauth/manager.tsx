@@ -1,14 +1,14 @@
-import { SecureLocalStorage } from '../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../lib/localstore';
 import { UserModel } from '../models/auth';
 
 class AuthService {
-    private USER_AUTH_TOKEN = 'x-auth-token';
-    private TOKEN_EXP_KEY = 'x-token-exp';
-    private CURRENT_AUTH_PROCESS = 'x-auth-process';
-    private AUTH_PROCESS_TOKEN = 'x-auth-process-token';
-    private AUTH_USER_MODEL = 'x-auth-user-model';
-    private AUTH_PROVIDER = 'x-auth-provider';
-    private AUTH_DEVICE_VERIFIED = 'x-auth-device-verified';
+    private USER_AUTH_TOKEN = LocalStorageKey.AppAuthToken;
+    private TOKEN_EXP_KEY = LocalStorageKey.AppAuthExp;
+    private CURRENT_AUTH_PROCESS = LocalStorageKey.AppAuthProcess;
+    private AUTH_PROCESS_TOKEN = LocalStorageKey.AppAuthProcessToken;
+    private AUTH_USER_MODEL = LocalStorageKey.AppAuthUserModel;
+    private AUTH_PROVIDER = LocalStorageKey.AppAuthProvider;
+    private AUTH_DEVICE_VERIFIED = LocalStorageKey.AppAuthDeviceVerified;
 
     constructor() {}
 

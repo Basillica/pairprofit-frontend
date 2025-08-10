@@ -22,7 +22,7 @@ import {
     OfferedServiceInput,
     PublicUpdateInput,
 } from './utils';
-import { SecureLocalStorage } from '../../../lib/localstore';
+import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { BucketAPIHandler } from '../../../api/supabase';
 import { ArtisanApiHandler } from '../../../api/backend/profile';
 import { LoadingAnimation } from '../../../lib/lottie';
@@ -114,7 +114,7 @@ export const CreateProviderProfile: Component<{
 
     onMount(() => {
         let cachedCategores = SecureLocalStorage.getItem<ApiCategoriesResponse>(
-            'x-pairprofit-categories'
+            LocalStorageKey.PairProfitCategories
         );
         if (cachedCategores) {
             setApiCategories(cachedCategores);
@@ -299,7 +299,9 @@ export const CreateProviderProfile: Component<{
     ) => {
         event.preventDefault(); // Prevent default form submission
         // Here you would typically send formData() to your backend
-        const user = SecureLocalStorage.getItem<UserModel>('x-auth-user-model');
+        const user = SecureLocalStorage.getItem<UserModel>(
+            LocalStorageKey.AppAuthUserModel
+        );
         if (!user) return;
 
         setIsLoading(true);
