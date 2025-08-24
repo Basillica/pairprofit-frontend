@@ -233,9 +233,9 @@ export const ServiceProviderDashboard = () => {
     return (
         // Added a main container for the dashboard
         <div class={css_module.dashboard_container}>
-            <p class={`${css_module.dashboard_title}`}>
+            {/* <p class={`${css_module.dashboard_title}`}>
                 Service Provider Dashboard
-            </p>
+            </p> */}
 
             {/* Row 1: Contact Cards */}
             <div class="flex flex-wrap -mx-2">

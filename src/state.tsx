@@ -492,6 +492,10 @@ export const AppContextProvider = (props: {
                     );
                     activeCallFailed();
                     break;
+                case 'chat_message':
+                    break;
+                case 'register':
+                    break;
                 default:
                     console.warn(
                         'Unknown signaling message type:',

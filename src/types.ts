@@ -43,12 +43,14 @@ export interface HangUpMessage extends BaseSignalingMessage {
 }
 
 export interface ChatMessage {
-    type: "chat_message";
+    type: 'chat_message';
     sender_id: string;
     receiver_id?: string;
+    receiver_name: string;
     group_id?: string;
     message: string;
     message_content: 'file' | 'text';
+    is_media: boolean;
     timestamp: string;
 }
 

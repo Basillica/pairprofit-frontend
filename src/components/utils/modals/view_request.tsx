@@ -160,6 +160,7 @@ export const ServiceRequestDetails: Component<{
             setContactMethod(props.listing()?.contact_method);
         }
     });
+
     return (
         <Portal>
             <Show when={props.isOpen()}>

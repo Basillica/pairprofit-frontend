@@ -21,17 +21,6 @@ import css_module from './style.module.css';
 import { ViewProfileModal } from '../../../components/utils/modals';
 import { BucketAPIHandler } from '../../../api/supabase';
 
-export const generateUUID = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
-        /[xy]/g,
-        function (c) {
-            const r = (Math.random() * 16) | 0,
-                v = c == 'x' ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-        }
-    );
-};
-
 export interface ListingsFilter {
     filters: string[];
     string_params: string[];

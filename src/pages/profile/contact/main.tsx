@@ -62,7 +62,7 @@ const initialUserContacts: ContactModel[] = [
 ];
 
 export const ContactList = () => {
-    const [contacts, setContacts] = createSignal(initialUserContacts);
+    const [contacts, setContacts] = createSignal<ContactModel[]>([]);
     const [searchTerm, setSearchTerm] = createSignal('');
     const [filterRole, setFilterRole] = createSignal('all');
     const [filterStatus, setFilterStatus] = createSignal('all');
@@ -90,7 +90,7 @@ export const ContactList = () => {
 
         const result = await contactApi.getUserContacts(authUser()!.id);
         if (result.success) {
-            setContacts([...initialUserContacts, ...result.data]);
+            setContacts([...result.data]);
         }
     });
 
@@ -114,6 +114,12 @@ export const ContactList = () => {
         const status = filterStatus();
 
         let filtered = contacts().filter((contact) => {
+            if (typeof contact.last_interaction === 'string') {
+                contact.last_interaction = new Date(contact.last_interaction);
+            }
+            if (contact.avatar === '') {
+                contact.avatar = 'https://picsum.photos/200?random=1';
+            }
             const matchesSearch =
                 contact.name.toLowerCase().includes(term) ||
                 contact.role.toLowerCase().includes(term);
@@ -131,6 +137,7 @@ export const ContactList = () => {
             return matchesSearch && matchesRole && matchesStatus;
         });
 
+        console.log(filtered, 'ööööööööööööööööööööööö');
         filtered.sort(
             (a, b) =>
                 b.last_interaction.getTime() - a.last_interaction.getTime()
@@ -211,7 +218,7 @@ export const ContactList = () => {
     };
 
     return (
-        <div class="mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <div class="mx-auto bg-white p-8 rounded-lg shadow-lg min-h-screen">
             <h1 class="text-3xl font-extrabold text-gray-900 text-center mb-6">
                 My Contact List
             </h1>

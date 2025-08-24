@@ -9,6 +9,7 @@ export {
     AccountSettings,
     MailApp,
     ComposeMailApp,
+    ChatPage,
 } from './profile';
 export { CallerPage, CallerPageV2, CallerPageV3 } from './caller';
 export {
@@ -17,5 +18,5 @@ export {
     ServiceDetailsComponent,
 } from './listings';
 export { Page404, LoginPage, HomePage } from './general';
-export { Calendar, AboutUs, NotificationsPage, ChatApp } from './utils';
+export { Calendar, AboutUs, NotificationsPage } from './utils';
 export { LoggerPage } from './logger';

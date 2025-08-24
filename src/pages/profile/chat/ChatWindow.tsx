@@ -1,5 +1,5 @@
 import { createSignal, createEffect, For } from 'solid-js';
-import './chat.css';
+import chat_module from './chat.module.css';
 import {
     ChatWindowProps,
     Message,
@@ -22,6 +22,7 @@ const ChatWindow = (props: ChatWindowProps) => {
     let messagesAreaRef: HTMLDivElement | undefined;
     let messageInputRef: HTMLTextAreaElement | undefined;
     let fileInputRef: HTMLInputElement | undefined;
+    const defaultPartnerAvatar = 'https://picsum.photos/50';
 
     const adjustTextareaHeight = () => {
         if (messageInputRef) {
@@ -45,10 +46,11 @@ const ChatWindow = (props: ChatWindowProps) => {
     const handleSendMessage = () => {
         const text = messageInput().trim();
         if (text === '') return;
-
+        setIsSending(true);
         props.sendMessage(text, 'text');
         setMessageInput('');
         adjustTextareaHeight();
+        setIsSending(false);
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -132,7 +134,9 @@ const ChatWindow = (props: ChatWindowProps) => {
     };
 
     return (
-        <div class="chat-main flex-grow flex flex-col bg-gray-50">
+        <div
+            class={`${chat_module.chat_main} flex-grow flex flex-col bg-gray-50`}
+        >
             <div
                 id="chatHeader"
                 class="p-4 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between z-10"
@@ -149,8 +153,8 @@ const ChatWindow = (props: ChatWindowProps) => {
                         id="chatPartnerAvatar"
                         class="h-10 w-10 rounded-full object-cover"
                         src={
-                            props.activeConversation?.partner.avatar ||
-                            props.defaultPartnerAvatar
+                            props.activeConversation?.receiver.avatar ||
+                            defaultPartnerAvatar
                         }
                         alt="Partner Avatar"
                     />
@@ -160,7 +164,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                             class="text-lg font-semibold text-gray-800"
                         >
                             {props.activeConversation
-                                ? props.activeConversation.partner.name
+                                ? props.activeConversation.receiver.name
                                 : 'Select a Chat'}
                         </h2>
                         <p id="chatPartnerStatus" class="text-xs text-gray-500">
@@ -168,13 +172,13 @@ const ChatWindow = (props: ChatWindowProps) => {
                                 <>
                                     <span
                                         class={`h-2 w-2 rounded-full ${
-                                            props.activeConversation.partner
+                                            props.activeConversation.receiver
                                                 .isOnline
                                                 ? 'bg-green-500'
                                                 : 'bg-gray-400'
                                         } inline-block mr-1`}
                                     ></span>
-                                    {props.activeConversation.partner.isOnline
+                                    {props.activeConversation.receiver.isOnline
                                         ? 'Online'
                                         : 'Offline'}
                                 </>
@@ -187,7 +191,7 @@ const ChatWindow = (props: ChatWindowProps) => {
             <div
                 id="messagesArea"
                 ref={messagesAreaRef}
-                class="chat-messages-area flex-grow flex flex-col"
+                class={`${chat_module.chat_messages_area} flex-grow flex flex-col`}
             >
                 {!props.activeConversation ? (
                     <div
@@ -203,7 +207,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                     <For each={props.activeConversation.messages}>
                         {(msg, i) => {
                             const isSentByMe =
-                                msg.senderId === props.loggedInUser.id;
+                                msg.sender_id === props.loggedInUser.id;
                             const prevMsg =
                                 props.activeConversation?.messages[i() - 1];
                             const showDateDivider =
@@ -214,7 +218,9 @@ const ChatWindow = (props: ChatWindowProps) => {
                             return (
                                 <>
                                     {showDateDivider && (
-                                        <div class="date-divider">
+                                        <div
+                                            class={`${chat_module.date_divider}`}
+                                        >
                                             <span>
                                                 {formatRelativeTime(
                                                     msg.timestamp
@@ -230,16 +236,22 @@ const ChatWindow = (props: ChatWindowProps) => {
                                         }`}
                                     >
                                         <div
-                                            class={`message-bubble relative group ${
-                                                isSentByMe ? 'sent' : 'received'
+                                            class={`${
+                                                chat_module.message_bubble
+                                            } relative group ${
+                                                isSentByMe
+                                                    ? `${chat_module.sent}`
+                                                    : `${chat_module.received}`
                                             } ${
                                                 msg.type === 'image'
-                                                    ? 'image-message'
+                                                    ? `${chat_module.image_message}`
                                                     : ''
                                             }`}
                                         >
                                             {getMessageContent(msg)}
-                                            <div class="message-timestamp flex items-center justify-end text-right text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <div
+                                                class={`${chat_module.message_timestamp} flex items-center justify-end text-right text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
+                                            >
                                                 {formatMessageTime(
                                                     msg.timestamp
                                                 )}

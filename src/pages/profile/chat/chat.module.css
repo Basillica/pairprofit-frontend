@@ -1,5 +1,5 @@
 /* Main layout - mimic the image's structure */
-.chat-container {
+.chat_container {
     display: flex;
     height: 100vh;
     overflow-y: scroll;
@@ -7,7 +7,7 @@
 }
 
 /* Sidebar custom scrollbar */
-.chat-sidebar-list {
+.chat_sidebar_list {
     overflow-y: scroll;
     scrollbar-width: thin;
     scrollbar-color: #ccc #f0f2f5;
@@ -17,19 +17,19 @@
     display: none;
 }
 
-.chat-sidebar-list::-webkit-scrollbar {
+.chat_sidebar_list::-webkit-scrollbar {
     width: 6px;
 }
-.chat-sidebar-list::-webkit-scrollbar-track {
+.chat_sidebar_list::-webkit-scrollbar-track {
     background: #f0f2f5;
 }
-.chat-sidebar-list::-webkit-scrollbar-thumb {
+.chat_sidebar_list::-webkit-scrollbar-thumb {
     background-color: #ccc;
     border-radius: 3px;
 }
 
 /* Message area custom scrollbar */
-.chat-messages-area {
+.chat_messages_area {
     overflow-y: scroll;
     scrollbar-width: thin;
     scrollbar-color: #ccc #eef2f5; /* Different scrollbar for chat area */
@@ -37,19 +37,19 @@
     /* Ensure it can scroll even if content is less than height */
     min-height: 0;
 }
-.chat-messages-area::-webkit-scrollbar {
+.chat_messages_area::-webkit-scrollbar {
     width: 6px;
 }
-.chat-messages-area::-webkit-scrollbar-track {
+.chat_messages_area::-webkit-scrollbar-track {
     background: #eef2f5;
 }
-.chat-messages-area::-webkit-scrollbar-thumb {
+.chat_messages_area::-webkit-scrollbar-thumb {
     background-color: #ccc;
     border-radius: 3px;
 }
 
 /* Message bubble styles - custom to match image */
-.message-bubble {
+.message_bubble {
     max-width: 70%; /* Similar to image */
     padding: 8px 12px;
     border-radius: 8px; /* Slightly rounded corners */
@@ -57,13 +57,13 @@
     word-wrap: break-word;
 }
 
-.message-bubble.sent {
+.message_bubble.sent {
     background-color: #e0f2fe; /* Light blue, similar to image */
     color: #1a202c; /* Dark text */
     border-bottom-right-radius: 2px; /* Pointed corner towards sender */
 }
 
-.message-bubble.received {
+.message_bubble.received {
     background-color: #ffffff; /* White background for received */
     color: #1a202c;
     border: 1px solid #e2e8f0; /* Light border */
@@ -71,12 +71,12 @@
 }
 
 /* Image message styling */
-.message-bubble.image-message {
+.message_bubble.image_message {
     padding: 0;
     background: none;
     border: none;
 }
-.image-message img {
+.image_message img {
     max-width: 100%;
     border-radius: 8px;
     display: block;
@@ -96,7 +96,7 @@
 
 
 /* Timestamp for messages */
-.message-timestamp {
+.message_timestamp {
     font-size: 0.7rem;
     color: #888;
     margin-top: 2px;
@@ -104,15 +104,15 @@
 }
 
 /* Date divider */
-.date-divider {
+.date_divider {
     position: relative;
     text-align: center;
     margin: 20px 0;
     font-size: 0.8rem;
     color: #888;
 }
-.date-divider::before,
-.date-divider::after {
+.date_divider::before,
+.date_divider::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -120,9 +120,9 @@
     height: 1px;
     background-color: #e0e0e0;
 }
-.date-divider::before { left: 0; }
-.date-divider::after { right: 0; }
-.date-divider span {
+.date_divider::before { left: 0; }
+.date_divider::after { right: 0; }
+.date_divider span {
     background-color: #f0f2f5;
     padding: 0 10px;
     z-index: 1;
@@ -131,7 +131,7 @@
 
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
-    .chat-sidebar {
+    .chat_sidebar {
         position: absolute;
         top: 0;
         left: 0;
@@ -141,26 +141,26 @@
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
     }
-    .chat-sidebar.open {
+    .chat_sidebar.open {
         transform: translateX(0%);
     }
-    .chat-main {
+    .chat_main {
         width: 100%;
     }
-    .sidebar-toggle {
+    .sidebar_toggle {
         display: block;
     }
-    .chat-header .flex-grow {
+    .chat_header .flex_grow {
         text-align: center;
     }
 }
 
 /* Hide mobile toggle on desktop */
-.sidebar-toggle {
+.sidebar_toggle {
     display: none;
 }
 @media (max-width: 768px) {
-    .sidebar-toggle {
+    .sidebar_toggle {
         display: block;
     }
 }

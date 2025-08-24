@@ -1,4 +1,5 @@
-import { UserModel } from "../../models/auth";
+import { UserModel } from '../../models/auth';
+import { v4 as uuidv4 } from 'uuid';
 
 // --- Type Definitions for Signaling Messages (Must match Rust Backend) ---
 interface BaseSignalingMessage {
@@ -85,25 +86,18 @@ export interface CallHistoryItem {
 }
 
 /**
- * Generates a random UUID (Version 4).
- * This is a simplified version and not cryptographically strong, but sufficient for mock data.
- */
-function generateUuid(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-/**
  * Generates a random string of a given length, useful for passwords.
  */
-function generateRandomString(length: number, characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'): string {
+function generateRandomString(
+    length: number,
+    characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
+): string {
     let result = '';
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength)
+        );
     }
     return result;
 }
@@ -141,34 +135,78 @@ function getRandomInt(min: number, max: number): number {
  */
 export function generateUsers(count: number): UserModel[] {
     if (count < 0) {
-        throw new Error("Count must be a non-negative number.");
+        throw new Error('Count must be a non-negative number.');
     }
 
     const users: UserModel[] = [];
 
-    const firstNames = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank', 'Grace', 'Heidi', 'Ivan', 'Judy'];
-    const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+    const firstNames = [
+        'Alice',
+        'Bob',
+        'Charlie',
+        'Diana',
+        'Eve',
+        'Frank',
+        'Grace',
+        'Heidi',
+        'Ivan',
+        'Judy',
+    ];
+    const lastNames = [
+        'Smith',
+        'Johnson',
+        'Williams',
+        'Brown',
+        'Jones',
+        'Garcia',
+        'Miller',
+        'Davis',
+        'Rodriguez',
+        'Martinez',
+    ];
     const domains = ['example.com', 'test.org', 'mail.net', 'company.io'];
     const statuses = ['active', 'inactive', 'pending', 'suspended'];
     const platforms = ['web', 'mobile', 'api'];
     const scopes = ['public', 'private', 'admin'];
     const roles = ['user', 'editor', 'admin', 'guest'];
-    const allPermissions = ['read', 'write', 'delete', 'manage_users', 'view_reports', 'configure_settings'];
+    const allPermissions = [
+        'read',
+        'write',
+        'delete',
+        'manage_users',
+        'view_reports',
+        'configure_settings',
+    ];
 
     for (let i = 0; i < count; i++) {
         const firstName = pickRandomElement(firstNames);
         const lastName = pickRandomElement(lastNames);
-        const usernameBase = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(10, 99)}`;
-        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(1, 999)}@${pickRandomElement(domains)}`;
+        const usernameBase = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(
+            10,
+            99
+        )}`;
+        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(
+            1,
+            999
+        )}@${pickRandomElement(domains)}`;
         const password = generateRandomString(10); // A password of length 10
-        const id = generateUuid();
+        const id = uuidv4();
 
         // Generate realistic-ish dates
         const now = new Date();
-        const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
-        const createdAt = new Date(twoYearsAgo.getTime() + Math.random() * (now.getTime() - twoYearsAgo.getTime()));
-        const updatedAt = new Date(createdAt.getTime() + Math.random() * (now.getTime() - createdAt.getTime()));
-
+        const twoYearsAgo = new Date(
+            now.getFullYear() - 2,
+            now.getMonth(),
+            now.getDate()
+        );
+        const createdAt = new Date(
+            twoYearsAgo.getTime() +
+                Math.random() * (now.getTime() - twoYearsAgo.getTime())
+        );
+        const updatedAt = new Date(
+            createdAt.getTime() +
+                Math.random() * (now.getTime() - createdAt.getTime())
+        );
 
         users.push({
             firstname: firstName,

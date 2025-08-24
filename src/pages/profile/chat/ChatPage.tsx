@@ -1,8 +1,12 @@
 import { createSignal, createEffect, onMount } from 'solid-js';
-import './chat.css';
+import chat_module from './chat.module.css';
 import { User, Conversation, MessageType, Message, TextMessage } from './types';
 import ChatWindow from './ChatWindow';
-import Sidebar from './SideBar';
+import { ChatSidebar } from './ChatSideBar';
+import {
+    generateMockChatMessages,
+    transformMessagesToConversations,
+} from './functions';
 
 const loggedInUser: User = {
     isOnline: false,
@@ -14,19 +18,19 @@ const loggedInUser: User = {
 const initialConversations: Conversation[] = [
     {
         id: 'chat_kit_herrington',
-        partner: {
+        receiver: {
             id: 'contact_kit',
             name: 'Kit Herrington',
             avatar: 'https://picsum.photos/50?random=9',
             isOnline: true,
         },
-        lastMessage: 'Ok, got it. Thanks!',
-        lastMessageTime: new Date('2025-06-08T18:05:00Z'),
-        unreadCount: 0,
+        last_message: 'Ok, got it. Thanks!',
+        last_message_timestamp: new Date('2025-06-08T18:05:00Z'),
+        unread_count: 0,
         messages: [
             {
                 id: 'msg_k1',
-                senderId: 'contact_kit',
+                sender_id: 'contact_kit',
                 type: 'text',
                 content:
                     'Hi! I received your request for a new website design. I have some initial ideas.',
@@ -35,7 +39,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k2',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content: "Great! I'm excited to see them. When can we discuss?",
                 timestamp: new Date('2025-06-07T09:40:00Z'),
@@ -43,7 +47,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k3',
-                senderId: 'contact_kit',
+                sender_id: 'contact_kit',
                 type: 'text',
                 content:
                     "I've attached a preliminary mockup of the homepage layout. Let me know what you think.",
@@ -52,7 +56,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k4',
-                senderId: 'contact_kit',
+                sender_id: 'contact_kit',
                 type: 'image',
                 imageUrl:
                     'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg',
@@ -61,7 +65,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k5',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content: 'Looks promising! What about the internal pages?',
                 timestamp: new Date('2025-06-07T14:15:00Z'),
@@ -69,7 +73,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k6',
-                senderId: 'contact_kit',
+                sender_id: 'contact_kit',
                 type: 'text',
                 content:
                     "They will follow a similar clean design. I'm also thinking of adding a very cool animation for the hero section.",
@@ -78,7 +82,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_k7',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content:
                     "Sounds great! I'm looking forward to it. Ok, got it. Thanks!",
@@ -89,19 +93,19 @@ const initialConversations: Conversation[] = [
     },
     {
         id: 'chat_john_doe',
-        partner: {
+        receiver: {
             id: 'contact_john',
             name: 'John Doe',
             avatar: 'https://picsum.photos/50?random=5',
             isOnline: false,
         },
-        lastMessage: 'Can you show me a picture of the faucet?',
-        lastMessageTime: new Date('2025-06-05T09:41:00Z'),
-        unreadCount: 1,
+        last_message: 'Can you show me a picture of the faucet?',
+        last_message_timestamp: new Date('2025-06-05T09:41:00Z'),
+        unread_count: 1,
         messages: [
             {
                 id: 'msg_j1',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content: 'Hi John, are you available for a repair next week?',
                 timestamp: new Date('2025-06-05T09:00:00Z'),
@@ -109,7 +113,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_j2',
-                senderId: 'contact_john',
+                sender_id: 'contact_john',
                 type: 'text',
                 content:
                     'Yes, I have some slots open. What kind of repair is it?',
@@ -118,7 +122,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_j3',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content: "It's for a leaky faucet in the kitchen.",
                 timestamp: new Date('2025-06-05T09:30:00Z'),
@@ -126,19 +130,15 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_j4',
-                senderId: 'contact_john',
+                sender_id: 'contact_john',
                 type: 'image',
-                imageUrl: [
-                    'https://picsum.photos/200?random=1',
-                    'https://picsum.photos/200?random=2',
-                    'https://picsum.photos/200?random=3',
-                ],
+                imageUrl: 'https://picsum.photos/200?random=1',
                 timestamp: new Date('2025-06-05T09:40:00Z'),
                 status: 'delivered',
             },
             {
                 id: 'msg_j5',
-                senderId: 'contact_john',
+                sender_id: 'contact_john',
                 type: 'text',
                 content: 'Can you show me a picture of the faucet?',
                 timestamp: new Date('2025-06-05T09:41:00Z'),
@@ -148,19 +148,19 @@ const initialConversations: Conversation[] = [
     },
     {
         id: 'chat_anna_smith',
-        partner: {
+        receiver: {
             id: 'contact_anna',
             name: 'Anna Smith',
             avatar: 'https://picsum.photos/50?random=3',
             isOnline: true,
         },
-        lastMessage: 'Got it, thanks for the update!',
-        lastMessageTime: new Date('2025-06-09T10:00:00Z'),
-        unreadCount: 0,
+        last_message: 'Got it, thanks for the update!',
+        last_message_timestamp: new Date('2025-06-09T10:00:00Z'),
+        unread_count: 0,
         messages: [
             {
                 id: 'msg_a1',
-                senderId: 'contact_anna',
+                sender_id: 'contact_anna',
                 type: 'text',
                 content:
                     'Good morning! Just confirming our meeting for tomorrow at 10 AM.',
@@ -169,7 +169,7 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_a2',
-                senderId: 'user_me',
+                sender_id: 'user_me',
                 type: 'text',
                 content: 'Confirmed! Looking forward to it.',
                 timestamp: new Date('2025-06-09T09:50:00Z'),
@@ -177,7 +177,46 @@ const initialConversations: Conversation[] = [
             },
             {
                 id: 'msg_a3',
-                senderId: 'contact_anna',
+                sender_id: 'contact_anna',
+                type: 'text',
+                content: 'Great, see you then.',
+                timestamp: new Date('2025-06-09T10:00:00Z'),
+                status: 'seen',
+            },
+        ],
+    },
+    {
+        id: 'chat_anna_smither',
+        receiver: {
+            id: 'contact_anna',
+            name: 'Anna Smith',
+            avatar: 'https://picsum.photos/50?random=3',
+            isOnline: true,
+        },
+        last_message: 'Got it, thanks for the update!',
+        last_message_timestamp: new Date('2025-06-09T10:00:00Z'),
+        unread_count: 0,
+        messages: [
+            {
+                id: 'msg_a1',
+                sender_id: 'contact_anna',
+                type: 'text',
+                content:
+                    'Good morning! Just confirming our meeting for tomorrow at 10 AM.',
+                timestamp: new Date('2025-06-09T09:45:00Z'),
+                status: 'seen',
+            },
+            {
+                id: 'msg_a2',
+                sender_id: 'user_me',
+                type: 'text',
+                content: 'Confirmed! Looking forward to it.',
+                timestamp: new Date('2025-06-09T09:50:00Z'),
+                status: 'seen',
+            },
+            {
+                id: 'msg_a3',
+                sender_id: 'contact_anna',
                 type: 'text',
                 content: 'Great, see you then.',
                 timestamp: new Date('2025-06-09T10:00:00Z'),
@@ -187,11 +226,10 @@ const initialConversations: Conversation[] = [
     },
 ];
 
-const defaultPartnerAvatar = 'https://picsum.photos/50';
-
-export const ChatApp = () => {
+export const ChatPage = () => {
     const [conversations, setConversations] =
         createSignal<Conversation[]>(initialConversations);
+    const [_, setIsLoading] = createSignal(true);
     const [activeConversationId, setActiveConversationId] = createSignal<
         string | null
     >('chat_kit_herrington');
@@ -206,12 +244,12 @@ export const ChatApp = () => {
             (prev) =>
                 prev
                     .map((conv) =>
-                        conv.id === id ? { ...conv, unreadCount: 0 } : conv
+                        conv.id === id ? { ...conv, unread_count: 0 } : conv
                     )
                     .sort(
                         (a, b) =>
-                            b.lastMessageTime.getTime() -
-                            a.lastMessageTime.getTime()
+                            b.last_message_timestamp.getTime() -
+                            a.last_message_timestamp.getTime()
                     ) // Re-sort to bring active to top (optional)
         );
         setActiveConversationId(id);
@@ -221,10 +259,36 @@ export const ChatApp = () => {
         }
     };
 
+    const fetchChatData = async () => {
+        setIsLoading(true);
+        try {
+            // Transform the fetched data
+            const transformedConversations = transformMessagesToConversations(
+                [
+                    ...generateMockChatMessages(12),
+                    ...generateMockChatMessages(12),
+                    ...generateMockChatMessages(12),
+                ],
+                loggedInUser
+            );
+            setConversations([...conversations(), ...transformedConversations]);
+
+            // Set the first conversation as active
+            if (transformedConversations.length > 0) {
+                setActiveConversationId(transformedConversations[0].id);
+            }
+        } catch (error) {
+            console.error('Failed to fetch conversations:', error);
+            // Handle error state
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleSendMessage = (
         content: string,
         type: MessageType = 'text',
-        imageUrl?: string | string[]
+        imageUrl?: string
     ) => {
         if (!activeConversationId()) return;
 
@@ -235,17 +299,17 @@ export const ChatApp = () => {
 
         if (type === 'text') {
             newMessage = {
-                id: `msg_${Date.now()}`, // In real app, use UUID or backend ID
-                senderId: loggedInUser.id,
+                id: `msg_${Date.now()}`,
+                sender_id: loggedInUser.id,
                 type: 'text',
                 content: content,
                 timestamp: new Date(),
-                status: 'sent', // Optimistic UI: assume sent, update to 'delivered'/'seen' later
+                status: 'sent',
             };
         } else if (type === 'image' && imageUrl) {
             newMessage = {
                 id: `msg_${Date.now()}`,
-                senderId: loggedInUser.id,
+                sender_id: loggedInUser.id,
                 type: 'image',
                 imageUrl: imageUrl,
                 timestamp: new Date(),
@@ -265,20 +329,20 @@ export const ChatApp = () => {
                         ? {
                               ...conv,
                               messages: [...conv.messages, newMessage],
-                              lastMessage:
+                              last_message:
                                   type === 'text'
                                       ? content
                                       : type === 'image'
                                       ? 'Image'
                                       : 'File',
-                              lastMessageTime: newMessage.timestamp,
+                              last_message_timestamp: newMessage.timestamp,
                           }
                         : conv
                 )
                 .sort(
                     (a, b) =>
-                        b.lastMessageTime.getTime() -
-                        a.lastMessageTime.getTime()
+                        b.last_message_timestamp.getTime() -
+                        a.last_message_timestamp.getTime()
                 )
         );
 
@@ -300,20 +364,20 @@ export const ChatApp = () => {
             );
         }, 1000); // Simulate network delay
 
-        // Simulate partner's response (for demo purposes)
+        // Simulate receiver's response (for demo purposes)
         if (
-            currentConv.partner.id === 'contact_kit' &&
+            currentConv.receiver.id === 'contact_kit' &&
             newMessage.type === 'text' &&
             newMessage.content.toLowerCase().includes('hello')
         ) {
             setTimeout(() => {
                 const autoResponse: TextMessage = {
                     id: `msg_${Date.now()}_auto`,
-                    senderId: currentConv.partner.id,
+                    sender_id: currentConv.receiver.id,
                     type: 'text',
                     content: 'Hi there! How can I help you today?',
                     timestamp: new Date(),
-                    status: 'sent', // Auto-responses are 'sent' by partner from their end
+                    status: 'sent', // Auto-responses are 'sent' by receiver from their end
                 };
                 setConversations((prev) =>
                     prev.map((conv) =>
@@ -321,8 +385,9 @@ export const ChatApp = () => {
                             ? {
                                   ...conv,
                                   messages: [...conv.messages, autoResponse],
-                                  lastMessage: autoResponse.content,
-                                  lastMessageTime: autoResponse.timestamp,
+                                  last_message: autoResponse.content,
+                                  last_message_timestamp:
+                                      autoResponse.timestamp,
                               }
                             : conv
                     )
@@ -348,6 +413,7 @@ export const ChatApp = () => {
             }
         };
         window.addEventListener('resize', handleResize);
+        fetchChatData();
         return () => window.removeEventListener('resize', handleResize);
     });
 
@@ -359,7 +425,7 @@ export const ChatApp = () => {
     });
 
     return (
-        <div class="chat-container">
+        <div class={chat_module.chat_container}>
             <div
                 class={`w-full md:w-1/4
                     bg-white border-r border-gray-200
@@ -373,7 +439,7 @@ export const ChatApp = () => {
                     }
                 `}
             >
-                <Sidebar
+                <ChatSidebar
                     conversations={conversations()}
                     activeConversationId={activeConversationId()}
                     switchChat={switchChat}
@@ -383,7 +449,7 @@ export const ChatApp = () => {
             </div>
 
             <div
-                class={`flex-grow flex flex-col bg-gray-50 ${
+                class={`${chat_module.flex_grow} flex flex-col bg-gray-50 ${
                     mobileView() === 'chat' ? 'block' : 'hidden'
                 } md:block
         transition-transform duration-300 ease-in-out
@@ -398,7 +464,6 @@ export const ChatApp = () => {
                     activeConversation={activeConversation()}
                     loggedInUser={loggedInUser}
                     sendMessage={handleSendMessage}
-                    defaultPartnerAvatar={defaultPartnerAvatar}
                     showGoBackButton={
                         window.innerWidth <= 768 && mobileView() === 'chat'
                     }

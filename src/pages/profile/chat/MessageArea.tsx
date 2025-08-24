@@ -7,7 +7,6 @@ import {
     Accessor,
 } from 'solid-js';
 
-// Import your interfaces
 import {
     SelectedFile,
     MessageMedia,
@@ -25,15 +24,13 @@ export default function ChatInputArea(props: ChatInputAreaProps) {
     const [selectedFiles, setSelectedFiles] = createSignal<SelectedFile[]>([]);
     const [isSending, setIsSending] = createSignal<boolean>(false); // To manage sending state
 
-    // --- Helper Functions (ensure adjustTextareaHeight exists elsewhere) ---
-
-    // Example of adjustTextareaHeight (if not already defined)
     const adjustTextareaHeight = () => {
         if (messageInputRef) {
             messageInputRef.style.height = 'auto'; // Reset height
             messageInputRef.style.height = messageInputRef.scrollHeight + 'px'; // Set to scroll height
         }
     };
+
     // Ensure this is called on mount and whenever messageInput changes
     onMount(() => {
         adjustTextareaHeight();
@@ -120,22 +117,6 @@ export default function ChatInputArea(props: ChatInputAreaProps) {
             });
 
             try {
-                // Replace with your actual upload API endpoint
-                // const response = await fetch("/api/upload-media", {
-                //   method: "POST",
-                //   body: formData,
-                //   // headers: { 'Authorization': `Bearer ${yourAuthToken}` } // Add auth if needed
-                // });
-
-                // if (!response.ok) {
-                //   throw new Error(`Upload failed: ${response.statusText}`);
-                // }
-
-                // const result: { urls: string[] } = await response.json(); // Assuming backend returns { urls: string[] }
-                // mediaPayload = result.urls.map((url) => ({
-                //   url,
-                //   type: url.match(/\.(mp4|mov|avi|webm)$/i) ? "video" : "image", // Simple type inference based on extension
-                // }));
                 mediaPayload = [
                     {
                         url: 'https://picsum.photos/50',
@@ -153,34 +134,24 @@ export default function ChatInputArea(props: ChatInputAreaProps) {
 
         // --- 2. Construct and Send the Message Payload ---
         const messagePayload: ChatMessage = {
-            conversationId: props.activeConversation.id,
-            senderId: props.currentUserId, // Use the current user's ID from props
-            timestamp: Date.now(),
+            id: props.activeConversation.id,
+            sender_id: props.currentUserId,
+            receiver_id: '',
+            room_id: '',
+            scope: '',
+            is_media: false,
+            updated_at: '',
+            created_at: Date.now().toLocaleString(),
         };
 
         if (messageText) {
-            messagePayload.text = messageText;
+            messagePayload.message = messageText;
         }
         if (mediaPayload.length > 0) {
-            messagePayload.media = mediaPayload;
+            messagePayload.is_media = true;
         }
 
         try {
-            // Replace with your actual message sending API endpoint (or WebSocket emit)
-            //   const messageResponse = await fetch("/api/send-message", {
-            //     method: "POST",
-            //     headers: {
-            //       "Content-Type": "application/json",
-            //       // 'Authorization': `Bearer ${yourAuthToken}` // Add auth if needed
-            //     },
-            //     body: JSON.stringify(messagePayload),
-            //   });
-
-            //   if (!messageResponse.ok) {
-            //     throw new Error(`Send message failed: ${messageResponse.statusText}`);
-            //   }
-
-            // Success: Clear inputs and previews
             setMessageInput('');
             filesToUpload.forEach((f) => URL.revokeObjectURL(f.previewUrl)); // Revoke all preview URLs
             setSelectedFiles([]);

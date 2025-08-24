@@ -15,7 +15,7 @@ import {
     AboutUs,
     AccountSettings,
     NotificationsPage,
-    ChatApp,
+    ChatPage,
     MailApp,
     ComposeMailApp,
     LoggerPage,
@@ -28,6 +28,7 @@ import { ServiceProviderListings } from './components/account';
 import { HomePage } from './pages/profile';
 import { GetEnvConfig } from './environments';
 import { UserLocationMap } from './pages/leaf';
+import { PricingPage } from './pages/pricing';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -48,6 +49,7 @@ render(
                 <Route path="/login" component={LoginPage} />
                 <Route path="/public/profile" />{' '}
                 <Route path="/caller" component={CallerPage} />
+                <Route path="/pricing" component={PricingPage} />
                 <Route path="/caller2" component={CallerPageV2} />
                 <Route path="/sw.js" />
                 <Route path="/brevo-frame.html" />
@@ -68,7 +70,7 @@ render(
                             <Route path="/inbox" component={MailApp} />
                             <Route path="/compose" component={ComposeMailApp} />
                         </Route>
-                        <Route path="/chat" component={ChatApp} />
+                        <Route path="/chat" component={ChatPage} />
                         <Route path="/list" component={ContactList} />
                         <Route path="/call" component={CallerPageV3} />
                         {/* <Route path="/inbox" component={EmailInbox} />  */}

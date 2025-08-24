@@ -117,9 +117,11 @@ export const ProviderProfileDetail: Component<{
             type: 'chat_message',
             sender_id: userType.userID(),
             receiver_id: props.listing()?.user_id,
+            receiver_name: props.listing()?.name!,
             message: message,
             timestamp: new Date().toISOString(),
             message_content: 'text',
+            is_media: false,
         });
         setChatMessage('');
     };
