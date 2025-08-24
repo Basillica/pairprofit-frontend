@@ -7,60 +7,6 @@ import { LocalStorageKey, SecureLocalStorage } from '../../../lib/localstore';
 import { UserModel } from '../../../models/auth';
 import { useAppContext } from '../../../state';
 
-// Dummy Data for User Contacts (unchanged)
-const initialUserContacts: ContactModel[] = [
-    {
-        user_id: 'contact_johndoe',
-        name: 'John Doe',
-        role: 'Artisan (Carpenter)',
-        avatar: 'https://images.unsplash.com/photo-1549068106-b024baf5062d?q=80&w=60&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        last_interaction: new Date('2025-06-07T10:30:00Z'),
-        is_favorite: true,
-        is_blocked: false,
-        contact_id: 'artisan_xyz456',
-    },
-    {
-        user_id: 'contact_sarahchen',
-        name: 'Sarah Chen',
-        role: 'Artisan (Plumber)',
-        avatar: 'https://picsum.photos/200?random=1',
-        last_interaction: new Date('2025-06-06T14:06:00Z'),
-        is_favorite: false,
-        is_blocked: false,
-        contact_id: 'artisan_abc789',
-    },
-    {
-        user_id: 'contact_janedoe',
-        name: 'Jane Smith',
-        role: 'Customer',
-        avatar: 'https://picsum.photos/200?random=2',
-        last_interaction: new Date('2025-06-05T09:15:00Z'),
-        is_favorite: true,
-        is_blocked: false,
-        contact_id: 'customer_janedoe',
-    },
-    {
-        user_id: 'contact_peterjones',
-        name: 'Peter Jones',
-        role: 'Customer',
-        avatar: 'https://picsum.photos/200?random=3',
-        last_interaction: new Date('2025-06-03T16:00:00Z'),
-        is_favorite: false,
-        is_blocked: true,
-        contact_id: 'customer_peterjones',
-    },
-    {
-        user_id: 'contact_marywhite',
-        name: 'Mary White',
-        role: 'Artisan (Painter)',
-        avatar: 'https://picsum.photos/200?random=4',
-        last_interaction: new Date('2025-06-01T11:00:00Z'),
-        is_favorite: false,
-        is_blocked: false,
-        contact_id: 'artisan_marywhite',
-    },
-];
-
 export const ContactList = () => {
     const [contacts, setContacts] = createSignal<ContactModel[]>([]);
     const [searchTerm, setSearchTerm] = createSignal('');
