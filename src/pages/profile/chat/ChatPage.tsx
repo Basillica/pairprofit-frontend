@@ -11,17 +11,16 @@ import { ChatMessageModel, RoomModel } from '../../../models/chat';
 import { ChatApiHandler } from '../../../api/backend/chat';
 
 export const ChatPage = () => {
-    const [_, setIsLoading] = createSignal(true);
     const [activeConversationId, setActiveConversationId] = createSignal<
         string | null
     >('');
     const fetchUserRooms = async (user: UserModel): Promise<RoomModel[]> => {
         if (!user) return [];
-        setIsLoading(true);
+        setIsAppLoading(true);
         const api = new RoomApiHandler();
         const response = await api.listUserRooms(user.id);
+        setIsAppLoading(false);
         if (!response.success) return [];
-        setIsLoading(false);
         setUserRooms(response.data.rooms as RoomModel[]);
         return response.data.rooms as RoomModel[];
     };
@@ -30,8 +29,10 @@ export const ChatPage = () => {
         roomID: string
     ): Promise<ChatMessageModel[]> => {
         if (!roomID) return [];
+        setIsAppLoading(true);
         let api = new ChatApiHandler();
         let res = await api.getRoomMessages(roomID);
+        setIsAppLoading(false);
         if (res.success) {
             console.log(res.data, 'messagesmessages');
             return res.data.message as ChatMessageModel[];
@@ -39,14 +40,21 @@ export const ChatPage = () => {
             return [] as ChatMessageModel[];
         }
     };
+
     const [roomMessages] = createResource(
         activeConversationId,
         fetRoomMessages
     );
+
     const {
         userType: { authUser, setAuthUser },
-        inAppConnection: { getConnectedClients, connectedClients },
+        inAppConnection: {
+            getConnectedClients,
+            connectedClients,
+            setIsAppLoading,
+        },
     } = useAppContext();
+
     const [mobileView, setMobileView] = createSignal<'sidebar' | 'chat'>(
         window.innerWidth <= 768 ? 'sidebar' : 'chat'
     );
