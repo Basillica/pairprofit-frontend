@@ -8,6 +8,7 @@ import {
     stringToHslColor,
     getInitials,
 } from './functions';
+import { ChatMessageModel } from '../../../models/chat';
 
 const ChatWindow = (props: ChatWindowProps) => {
     const [messageInput, setMessageInput] = createSignal('');
@@ -54,38 +55,21 @@ const ChatWindow = (props: ChatWindowProps) => {
         }
     };
 
-    // const getMessageContent = (msg: Message) => {
-    //     if (msg.type === 'text') {
-    //         return <div>{(msg as TextMessage).content}</div>;
-    //     } else if (msg.type === 'image') {
-    //         const imageMsg = msg as ImageMessage;
-    //         if (Array.isArray(imageMsg.imageUrl)) {
-    //             return (
-    //                 <div class="image-gallery">
-    //                     <For each={imageMsg.imageUrl}>
-    //                         {(url) => (
-    //                             <img
-    //                                 src={url}
-    //                                 alt="Chat image"
-    //                                 class="rounded-lg object-cover"
-    //                             />
-    //                         )}
-    //                     </For>
-    //                 </div>
-    //             );
-    //         } else {
-    //             return (
-    //                 <img
-    //                     src={imageMsg.imageUrl}
-    //                     alt="Chat image"
-    //                     class="rounded-lg object-cover"
-    //                 />
-    //             );
-    //         }
-    //     }
-    //     // Handle other types like 'file' here if implemented
-    //     return null;
-    // };
+    const getMessageContent = (msg: ChatMessageModel) => {
+        if (!msg.is_media) {
+            return <div>{msg.message}</div>;
+        } else {
+            return (
+                <div class="image-gallery">
+                    <img
+                        src={msg.message}
+                        alt="Chat image"
+                        class="rounded-lg object-cover"
+                    />
+                </div>
+            );
+        }
+    };
 
     // Handle file selection
 
@@ -140,6 +124,14 @@ const ChatWindow = (props: ChatWindowProps) => {
             return updatedFiles;
         });
     };
+
+    function isSameDay(d1: Date, d2: Date) {
+        return (
+            d1.getFullYear() === d2.getFullYear() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getDate() === d2.getDate()
+        );
+    }
 
     return (
         <div
@@ -198,7 +190,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                             props.activeConversationId() ===
                                 props.roomMessages.latest![0].id
                                 ? 'To be Changed'
-                                : 'Select a Chat'}
+                                : props.currentRoom()?.title}
                         </h2>
                         <p id="chatPartnerStatus" class="text-xs text-gray-500">
                             {props.roomMessages.latest &&
@@ -247,9 +239,13 @@ const ChatWindow = (props: ChatWindowProps) => {
                             const isSentByMe =
                                 msg.sender_id === props.authUser()?.id;
                             const prevMsg = props.roomMessages()![i() - 1];
+
                             const showDateDivider =
                                 !prevMsg ||
-                                msg.updated_at !== prevMsg.updated_at;
+                                !isSameDay(
+                                    new Date(msg.updated_at),
+                                    new Date(prevMsg.updated_at)
+                                );
 
                             return (
                                 <>
@@ -284,8 +280,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                                                     : ''
                                             }`}
                                         >
-                                            {/* {getMessageContent(msg)} */}
-                                            {msg.message}
+                                            {getMessageContent(msg)}
                                             <div
                                                 class={`${chat_module.message_timestamp} flex items-center justify-end text-right text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
                                             >

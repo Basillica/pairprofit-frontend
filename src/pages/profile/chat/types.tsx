@@ -1,6 +1,6 @@
 import { Accessor, Resource } from 'solid-js';
 import { UserModel } from '../../../models/auth';
-import { ChatMessageModel } from '../../../models/chat';
+import { ChatMessageModel, RoomModel } from '../../../models/chat';
 
 export interface User {
     id: string;
@@ -34,6 +34,7 @@ export interface ConversationType {
 
 export interface ChatWindowProps {
     activeConversationId: Accessor<string | null>;
+    currentRoom: Accessor<RoomModel | undefined>;
     authUser: Accessor<UserModel | undefined>;
     roomMessages: Resource<ChatMessageModel[]>;
     sendMessage: (

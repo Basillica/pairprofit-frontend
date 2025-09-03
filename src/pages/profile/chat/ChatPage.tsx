@@ -56,6 +56,7 @@ export const ChatPage = () => {
         return connectedClients().includes(authUser()!.id);
     });
     const [userRooms, setUserRooms] = createSignal<RoomModel[]>([]);
+    const [currentRoom, setCurrentRoom] = createSignal<RoomModel>();
 
     const handleSendMessage = (
         content: string,
@@ -79,6 +80,24 @@ export const ChatPage = () => {
         console.log(newMessage);
     };
 
+    const handleResize = () => {
+        console.log(
+            window.innerWidth,
+            'window.innerWidthwindow.innerWidthwindow.innerWidth'
+        );
+        if (window.innerWidth > 768) {
+            // On desktop, always show both
+            setMobileView('chat'); // 'chat' implies both are visible on desktop
+        } else {
+            // On mobile, if an active chat exists, stay on chat view, otherwise go to sidebar
+            if (activeConversationId()) {
+                setMobileView('chat'); // Stay on chat if one is selected
+            } else {
+                setMobileView('sidebar'); // Go to sidebar if no chat selected initially
+            }
+        }
+    };
+
     // Handle window resize for sidebar visibility
     // Handle window resize to adjust mobileView state
     onMount(() => {
@@ -89,19 +108,6 @@ export const ChatPage = () => {
             if (!user) return;
             setAuthUser(user);
         }
-        const handleResize = () => {
-            if (window.innerWidth > 768) {
-                // On desktop, always show both
-                setMobileView('chat'); // 'chat' implies both are visible on desktop
-            } else {
-                // On mobile, if an active chat exists, stay on chat view, otherwise go to sidebar
-                if (activeConversationId()) {
-                    setMobileView('chat'); // Stay on chat if one is selected
-                } else {
-                    setMobileView('sidebar'); // Go to sidebar if no chat selected initially
-                }
-            }
-        };
         window.addEventListener('resize', handleResize);
         fetchUserRooms(authUser()!);
         getConnectedClients();
@@ -109,7 +115,9 @@ export const ChatPage = () => {
     });
 
     const setCurrentRoomID = (id: string) => {
+        setCurrentRoom(userRooms().find((el) => el.id === id));
         setActiveConversationId(id);
+        handleResize();
     };
 
     return (
@@ -161,6 +169,7 @@ export const ChatPage = () => {
                         window.innerWidth <= 768 && mobileView() === 'chat'
                     }
                     goBackToSidebar={() => setMobileView('sidebar')}
+                    currentRoom={currentRoom}
                 />
             </div>
         </div>
