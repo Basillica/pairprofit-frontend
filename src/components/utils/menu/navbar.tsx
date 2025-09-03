@@ -103,6 +103,33 @@ const SubMenu: Component<{
     );
 };
 
+const getIconForType = (type: string) => {
+    switch (type) {
+        case 'message':
+            return 'fas fa-comments text-blue-500';
+        case 'job':
+            return 'fas fa-briefcase text-purple-500';
+        case 'review':
+            return 'fas fa-star text-yellow-500';
+        case 'payment':
+            return 'fas fa-credit-card text-green-500';
+        case 'system':
+            return 'fas fa-cogs text-gray-500';
+        case 'contact':
+            return 'fas fa-address-book text-pink-500';
+        case 'appointment':
+            return 'fas fa-calendar-alt text-red-500';
+        case 'email':
+            return 'fas fa-envelope text-indigo-500';
+        case 'goal':
+            return 'fas fa-bullseye text-orange-500';
+        case 'general':
+            return 'fas fa-info-circle text-gray-400';
+        default:
+            return 'fas fa-bell text-gray-400';
+    }
+};
+
 export const NavBar: Component<{
     setOpenLogout: Setter<boolean>;
     openLogout: Accessor<boolean>;
@@ -112,7 +139,13 @@ export const NavBar: Component<{
     const [isMobileMenuOpen, setIsMobileMenuOpen] = createSignal(false);
     const [openDropdowns, setOpenDropdowns] = createSignal<string[]>([]);
     const [isUserAuthenticated, setIsUserAuthenticated] = createSignal(false);
-    const { userType } = useAppContext();
+    const {
+        userType,
+        notification: { notificationList },
+    } = useAppContext();
+    const [unreadNotifications] = createSignal(
+        notificationList().filter((el) => el.isRead === false)
+    );
 
     const closeAllMenus = () => {
         setOpenDropdowns([]);
@@ -303,6 +336,7 @@ export const NavBar: Component<{
                     </button>
                 )}
 
+                {/* notifications */}
                 <div class="relative inline-flex">
                     {userType.authUser()! && (
                         <button
@@ -329,8 +363,14 @@ export const NavBar: Component<{
                         >
                             <div class="relative inline-block">
                                 <i class="fas fa-bell"></i>
-                                <div class="absolute top-0 right-0 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center transform translate-x-1/3 -translate-y-1/3">
-                                    9+
+                                <div
+                                    class={`absolute top-0 right-0 h-5 w-5 ${
+                                        unreadNotifications().length > 0 &&
+                                        'rounded-full bg-red-500'
+                                    } text-white text-xs font-semibold flex items-center justify-center transform translate-x-1/3 -translate-y-1/3`}
+                                >
+                                    {unreadNotifications().length > 0 &&
+                                        unreadNotifications().length}
                                 </div>
                             </div>
                         </button>
@@ -359,7 +399,7 @@ export const NavBar: Component<{
                             aria-orientation="vertical"
                             aria-labelledby="dropdown-trigger"
                         >
-                            <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                            <div class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                                 <div class="flex items-center justify-between mb-4">
                                     <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">
                                         Latest Activities
@@ -367,9 +407,10 @@ export const NavBar: Component<{
                                     <a
                                         href="/notifications"
                                         class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
-                                        onClick={closeAllMenus} // Close menus when navigating
+                                        onClick={closeAllMenus}
                                     >
-                                        View all
+                                        {unreadNotifications().length > 0 &&
+                                            'View all'}
                                     </a>
                                 </div>
                                 <div class="flow-root">
@@ -377,117 +418,159 @@ export const NavBar: Component<{
                                         role="list"
                                         class="divide-y divide-gray-200 dark:divide-gray-700"
                                     >
-                                        {/* Your existing notification list items */}
-                                        <li class="py-3 sm:py-4">
-                                            <div class="flex items-center">
-                                                <div class="shrink-0">
-                                                    <img
-                                                        class="w-8 h-8 rounded-full"
-                                                        src="https://picsum.photos/50"
-                                                        alt="Neil image"
-                                                    />
-                                                </div>
-                                                <div class="flex-1 min-w-0 ms-4">
-                                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                        Neil Sims
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        email@windster.com
-                                                    </p>
-                                                </div>
-                                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                    $320
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="py-3 sm:py-4">
-                                            <div class="flex items-center ">
-                                                <div class="shrink-0">
-                                                    <img
-                                                        class="w-8 h-8 rounded-full"
-                                                        src="https://picsum.photos/50"
-                                                        alt="Bonnie image"
-                                                    />
-                                                </div>
-                                                <div class="flex-1 min-w-0 ms-4">
-                                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                        Bonnie Green
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        email@windster.com
-                                                    </p>
-                                                </div>
-                                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                    $3467
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="py-3 sm:py-4">
-                                            <div class="flex items-center">
-                                                <div class="shrink-0">
-                                                    <img
-                                                        class="w-8 h-8 rounded-full"
-                                                        src="https://picsum.photos/50"
-                                                        alt="Michael image"
-                                                    />
-                                                </div>
-                                                <div class="flex-1 min-w-0 ms-4">
-                                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                        Michael Gough
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        email@windster.com
-                                                    </p>
-                                                </div>
-                                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                    $67
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="py-3 sm:py-4">
-                                            <div class="flex items-center ">
-                                                <div class="shrink-0">
-                                                    <img
-                                                        class="w-8 h-8 rounded-full"
-                                                        src="https://picsum.photos/50"
-                                                        alt="Lana image"
-                                                    />
-                                                </div>
-                                                <div class="flex-1 min-w-0 ms-4">
-                                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                        Lana Byrd
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        email@windster.com
-                                                    </p>
-                                                </div>
-                                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                    $367
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="pt-3 pb-0 sm:pt-4">
-                                            <div class="flex items-center ">
-                                                <div class="shrink-0">
-                                                    <img
-                                                        class="w-8 h-8 rounded-full"
-                                                        src="https://picsum.photos/50"
-                                                        alt="Thomas image"
-                                                    />
-                                                </div>
-                                                <div class="flex-1 min-w-0 ms-4">
-                                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                        Thomes Lean
-                                                    </p>
-                                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                                        email@windster.com
-                                                    </p>
-                                                </div>
-                                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                    $2367
-                                                </div>
-                                            </div>
-                                        </li>
+                                        <For each={unreadNotifications()}>
+                                            {(notification) => (
+                                                <li class="py-3 sm:py-4 px-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors duration-200">
+                                                    <div class="flex items-center space-x-4">
+                                                        <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700">
+                                                            <i
+                                                                class={`${getIconForType(
+                                                                    notification.type
+                                                                )}`}
+                                                            ></i>
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-sm font-semibold text-gray-900 truncate dark:text-white">
+                                                                {
+                                                                    notification.title
+                                                                }
+                                                            </p>
+                                                            <p class="text-xs text-gray-500 truncate dark:text-gray-400">
+                                                                {
+                                                                    notification.message
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                        <div class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                            {new Date(
+                                                                notification.timestamp
+                                                            ).toLocaleTimeString()}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            )}
+                                        </For>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* messages */}
+                <div class="relative inline-flex">
+                    {userType.authUser()! && (
+                        <button
+                            id="dropdown-trigger"
+                            type="button"
+                            class="flex justify-center items-center size-9 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+                            aria-haspopup="menu"
+                            aria-expanded={
+                                openDropdowns().includes('messages')
+                                    ? 'true'
+                                    : 'false'
+                            }
+                            aria-label="Messages"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent document click from closing
+                                const newOpenDropdowns =
+                                    openDropdowns().includes('messages')
+                                        ? openDropdowns().filter(
+                                              (id) => id !== 'messages'
+                                          )
+                                        : [...openDropdowns(), 'messages'];
+                                setOpenDropdowns(newOpenDropdowns);
+                            }}
+                        >
+                            <div class="relative inline-block">
+                                <i class="fas fa-comments"></i>
+                                <div
+                                    class={`absolute top-0 right-0 h-5 w-5 ${
+                                        unreadNotifications().length > 0 &&
+                                        'rounded-full bg-red-500'
+                                    } text-white text-xs font-semibold flex items-center justify-center transform translate-x-1/3 -translate-y-1/3`}
+                                >
+                                    {unreadNotifications().length > 0 &&
+                                        unreadNotifications().length}
+                                </div>
+                            </div>
+                        </button>
+                    )}
+
+                    {/* messages Dropdown */}
+                    {userType.authUser()! && (
+                        <div
+                            id="dropdown-menu"
+                            class={`
+                                transition-opacity duration-300
+                                absolute right-0 mt-10 bg-white
+                                shadow-md rounded-lg origin-top-right
+                                ${
+                                    openDropdowns().includes('messages')
+                                        ? 'block opacity-100'
+                                        : 'hidden opacity-0'
+                                }
+                                overflow-y-auto
+                            `}
+                            style={{
+                                width: '290px',
+                                'max-height': '650px',
+                            }}
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="dropdown-trigger"
+                        >
+                            <div class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                                        Latest Messages
+                                    </h5>
+                                    <a
+                                        href="/contact/chat"
+                                        class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+                                        onClick={closeAllMenus}
+                                    >
+                                        {unreadNotifications().length > 0 &&
+                                            'View all'}
+                                    </a>
+                                </div>
+                                <div class="flow-root">
+                                    <ul
+                                        role="list"
+                                        class="divide-y divide-gray-200 dark:divide-gray-700"
+                                    >
+                                        <For each={unreadNotifications()}>
+                                            {(notification) => (
+                                                <li class="py-3 sm:py-4 px-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors duration-200">
+                                                    <div class="flex items-center space-x-4">
+                                                        <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700">
+                                                            <i
+                                                                class={`${getIconForType(
+                                                                    notification.type
+                                                                )}`}
+                                                            ></i>
+                                                        </div>
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-sm font-semibold text-gray-900 truncate dark:text-white">
+                                                                {
+                                                                    notification.title
+                                                                }
+                                                            </p>
+                                                            <p class="text-xs text-gray-500 truncate dark:text-gray-400">
+                                                                {
+                                                                    notification.message
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                        <div class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                            {new Date(
+                                                                notification.timestamp
+                                                            ).toLocaleTimeString()}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            )}
+                                        </For>
                                     </ul>
                                 </div>
                             </div>
@@ -497,7 +580,7 @@ export const NavBar: Component<{
 
                 {userType.authUser()! && (
                     <button
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-full flex items-center justify-center text-lg"
+                        class="bg-blue-500 hover:bg-blue-200 text-white font-bold py-2 px-2 rounded-full flex items-center justify-center text-lg"
                         onClick={handleUserProfile}
                         aria-label="User Profile"
                     >

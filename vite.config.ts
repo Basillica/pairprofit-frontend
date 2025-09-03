@@ -1,6 +1,6 @@
-import { defineConfig } from "vite";
-import solid from "vite-plugin-solid";
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite';
+import solid from 'vite-plugin-solid';
+import tailwindcss from '@tailwindcss/vite';
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -18,18 +18,25 @@ export default defineConfig(async () => ({
         strictPort: true,
         host: host || false,
         hmr: host
-        ? {
-            protocol: "ws",
-            host,
-            port: 1421,
-            }
-        : undefined,
+            ? {
+                  protocol: 'ws',
+                  host,
+                  port: 1421,
+              }
+            : undefined,
         watch: {
-        // 3. tell vite to ignore watching `src-tauri`
-        ignored: ["**/src-tauri/**"],
+            // 3. tell vite to ignore watching `src-tauri`
+            ignored: ['**/src-tauri/**'],
         },
     },
     build: {
         target: 'esnext',
+    },
+    test: {
+        // environment: 'jsdom',
+        globals: true,
+        // setupFiles: './src/setupTests.ts',
+        // css: true,
+        // include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
 }));

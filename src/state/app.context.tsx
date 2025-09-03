@@ -5,68 +5,58 @@ import {
     createEffect,
     JSX,
     Accessor,
-    Setter,
     onCleanup,
 } from 'solid-js';
-import { UserModel } from './models/auth';
 import {
-    AnswerMessage,
-    CallAcceptedMessage,
-    CallRequestMessage,
-    CandidateMessage,
-    HangUpMessage,
-    OfferMessage,
-    RegisterMessage,
     SignalingMessage,
-    ActiveCall,
+    PeerToPeerMessage,
+    AuthenticationMessage,
+    ChatSignalingMessage,
+    InAppNotificationMessage,
+    ErrorMessage,
+    ChatMessagePayload,
+    OfferMessagePayload,
+    AnswerMessagePayload,
+    CandidateMessagePayload,
+    CallRequestMessagePayload,
     CallHistoryItem,
-    ChatMessage,
-} from './types';
-
-interface NotificationType {
-    showAppNotification: (
-        type: 'success' | 'warning' | 'error',
-        message: string
-    ) => void;
-    notificationType: Accessor<'success' | 'warning' | 'error' | null>;
-    setNotificationType: Setter<'success' | 'warning' | 'error' | null>;
-    notificationMessage: Accessor<string | null>;
-    setNotificationMessage: Setter<string | null>;
-}
-
-interface UserType {
-    authUser: Accessor<UserModel | undefined>;
-    setAuthUser: Setter<UserModel | undefined>;
-    userID: Accessor<string>;
-    setUserID: Setter<string>;
-    callHistory: Accessor<CallHistoryItem[]>;
-    setCallHistory: Setter<CallHistoryItem[]>;
-    addCallToHistory: (call: CallHistoryItem) => void;
-}
-
-interface InAppConnection {
-    socket: Accessor<WebSocket | null>;
-    registerUser: () => void;
-    startCall: () => Promise<void>;
-    activeCall: Accessor<ActiveCall | null>;
-    setActiveCall: Setter<ActiveCall | null>;
-    selectedUserToCall: Accessor<UserModel | null>;
-    setSelectedUserToCall: Setter<UserModel | null>;
-    setRemoteUserId: Setter<string>;
-    endActiveCall: () => void;
-}
-
-interface AppContextType {
-    isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
-    sendMessage: (chatMessage: ChatMessage) => void;
-    updateNotifWidget: Accessor<boolean>;
-    setNotifWidget: Setter<boolean>;
-    syncMode: Accessor<boolean>;
-    setSyncMode: Setter<boolean>;
-    notification: NotificationType;
-    userType: UserType;
-    inAppConnection: InAppConnection;
-}
+    ConnectedClientsMessage,
+    OnlineStatusMessage,
+} from './app.types';
+import { AppContextType } from './state.types';
+import { LocalStorageKey, SecureLocalStorage } from '../lib/localstore';
+import {
+    isConnected,
+    setIsConnected,
+    updateNotifWidget,
+    setNotifWidget,
+    syncMode,
+    setSyncMode,
+    socket,
+    setSocket,
+    isAppLoading,
+    setIsAppLoading,
+    activeCall,
+    setActiveCall,
+    selectedUserToCall,
+    setSelectedUserToCall,
+    openLogout,
+    setOpenLogout,
+    remoteUserId,
+    setRemoteUserId,
+    notificationList,
+    setNotificationList,
+    notificationType,
+    setNotificationType,
+    notificationMessage,
+    setNotificationMessage,
+    authUser,
+    setAuthUser,
+    userID,
+    setUserID,
+    callHistory,
+    setCallHistory,
+} from './context';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -75,30 +65,13 @@ export const AppContextProvider = (props: {
     query: Accessor<string>; // Query is a signal
     children: JSX.Element;
 }) => {
-    const [socket, setSocket] = createSignal<WebSocket | null>(null);
-    const [isConnected, setIsConnected] = createSignal<boolean>(false);
-    const [authUser, setAuthUser] = createSignal<UserModel>();
-    const [selectedUserToCall, setSelectedUserToCall] =
-        createSignal<UserModel | null>(null);
-    const [activeCall, setActiveCall] = createSignal<ActiveCall | null>(null);
-    const [notificationType, setNotificationType] = createSignal<
-        'success' | 'warning' | 'error' | null
-    >(null);
-    const [callHistory, setCallHistory] = createSignal<CallHistoryItem[]>([]);
-    const [notificationMessage, setNotificationMessage] = createSignal<
-        string | null
-    >(null);
-    const [updateNotifWidget, setNotifWidget] = createSignal<boolean>(false);
-    const [syncMode, setSyncMode] = createSignal(false);
-    // --- Call setup ---
     const [localStream, setLocalStream] = createSignal<MediaStream | null>(
         null
     );
+    const [connectedClients, setConnectedClients] = createSignal<string[]>([]);
     const [_, setRemoteStream] = createSignal<MediaStream | null>(null);
     const [peerConnection, setPeerConnection] =
         createSignal<RTCPeerConnection | null>(null);
-    const [userID, setUserID] = createSignal('');
-    const [remoteUserId, setRemoteUserId] = createSignal<string>('');
     const [callStatus, setCallStatus] = createSignal<
         'idle' | 'calling' | 'incoming' | 'connected'
     >('idle');
@@ -120,7 +93,6 @@ export const AppContextProvider = (props: {
             console.log('Query is empty, not connecting to WebSocket.');
             return;
         }
-
         if (socket() || socket()?.readyState === WebSocket.OPEN) {
             console.log('Client is already connected.');
             return;
@@ -148,8 +120,16 @@ export const AppContextProvider = (props: {
 
         ws.onopen = () => {
             console.log('WebSocket connected!');
-            setIsConnected(true);
-            retryCount = 0; // Reset retry count on successful connection
+            const token = SecureLocalStorage.getItem<string>(
+                LocalStorageKey.AppAuthToken
+            );
+            if (token) {
+                setIsConnected(true);
+                retryCount = 0; // Reset retry count on successful connection
+                registerUser(token); // Now we register the user on a successful connection.
+            }
+            setIsConnected(false);
+            retryCount = maxRetries; // Reset retry count on successful connection
         };
 
         ws.onmessage = (event: MessageEvent<string>) =>
@@ -171,25 +151,6 @@ export const AppContextProvider = (props: {
             if (reconnectTimeoutId) {
                 clearTimeout(reconnectTimeoutId);
                 reconnectTimeoutId = null;
-            }
-
-            // --- ADD THIS: Send a Register message ---
-            const currentAuthUser = authUser(); // Get the current user ID
-            if (currentAuthUser && currentAuthUser.id) {
-                const registerMessage = JSON.stringify({
-                    type: 'register',
-                    user_id: currentAuthUser.id,
-                });
-                ws.send(registerMessage);
-                console.log(
-                    `WS: Sent 'register' message for user ID: ${currentAuthUser.id}`
-                );
-            } else {
-                console.warn(
-                    'WS: User ID not available for registration, connection might be limited.'
-                );
-                // Consider closing the connection if registration is mandatory
-                ws.close(1003, 'User ID missing for registration');
             }
 
             // Only attempt reconnect if not explicitly closed by us (e.g., query change)
@@ -223,44 +184,6 @@ export const AppContextProvider = (props: {
         setNotificationType(type);
         setNotificationMessage(message);
     };
-
-    // Effect to manage WebSocket connection based on props.query
-    // createEffect(() => {
-    //     // const currentQuery = props.query();
-    //     if (props.url !== '' && authUser()) {
-    //         // set current user ID
-    //         setUserID(authUser()?.id!);
-    //         // If there's an existing open socket and the query changes, close it first
-    //         if (socket() && socket()?.readyState === WebSocket.OPEN) {
-    //             console.log('Query changed, closing existing WebSocket...');
-    //             socket()?.close(1000, 'Query changed'); // Clean close
-    //             // The onclose handler will then trigger a new connection attempt
-    //         } else {
-    //             // If no socket or not open, try to connect immediately
-    //             connectToWS();
-    //         }
-    //     } else {
-    //         // If query becomes empty, close any active socket
-    //         if (socket() && socket()?.readyState === WebSocket.OPEN) {
-    //             console.log('Query became empty, closing WebSocket.');
-    //             socket()?.close(1000, 'Query empty');
-    //         }
-    //         setSocket(null);
-    //         setIsConnected(false);
-    //         retryCount = 0; // Reset retries if query becomes empty
-    //     }
-
-    //     // Cleanup function for when the effect re-runs or component unmounts
-    //     return () => {
-    //         if (socket() && socket()?.readyState === WebSocket.OPEN) {
-    //             console.log('Effect cleanup: Closing WebSocket.');
-    //             socket()?.close(1000, 'Component unmounted or effect re-ran');
-    //         }
-    //         setSocket(null);
-    //         setIsConnected(false);
-    //         retryCount = 0; // Reset retries on cleanup
-    //     };
-    // });
 
     createEffect(() => {
         const currentUrl = props.url;
@@ -372,9 +295,14 @@ export const AppContextProvider = (props: {
         };
     });
 
-    const sendMessage = (chatMessage: ChatMessage) => {
-        if (socket()?.readyState === WebSocket.OPEN) {
-            socket()!.send(JSON.stringify(chatMessage));
+    const sendChatMessage = (chatMessage: ChatMessagePayload) => {
+        const currentWs = socket();
+        if (currentWs?.readyState === WebSocket.OPEN) {
+            const wrappedMessage = {
+                type: 'chat',
+                payload: chatMessage,
+            };
+            currentWs.send(JSON.stringify(wrappedMessage));
             showAppNotification('success', 'message successfully delivered');
         } else {
             showAppNotification(
@@ -385,13 +313,46 @@ export const AppContextProvider = (props: {
     };
 
     // 2. Register user with signaling server
-    const registerUser = () => {
+    const registerUser = (token: string) => {
         const currentWs = socket();
         const currentUserId = authUser()?.id;
         if (currentWs && currentUserId) {
-            const message: RegisterMessage = {
-                type: 'register',
-                user_id: currentUserId,
+            const message: AuthenticationMessage = {
+                type: 'authentication',
+                payload: {
+                    subtype: 'register',
+                    user_id: currentUserId,
+                    user_name: authUser()?.username!,
+                    token: token,
+                },
+            };
+            currentWs.send(JSON.stringify(message));
+        }
+    };
+
+    const getClientOnlineStatus = (client_ids: string[]) => {
+        const currentWs = socket();
+        if (currentWs) {
+            const message: OnlineStatusMessage = {
+                type: 'clients_online_status',
+                payload: {
+                    subtype: 'connected_clients_request',
+                    client_ids: client_ids,
+                },
+            };
+            currentWs.send(JSON.stringify(message));
+        }
+    };
+
+    const getConnectedClients = () => {
+        const currentWs = socket();
+        const currentUserId = authUser()?.id;
+        if (currentWs && currentUserId) {
+            const message: ConnectedClientsMessage = {
+                type: 'connected_clients',
+                payload: {
+                    subtype: 'connected_clients_request',
+                },
             };
             currentWs.send(JSON.stringify(message));
         }
@@ -404,97 +365,223 @@ export const AppContextProvider = (props: {
             console.log('Received signaling message:', msg);
 
             switch (msg.type) {
-                case 'call_request':
-                    if (callStatus() === 'idle') {
-                        setRemoteUserId(msg.caller_id);
-                        setCallStatus('incoming');
-                        showAppNotification(
-                            'success',
-                            `Incoming call from ${msg.caller_id}!`
-                        );
-                    } else {
-                        console.log('Busy, rejecting call from', msg.caller_id);
-                        // You might send a "busy" message back to the caller here
-                    }
-                    break;
-                case 'call_accepted':
-                    // The callee accepted the call, now create offer and send
-                    await createOffer();
-                    setCallStatus('connected'); // Immediately set to connected on caller's side
-                    break;
-                case 'offer':
-                    // Ensure peerConnection is initialized if not already (e.g., if we are the callee)
-                    let currentPc = peerConnection();
-                    if (!currentPc) {
-                        if (callStatus() === 'incoming') {
-                            await acceptCall(); // This will create the PC and set local stream
-                            currentPc = peerConnection(); // Get the newly created PC
-                        } else {
-                            console.error(
-                                'Received offer in unexpected state, peerConnection not initialized:',
-                                callStatus()
+                case 'authentication':
+                    const authMsg = msg as AuthenticationMessage;
+                    switch (authMsg.payload.subtype) {
+                        case 'register':
+                            console.log(
+                                'Successfully registered with the signaling server.'
                             );
-                            return;
-                        }
+                            break;
                     }
+                    break;
+                case 'peer_to_peer':
+                    const p2pMsg = msg as PeerToPeerMessage;
+                    switch (p2pMsg.payload.subtype) {
+                        case 'call_request':
+                            const callRequestPayload =
+                                p2pMsg.payload as CallRequestMessagePayload;
+                            if (callStatus() === 'idle') {
+                                setRemoteUserId(callRequestPayload.caller_id);
+                                setCallStatus('incoming');
+                                showAppNotification(
+                                    'success',
+                                    `Incoming call from ${callRequestPayload.caller_id}!`
+                                );
+                            } else {
+                                console.log(
+                                    'Busy, rejecting call from',
+                                    callRequestPayload.caller_id
+                                );
+                            }
+                            break;
+                        case 'call_accepted':
+                            await createOffer();
+                            setCallStatus('connected');
+                            break;
+                        case 'offer':
+                            const offerPayload =
+                                p2pMsg.payload as OfferMessagePayload;
+                            let currentPc = peerConnection();
+                            if (!currentPc) {
+                                if (callStatus() === 'incoming') {
+                                    await acceptCall();
+                                    currentPc = peerConnection();
+                                } else {
+                                    console.error(
+                                        'Received offer in unexpected state, peerConnection not initialized:',
+                                        callStatus()
+                                    );
+                                    return;
+                                }
+                            }
+                            if (currentPc) {
+                                await currentPc.setRemoteDescription(
+                                    new RTCSessionDescription({
+                                        type: 'offer',
+                                        sdp: offerPayload.sdp,
+                                    })
+                                );
+                                await createAnswer();
+                                setCallStatus('connected');
+                            }
+                            break;
+                        case 'answer':
+                            const answerPayload =
+                                p2pMsg.payload as AnswerMessagePayload;
+                            const pcAfterAnswer = peerConnection();
+                            if (pcAfterAnswer) {
+                                await pcAfterAnswer.setRemoteDescription(
+                                    new RTCSessionDescription({
+                                        type: 'answer',
+                                        sdp: answerPayload.sdp,
+                                    })
+                                );
+                                setCallStatus('connected');
+                            }
+                            break;
+                        case 'candidate':
+                            const candidatePayload =
+                                p2pMsg.payload as CandidateMessagePayload;
+                            const pcAfterCandidate = peerConnection();
+                            if (
+                                pcAfterCandidate &&
+                                candidatePayload.candidate
+                            ) {
+                                try {
+                                    await pcAfterCandidate.addIceCandidate(
+                                        new RTCIceCandidate({
+                                            candidate:
+                                                candidatePayload.candidate,
+                                            sdpMid: candidatePayload.sdp_mid,
+                                            sdpMLineIndex:
+                                                candidatePayload.sdp_mline_index,
+                                        })
+                                    );
+                                } catch (e) {
+                                    console.error(
+                                        'Error adding received ICE candidate:',
+                                        e
+                                    );
+                                }
+                            }
+                            break;
+                        case 'hang_up':
+                            handleHangUpReceived();
+                            break;
+                    }
+                    break;
+                case 'chat':
+                    const chatMsg = msg as ChatSignalingMessage;
+                    switch (chatMsg.payload.subtype) {
+                        case 'chat_message':
+                            // Handle incoming chat message
+                            console.log(msg, 'chat message is right here');
+                            break;
+                        case 'chat_message_status':
+                            console.log(
+                                msg,
+                                'chat message status is right here'
+                            );
+                            // Handle chat message status updates (e.g., 'read', 'delivered')
+                            break;
+                    }
+                    break;
+                case 'in_app_notification':
+                    const notificationMsg = msg as InAppNotificationMessage;
+                    const { subtype, title } = notificationMsg.payload;
+                    console.log(`Received notification: ${subtype}`);
 
-                    if (currentPc) {
-                        await currentPc.setRemoteDescription(
-                            new RTCSessionDescription({
-                                type: 'offer',
-                                sdp: msg.sdp,
-                            })
-                        );
-                        await createAnswer();
-                        setCallStatus('connected');
-                    }
-                    break;
-                case 'answer':
-                    const pcAfterAnswer = peerConnection();
-                    if (pcAfterAnswer) {
-                        await pcAfterAnswer.setRemoteDescription(
-                            new RTCSessionDescription({
-                                type: 'answer',
-                                sdp: msg.sdp,
-                            })
-                        );
-                        setCallStatus('connected');
-                    }
-                    break;
-                case 'candidate':
-                    const pcAfterCandidate = peerConnection();
-                    if (pcAfterCandidate && msg.candidate) {
-                        try {
-                            // Reconstruct RTCIceCandidateInit from the received data
-                            await pcAfterCandidate.addIceCandidate(
-                                new RTCIceCandidate({
-                                    candidate: msg.candidate,
-                                    sdpMid: msg.sdp_mid,
-                                    sdpMLineIndex: msg.sdp_mline_index,
-                                })
+                    // You can perform different actions based on the subtype if needed
+                    switch (subtype) {
+                        case 'email':
+                            showAppNotification(
+                                'success',
+                                `New Email: ${title}`
                             );
-                        } catch (e) {
-                            console.error(
-                                'Error adding received ICE candidate:',
-                                e
+                            // update in state
+                            break;
+                        case 'contact':
+                            showAppNotification(
+                                'success',
+                                `Payment Alert: ${title}`
                             );
-                        }
+                            // update in state
+                            break;
+                        case 'chat':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'payment':
+                            showAppNotification(
+                                'success',
+                                `Payment Alert: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'appointment':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'goal':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'job':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'review':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        case 'system':
+                            showAppNotification(
+                                'success',
+                                `New Message: ${title}`
+                            );
+                            // update in state
+                            break;
+                        default:
+                            showAppNotification(
+                                'success',
+                                `New Notification: ${title}`
+                            );
+                            // update in state
+                            break;
                     }
+                    // You might also want to update your application's state here
+                    // to show a persistent notification badge or list.
                     break;
-                case 'hang_up':
-                    handleHangUpReceived();
+                case 'connected_clients':
+                    setConnectedClients(msg.payload.clients!);
+                    break;
+                case 'clients_online_status':
+                    console.log(msg, '**********************');
                     break;
                 case 'error':
-                    console.error('Server error:', msg.message);
+                    const errorMsg = msg as ErrorMessage;
+                    console.error('Server error:', errorMsg.message);
                     showAppNotification(
                         'error',
-                        `Server Error: ${msg.message}`
+                        `Server Error: ${errorMsg.message}`
                     );
                     activeCallFailed();
-                    break;
-                case 'chat_message':
-                    break;
-                case 'register':
                     break;
                 default:
                     console.warn(
@@ -591,14 +678,17 @@ export const AppContextProvider = (props: {
                 const currentUserId = userID();
                 const currentRemoteUserId = remoteUserId();
                 if (currentWs && currentUserId && currentRemoteUserId) {
-                    const message: CandidateMessage = {
-                        type: 'candidate',
-                        sender_id: currentUserId,
-                        receiver_id: currentRemoteUserId,
-                        candidate: event.candidate.candidate,
-                        sdp_mid: event.candidate.sdpMid || undefined, // undefined if null
-                        sdp_mline_index:
-                            event.candidate.sdpMLineIndex || undefined,
+                    const message: PeerToPeerMessage = {
+                        type: 'peer_to_peer',
+                        payload: {
+                            subtype: 'candidate',
+                            sender_id: currentUserId,
+                            receiver_id: currentRemoteUserId,
+                            candidate: event.candidate.candidate,
+                            sdp_mid: event.candidate.sdpMid || undefined,
+                            sdp_mline_index:
+                                event.candidate.sdpMLineIndex || undefined,
+                        },
                     };
                     currentWs.send(JSON.stringify(message));
                 }
@@ -638,11 +728,14 @@ export const AppContextProvider = (props: {
         try {
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
-            const message: OfferMessage = {
-                type: 'offer',
-                sender_id: currentUserId,
-                receiver_id: currentRemoteUserId,
-                sdp: offer.sdp || '', // SDP should not be null for an offer
+            const message: PeerToPeerMessage = {
+                type: 'peer_to_peer',
+                payload: {
+                    subtype: 'offer',
+                    sender_id: currentUserId,
+                    receiver_id: currentRemoteUserId,
+                    sdp: offer.sdp || '',
+                },
             };
             currentWs.send(JSON.stringify(message));
         } catch (err) {
@@ -666,11 +759,14 @@ export const AppContextProvider = (props: {
         try {
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
-            const message: AnswerMessage = {
-                type: 'answer',
-                sender_id: currentUserId,
-                receiver_id: currentRemoteUserId,
-                sdp: answer.sdp || '', // SDP should not be null for an answer
+            const message: PeerToPeerMessage = {
+                type: 'peer_to_peer',
+                payload: {
+                    subtype: 'answer',
+                    sender_id: currentUserId,
+                    receiver_id: currentRemoteUserId,
+                    sdp: answer.sdp || '',
+                },
             };
             currentWs.send(JSON.stringify(message));
         } catch (err) {
@@ -698,25 +794,26 @@ export const AppContextProvider = (props: {
             return;
         }
 
-        // Asserting selectedUser() is not null with !
         setActiveCall({
             id: 'call_' + Date.now(),
             peer: selectedUserToCall()!.username,
-            service: selectedUserToCall()!.role, // TODO:
+            service: selectedUserToCall()!.role,
             startTime: new Date(),
-            duration: 0, // Will be updated by effect
+            duration: 0,
         });
-        ///////////
         setCallStatus('calling');
         const stream = await getLocalAudio();
         if (stream) {
             initPeerConnection(stream);
             const currentWs = socket();
             if (currentWs) {
-                const message: CallRequestMessage = {
-                    type: 'call_request',
-                    caller_id: currentUserId,
-                    callee_id: currentRemoteUserId,
+                const message: PeerToPeerMessage = {
+                    type: 'peer_to_peer',
+                    payload: {
+                        subtype: 'call_request',
+                        caller_id: currentUserId,
+                        callee_id: currentRemoteUserId,
+                    },
                 };
                 currentWs.send(JSON.stringify(message));
             }
@@ -734,10 +831,13 @@ export const AppContextProvider = (props: {
             const currentUserId = userID();
             const currentRemoteUserId = remoteUserId();
             if (currentWs && currentUserId && currentRemoteUserId) {
-                const message: CallAcceptedMessage = {
-                    type: 'call_accepted',
-                    accepter_id: currentUserId,
-                    caller_id: currentRemoteUserId,
+                const message: PeerToPeerMessage = {
+                    type: 'peer_to_peer',
+                    payload: {
+                        subtype: 'call_accepted',
+                        accepter_id: currentUserId,
+                        caller_id: currentRemoteUserId,
+                    },
                 };
                 currentWs.send(JSON.stringify(message));
             }
@@ -749,20 +849,19 @@ export const AppContextProvider = (props: {
         const currentPc = peerConnection();
         if (currentPc) {
             currentPc.getSenders().forEach((sender) => {
-                if (sender.track) sender.track.stop(); // Stop media tracks associated with senders
+                if (sender.track) sender.track.stop();
             });
-            currentPc.close(); // Close the RTCPeerConnection
+            currentPc.close();
             setPeerConnection(null);
         }
         const currentLocalStream = localStream();
         if (currentLocalStream) {
-            currentLocalStream.getTracks().forEach((track) => track.stop()); // Stop local media tracks
+            currentLocalStream.getTracks().forEach((track) => track.stop());
             setLocalStream(null);
         }
-        setRemoteStream(null); // Clear remote stream
-        setCallStatus('idle'); // Reset call status
+        setRemoteStream(null);
+        setCallStatus('idle');
 
-        // Notify the other peer (if there was one)
         const currentWs = socket();
         const currentUserId = userID();
         const currentRemoteUserId = remoteUserId();
@@ -772,14 +871,17 @@ export const AppContextProvider = (props: {
             currentRemoteUserId &&
             callStatus() === 'connected'
         ) {
-            const message: HangUpMessage = {
-                type: 'hang_up',
-                sender_id: currentUserId,
-                receiver_id: currentRemoteUserId,
+            const message: PeerToPeerMessage = {
+                type: 'peer_to_peer',
+                payload: {
+                    subtype: 'hang_up',
+                    sender_id: currentUserId,
+                    receiver_id: currentRemoteUserId,
+                },
             };
             currentWs.send(JSON.stringify(message));
         }
-        setRemoteUserId(''); // Clear remote user ID
+        setRemoteUserId('');
         console.log('Call ended.');
     };
 
@@ -821,8 +923,8 @@ export const AppContextProvider = (props: {
     return (
         <AppContext.Provider
             value={{
-                isConnected, // Expose connection status
-                sendMessage,
+                isConnected,
+                sendChatMessage,
                 updateNotifWidget,
                 setNotifWidget,
                 syncMode,
@@ -833,6 +935,8 @@ export const AppContextProvider = (props: {
                     setNotificationMessage,
                     notificationType,
                     setNotificationType,
+                    notificationList,
+                    setNotificationList,
                 },
                 userType: {
                     authUser,
@@ -846,6 +950,10 @@ export const AppContextProvider = (props: {
                 inAppConnection: {
                     socket,
                     registerUser,
+                    getConnectedClients,
+                    getClientOnlineStatus,
+                    connectedClients,
+                    setConnectedClients,
                     startCall,
                     activeCall,
                     setActiveCall,
@@ -853,6 +961,12 @@ export const AppContextProvider = (props: {
                     setSelectedUserToCall,
                     setRemoteUserId,
                     endActiveCall,
+                    acceptCall,
+                    hangUp,
+                    isAppLoading,
+                    setIsAppLoading,
+                    openLogout,
+                    setOpenLogout,
                 },
             }}
         >

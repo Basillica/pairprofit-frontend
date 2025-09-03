@@ -16,6 +16,7 @@ import { useNavigate } from '@solidjs/router';
 import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
 import { PublicHandler } from '../../../api';
 import { ArtisanApiHandler } from '../../../api/backend/profile';
+import { useAppContext } from '../../../state';
 
 interface FilterOption {
     category: string;
@@ -50,12 +51,15 @@ export const ServiceProviderListings = (): JSX.Element => {
             offset: offset,
         });
     };
-
+    const {
+        inAppConnection: { setIsAppLoading },
+    } = useAppContext();
     const [artisanCount, setArtisanCount] = createSignal(0);
 
     const fetchArtisans = async (
         props: ListingsFilter
     ): Promise<ArtisanModel[]> => {
+        setIsAppLoading(true);
         let api = new ArtisanApiHandler();
         let listings: ArtisanModel[] = [];
         const result = await api.fetchAllArtisans(props);
@@ -64,6 +68,7 @@ export const ServiceProviderListings = (): JSX.Element => {
             listings = result.data.listings as ArtisanModel[];
         }
         setArtisanCount(result.data.count);
+        setIsAppLoading(false);
         return listings;
     };
 
@@ -110,7 +115,7 @@ export const ServiceProviderListings = (): JSX.Element => {
             setCategories(Object.keys(cachedCategores));
             return;
         }
-
+        setIsAppLoading(true);
         const api = new PublicHandler();
         try {
             const res = await api.fetchCategories();
@@ -133,6 +138,7 @@ export const ServiceProviderListings = (): JSX.Element => {
             console.error('Error fetching categories:', error);
             setApiCategories({});
         }
+        setIsAppLoading(false);
     });
 
     const handleApplyFilters = () => {
@@ -186,7 +192,7 @@ export const ServiceProviderListings = (): JSX.Element => {
     };
 
     return (
-        <div class="containers">
+        <div class="m-2">
             <div>
                 <ProviderProfileDetail
                     isOpen={viewProfile}

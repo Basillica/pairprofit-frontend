@@ -1,28 +1,22 @@
-import { createSignal, createEffect, For } from 'solid-js';
+import { createSignal, createEffect, For, Accessor, Show } from 'solid-js';
 import chat_module from './chat.module.css';
-import {
-    ChatWindowProps,
-    Message,
-    ImageMessage,
-    TextMessage,
-    SelectedFile,
-} from './types';
+import { ChatWindowProps, SelectedFile } from './types';
 import {
     formatRelativeTime,
-    formatMessageTime,
     getStatusColor,
     getStatusIcon,
+    stringToHslColor,
+    getInitials,
 } from './functions';
-import ChatInputArea from './MessageArea';
 
 const ChatWindow = (props: ChatWindowProps) => {
     const [messageInput, setMessageInput] = createSignal('');
     const [selectedFiles, setSelectedFiles] = createSignal<SelectedFile[]>([]);
-    const [isSending, setIsSending] = createSignal<boolean>(false); // To manage sending state
+    const [isSending, setIsSending] = createSignal<boolean>(false);
+
     let messagesAreaRef: HTMLDivElement | undefined;
     let messageInputRef: HTMLTextAreaElement | undefined;
     let fileInputRef: HTMLInputElement | undefined;
-    const defaultPartnerAvatar = 'https://picsum.photos/50';
 
     const adjustTextareaHeight = () => {
         if (messageInputRef) {
@@ -38,14 +32,14 @@ const ChatWindow = (props: ChatWindowProps) => {
     };
 
     createEffect(() => {
-        props.activeConversation?.messages;
-        props.activeConversation?.id;
+        // props.activeConversation?.messages;
+        // props.activeConversation?.id;
         setTimeout(scrollToBottom, 50);
     });
 
     const handleSendMessage = () => {
         const text = messageInput().trim();
-        if (text === '') return;
+        if (text === '' && selectedFiles().length === 0) return;
         setIsSending(true);
         props.sendMessage(text, 'text');
         setMessageInput('');
@@ -60,40 +54,41 @@ const ChatWindow = (props: ChatWindowProps) => {
         }
     };
 
-    const getMessageContent = (msg: Message) => {
-        if (msg.type === 'text') {
-            return <div>{(msg as TextMessage).content}</div>;
-        } else if (msg.type === 'image') {
-            const imageMsg = msg as ImageMessage;
-            if (Array.isArray(imageMsg.imageUrl)) {
-                return (
-                    <div class="image-gallery">
-                        <For each={imageMsg.imageUrl}>
-                            {(url) => (
-                                <img
-                                    src={url}
-                                    alt="Chat image"
-                                    class="rounded-lg object-cover"
-                                />
-                            )}
-                        </For>
-                    </div>
-                );
-            } else {
-                return (
-                    <img
-                        src={imageMsg.imageUrl}
-                        alt="Chat image"
-                        class="rounded-lg object-cover"
-                    />
-                );
-            }
-        }
-        // Handle other types like 'file' here if implemented
-        return null;
-    };
+    // const getMessageContent = (msg: Message) => {
+    //     if (msg.type === 'text') {
+    //         return <div>{(msg as TextMessage).content}</div>;
+    //     } else if (msg.type === 'image') {
+    //         const imageMsg = msg as ImageMessage;
+    //         if (Array.isArray(imageMsg.imageUrl)) {
+    //             return (
+    //                 <div class="image-gallery">
+    //                     <For each={imageMsg.imageUrl}>
+    //                         {(url) => (
+    //                             <img
+    //                                 src={url}
+    //                                 alt="Chat image"
+    //                                 class="rounded-lg object-cover"
+    //                             />
+    //                         )}
+    //                     </For>
+    //                 </div>
+    //             );
+    //         } else {
+    //             return (
+    //                 <img
+    //                     src={imageMsg.imageUrl}
+    //                     alt="Chat image"
+    //                     class="rounded-lg object-cover"
+    //                 />
+    //             );
+    //         }
+    //     }
+    //     // Handle other types like 'file' here if implemented
+    //     return null;
+    // };
 
     // Handle file selection
+
     const handleFileSelect = (event: Event) => {
         const target = event.target as HTMLInputElement;
         const files = Array.from(target.files || []); // Ensure it's an array
@@ -133,6 +128,19 @@ const ChatWindow = (props: ChatWindowProps) => {
         target.value = '';
     };
 
+    // Function to remove a file from the preview list
+    const removeFile = (indexToRemove: number) => {
+        setSelectedFiles((prev) => {
+            const updatedFiles = prev.filter((_, i) => i !== indexToRemove);
+            // Revoke the URL for the removed file to prevent memory leaks
+            if (prev[indexToRemove]) {
+                // Ensure file exists before revoking
+                URL.revokeObjectURL(prev[indexToRemove].previewUrl);
+            }
+            return updatedFiles;
+        });
+    };
+
     return (
         <div
             class={`${chat_module.chat_main} flex-grow flex flex-col bg-gray-50`}
@@ -149,7 +157,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                             onClick={props.goBackToSidebar}
                         />
                     )}
-                    <img
+                    {/* <img
                         id="chatPartnerAvatar"
                         class="h-10 w-10 rounded-full object-cover"
                         src={
@@ -157,32 +165,62 @@ const ChatWindow = (props: ChatWindowProps) => {
                             defaultPartnerAvatar
                         }
                         alt="Partner Avatar"
-                    />
+                    /> */}
+                    <div
+                        class="h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                        style={{
+                            'background-color': stringToHslColor(
+                                `${props.authUser()?.firstname} ${
+                                    props.authUser()?.lastname
+                                }`,
+                                70,
+                                70
+                            ),
+                        }}
+                        aria-label={`${props.authUser()?.firstname} ${
+                            props.authUser()?.lastname
+                        }`}
+                    >
+                        {getInitials(
+                            `${props.authUser()?.firstname} ${
+                                props.authUser()?.lastname
+                            }`
+                        )}
+                    </div>
+
                     <div>
                         <h2
                             id="chatPartnerName"
                             class="text-lg font-semibold text-gray-800"
                         >
-                            {props.activeConversation
-                                ? props.activeConversation.receiver.name
+                            {props.roomMessages.latest &&
+                            props.roomMessages.latest!.length > 0 &&
+                            props.activeConversationId() ===
+                                props.roomMessages.latest![0].id
+                                ? 'To be Changed'
                                 : 'Select a Chat'}
                         </h2>
                         <p id="chatPartnerStatus" class="text-xs text-gray-500">
-                            {props.activeConversation && (
-                                <>
-                                    <span
-                                        class={`h-2 w-2 rounded-full ${
-                                            props.activeConversation.receiver
-                                                .isOnline
-                                                ? 'bg-green-500'
-                                                : 'bg-gray-400'
-                                        } inline-block mr-1`}
-                                    ></span>
-                                    {props.activeConversation.receiver.isOnline
-                                        ? 'Online'
-                                        : 'Offline'}
-                                </>
-                            )}
+                            {props.roomMessages.latest &&
+                                props.roomMessages.latest!.length > 0 &&
+                                props.activeConversationId() && (
+                                    // props.roomMessages.latest![0].id && (
+                                    <>
+                                        <span
+                                            class={`h-2 w-2 rounded-full ${
+                                                // props.activeConversation.receiver
+                                                //     .isOnline
+                                                props.activeConversationId()
+                                                    ? 'bg-green-500'
+                                                    : 'bg-gray-400'
+                                            } inline-block mr-1`}
+                                        ></span>
+                                        {props.activeConversationId()
+                                            ? // props.activeConversation.receiver.isOnline
+                                              'Online'
+                                            : 'Offline'}
+                                    </>
+                                )}
                         </p>
                     </div>
                 </div>
@@ -193,7 +231,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                 ref={messagesAreaRef}
                 class={`${chat_module.chat_messages_area} flex-grow flex flex-col`}
             >
-                {!props.activeConversation ? (
+                {props.roomMessages.latest?.length! < 1 ? (
                     <div
                         id="noChatSelected"
                         class="flex flex-grow items-center justify-center text-center text-gray-500"
@@ -204,16 +242,14 @@ const ChatWindow = (props: ChatWindowProps) => {
                         </p>
                     </div>
                 ) : (
-                    <For each={props.activeConversation.messages}>
+                    <For each={props.roomMessages.latest!}>
                         {(msg, i) => {
                             const isSentByMe =
-                                msg.sender_id === props.loggedInUser.id;
-                            const prevMsg =
-                                props.activeConversation?.messages[i() - 1];
+                                msg.sender_id === props.authUser()?.id;
+                            const prevMsg = props.roomMessages()![i() - 1];
                             const showDateDivider =
                                 !prevMsg ||
-                                msg.timestamp.toDateString() !==
-                                    prevMsg.timestamp.toDateString();
+                                msg.updated_at !== prevMsg.updated_at;
 
                             return (
                                 <>
@@ -223,7 +259,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                                         >
                                             <span>
                                                 {formatRelativeTime(
-                                                    msg.timestamp
+                                                    msg.updated_at
                                                 )}
                                             </span>
                                         </div>
@@ -243,26 +279,27 @@ const ChatWindow = (props: ChatWindowProps) => {
                                                     ? `${chat_module.sent}`
                                                     : `${chat_module.received}`
                                             } ${
-                                                msg.type === 'image'
+                                                msg.is_media
                                                     ? `${chat_module.image_message}`
                                                     : ''
                                             }`}
                                         >
-                                            {getMessageContent(msg)}
+                                            {/* {getMessageContent(msg)} */}
+                                            {msg.message}
                                             <div
                                                 class={`${chat_module.message_timestamp} flex items-center justify-end text-right text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
                                             >
-                                                {formatMessageTime(
-                                                    msg.timestamp
+                                                {formatRelativeTime(
+                                                    msg.updated_at
                                                 )}
                                                 {isSentByMe && (
                                                     <span
                                                         class={`material-symbols-rounded text-xs align-bottom leading-none ml-0.5 ${getStatusColor(
-                                                            msg.status
+                                                            msg.status!
                                                         )}`}
                                                     >
                                                         {getStatusIcon(
-                                                            msg.status
+                                                            msg.status!
                                                         )}
                                                     </span>
                                                 )}
@@ -278,7 +315,7 @@ const ChatWindow = (props: ChatWindowProps) => {
                 <div
                     id="messageInputArea"
                     class={`p-4 bg-white border-t border-gray-200 flex items-end space-x-3 ${
-                        !props.activeConversation ? 'hidden' : ''
+                        !props.activeConversationId()! ? 'hidden' : ''
                     }`}
                 >
                     {/* File Input Button */}
@@ -298,36 +335,83 @@ const ChatWindow = (props: ChatWindowProps) => {
                         onChange={handleFileSelect}
                         class="hidden"
                     />
-                    <textarea
-                        ref={messageInputRef}
-                        class="textarea-autosize flex-grow p-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
-                        placeholder="Type your message here..."
-                        rows={1}
-                        value={messageInput()}
-                        onInput={(e) => {
-                            setMessageInput(e.currentTarget.value);
-                            adjustTextareaHeight();
-                        }}
-                        onKeyDown={handleKeyDown}
-                    ></textarea>
+                    {/* Media Preview Area */}
+                    <div class="flex-grow flex flex-col">
+                        <div
+                            class="flex flex-wrap gap-2 mb-2 max-h-24 overflow-y-auto"
+                            classList={{ hidden: selectedFiles().length === 0 }}
+                        >
+                            <For each={selectedFiles()}>
+                                {(file: SelectedFile, i: Accessor<number>) => (
+                                    <div class="relative w-16 h-16 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center border border-gray-300">
+                                        <Show
+                                            when={file.type.startsWith(
+                                                'image/'
+                                            )}
+                                        >
+                                            <img
+                                                src={file.previewUrl}
+                                                alt="preview"
+                                                class="w-full h-full object-cover"
+                                            />
+                                        </Show>
+                                        <Show
+                                            when={file.type.startsWith(
+                                                'video/'
+                                            )}
+                                        >
+                                            <video
+                                                src={file.previewUrl}
+                                                class="w-full h-full object-cover"
+                                                controls={false}
+                                                muted
+                                            ></video>
+                                            <span
+                                                class="material-symbols-rounded absolute text-white text-2xl"
+                                                style="text-shadow: 0 0 5px rgba(0,0,0,0.7);"
+                                            >
+                                                play_circle
+                                            </span>
+                                        </Show>
+                                        <button
+                                            onClick={() => removeFile(i())}
+                                            class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs"
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                )}
+                            </For>
+                        </div>
+
+                        {/* Textarea */}
+                        <textarea
+                            ref={messageInputRef}
+                            class="textarea-autosize flex-grow p-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+                            placeholder="Type your message here..."
+                            rows={1}
+                            value={messageInput()}
+                            onInput={(e) => {
+                                setMessageInput(e.currentTarget.value);
+                                adjustTextareaHeight();
+                            }}
+                            onKeyDown={handleKeyDown}
+                        ></textarea>
+                    </div>
                     <button
                         id="sendMessageBtn"
                         class="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleSendMessage}
-                        disabled={messageInput().trim() === ''}
+                        disabled={
+                            messageInput().trim() === '' &&
+                            selectedFiles().length === 0
+                        }
                     >
                         <span class="material-symbols-rounded text-xl">
                             send
                         </span>
                     </button>
                 </div>
-                <ChatInputArea
-                    activeConversation={{
-                        id: 'someboringid',
-                        name: 'someboringname',
-                    }}
-                    currentUserId=""
-                />
             </div>
         </div>
     );

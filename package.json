@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "test": "vitest"
   },
   "license": "MIT",
   "dependencies": {
@@ -31,9 +32,12 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.5.0",
+    "@types/jest": "^30.0.0",
     "@types/leaflet": "^1.9.17",
+    "jsdom": "^26.1.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3",
-    "vite-plugin-solid": "^2.11.0"
+    "vite-plugin-solid": "^2.11.0",
+    "vitest": "^3.2.4"
   }
 }

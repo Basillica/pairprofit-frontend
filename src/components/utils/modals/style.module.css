@@ -31,6 +31,7 @@
     opacity: 1;
     visibility: visible;
 }
+
 .modal_content {
     background-color: white;
     padding: 1.5rem;
@@ -43,11 +44,12 @@
     position: relative;
     transform: translateY(-20px);
     transition: transform 0.3s ease;
-
 }
+
 .modal_overlay.active .modal_content {
     transform: translateY(0);
 }
+
 .modal_close_button {
     position: absolute;
     top: 1rem;
@@ -58,6 +60,7 @@
     color: #6b7280;
     transition: color 0.2s ease;
 }
+
 .modal_close_button:hover {
     color: #ef4444;
 }
@@ -73,6 +76,7 @@
     display: flex;
     align-items: center;
 }
+
 .star {
     color: #FFD700;
     font-size: 1.25rem;
@@ -81,6 +85,7 @@
 .star.empty {
     color: #D1D5DB;
 }
+
 .rating_bar_container {
     width: 100%;
     background-color: #E5E7EB;
@@ -88,6 +93,7 @@
     height: 0.75rem;
     overflow: hidden;
 }
+
 .rating_bar_fill {
     background-color: #2563EB;
     height: 100%;

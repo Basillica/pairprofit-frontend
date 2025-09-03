@@ -1,13 +1,17 @@
-import { Component, createSignal } from 'solid-js';
-import { LogoutModal, NavBar } from '../../../components';
+import { Component } from 'solid-js';
+import { LoadingOverlay, LogoutModal, NavBar } from '../../../components';
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../../oauth/manager';
 import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
+import { useAppContext } from '../../../state';
 
 export const AuthLayout: Component = (props: any) => {
-    const [openLogout, setOpenLogout] = createSignal(false);
     const navigate = useNavigate();
+    const {
+        inAppConnection: { isAppLoading, openLogout, setOpenLogout },
+    } = useAppContext();
 
+    console.log('AuthLayout rendered', openLogout());
     const handleLogout = () => {
         authService.clearAuthToken();
         SecureLocalStorage.removeItem(LocalStorageKey.AppAuthDeviceVerified);
@@ -17,6 +21,7 @@ export const AuthLayout: Component = (props: any) => {
 
     return (
         <div>
+            <LoadingOverlay isLoading={isAppLoading()} />
             <NavBar setOpenLogout={setOpenLogout} openLogout={openLogout} />
             <LogoutModal
                 isOpen={openLogout}

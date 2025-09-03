@@ -3,13 +3,14 @@ import {
     ChatMessage,
     MessageStatus,
     User,
-    Conversation,
+    ConversationType,
     Message,
     ImageMessage,
     TextMessage,
 } from './types';
 
-export function formatRelativeTime(date: Date): string {
+export function formatRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffSeconds = Math.round(diffMs / 1000);
@@ -24,11 +25,42 @@ export function formatRelativeTime(date: Date): string {
         return `${diffHours} hr${diffHours !== 1 ? 's' : ''} ago`;
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+
     return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
     });
+}
+
+export function stringToHslColor(str: string, s: number, l: number): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const h = hash % 360;
+    return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+export function getInitials(name: string): string {
+    // Trim leading/trailing whitespace and split the name into words.
+    const parts = name.trim().split(/\s+/);
+
+    // If there are two or more parts (e.g., "John Doe")
+    if (parts.length >= 2) {
+        const firstInitial = parts[0].charAt(0).toUpperCase();
+        const secondInitial = parts[1].charAt(0).toUpperCase();
+        return `${firstInitial}${secondInitial}`;
+    }
+
+    // If there's only one part (e.g., "John")
+    else if (parts.length === 1 && parts[0].length > 1) {
+        return parts[0].substring(0, 2).toUpperCase();
+    }
+
+    // For single-character names or empty strings
+    return parts[0] ? parts[0].toUpperCase() : '';
 }
 
 export function formatMessageTime(date: Date): string {
@@ -63,114 +95,251 @@ export function getStatusColor(status: MessageStatus): string {
     }
 }
 
-export const transformMessagesToConversations = (
-    chatMessages: ChatMessage[],
-    loggedInUser: User
-): Conversation[] => {
-    const conversationsMap = new Map<string, Conversation>();
+/**
+ * A placeholder for a function that fetches a User object by their ID.
+ * You must implement this function based on your data source.
+ * It could be an API call, a map, or a simple lookup.
+ */
+function getUserById(userId: string): User {
+    // Implement your user lookup logic here.
+    return {
+        id: userId,
+        name: `User ${userId}`,
+        avatar: `https://example.com/avatars/${userId}.png`,
+        isOnline: true,
+    };
+}
 
-    for (const msg of chatMessages) {
-        const conversationId = msg.room_id;
-        const isMyMessage = msg.sender_id === loggedInUser.id;
+/**
+ * Converts a raw ChatMessage object into a structured Message object.
+ */
+function toStructuredMessage(chatMessage: ChatMessage): Message {
+    const baseMessage = {
+        id: chatMessage.id,
+        sender_id: chatMessage.sender_id,
+        timestamp: new Date(chatMessage.created_at),
+        status: 'delivered' as MessageStatus, // Default status for conversion
+    };
 
-        if (!conversationsMap.has(conversationId)) {
-            const receiverID = isMyMessage ? msg.receiver_id : msg.sender_id;
-            const receiver: User = {
-                id: receiverID,
-                name: `User ${receiverID}`,
-                avatar: 'https://picsum.photos/50',
-                isOnline: false,
-            };
+    // This part assumes you know the message type from the raw data.
+    // The raw `ChatMessage` type doesn't specify, so this is an assumption.
+    if (chatMessage.is_media) {
+        // You would need to add logic here to determine if it's an image or file.
+        // For now, we'll return a placeholder.
+        return {
+            ...baseMessage,
+            type: 'text',
+            content: 'Media message',
+        } as TextMessage;
+    } else {
+        return {
+            ...baseMessage,
+            type: 'text',
+            content: chatMessage.message || '',
+        } as TextMessage;
+    }
+}
 
-            conversationsMap.set(conversationId, {
-                id: conversationId,
+export function groupAndConvertMessages(
+    rawMessages: ChatMessage[],
+    currentUserId: string
+): ConversationType[] {
+    const conversationsMap = new Map<string, ConversationType>();
+
+    for (const rawMessage of rawMessages) {
+        const roomId = rawMessage.room_id;
+
+        // Find or create the conversation for this room
+        let conversation = conversationsMap.get(roomId);
+        if (!conversation) {
+            const receiverId =
+                rawMessage.sender_id === currentUserId
+                    ? rawMessage.receiver_id
+                    : rawMessage.sender_id;
+            const receiver = getUserById(receiverId);
+
+            conversation = {
+                id: roomId,
                 receiver: receiver,
                 last_message: '',
                 last_message_timestamp: new Date(0),
                 unread_count: 0,
                 messages: [],
-            });
+            };
+            conversationsMap.set(roomId, conversation);
         }
 
-        const conversation = conversationsMap.get(conversationId)!;
+        const structuredMessage = toStructuredMessage(rawMessage);
+        conversation.messages.push(structuredMessage);
 
-        // handle the discriminated union by creating two separate object types
-        let message: Message;
-
-        if (msg.is_media) {
-            message = {
-                id: msg.id,
-                sender_id: msg.sender_id,
-                type: 'image',
-                imageUrl: msg.message || '', // Assuming `message` field holds the URL for media
-                timestamp: new Date(msg.created_at),
-                status: 'delivered',
-            } as ImageMessage;
-        } else {
-            message = {
-                id: msg.id,
-                sender_id: msg.sender_id,
-                type: 'text',
-                content: msg.message || '',
-                timestamp: new Date(msg.created_at),
-                status: 'delivered',
-            } as TextMessage;
-        }
-
-        conversation.messages.push(message);
-
-        if (message.timestamp > conversation.last_message_timestamp) {
-            conversation.last_message = (message as any).content || 'Image'; // Cast for simplicity
-            conversation.last_message_timestamp = message.timestamp;
-        }
-
-        if (!isMyMessage) {
-            conversation.unread_count += 1;
+        // Update unread count for the current user.
+        // Assuming a message is 'unread' if it's from another user and not yet seen.
+        if (structuredMessage.sender_id !== currentUserId) {
+            // Your API should provide the status. Here, we're assuming 'delivered' means unread.
+            if (structuredMessage.status === 'delivered') {
+                conversation.unread_count++;
+            }
         }
     }
 
+    // After processing all messages, sort and set the last_message
     conversationsMap.forEach((conv) => {
         conv.messages.sort(
             (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
         );
+        const lastMessage = conv.messages[conv.messages.length - 1];
+
+        if (lastMessage) {
+            if (lastMessage.type === 'text') {
+                conv.last_message = lastMessage.content;
+            } else if (lastMessage.type === 'image') {
+                conv.last_message = 'Image message';
+            } else if (lastMessage.type === 'file') {
+                conv.last_message = 'File message';
+            }
+            conv.last_message_timestamp = lastMessage.timestamp;
+        }
     });
 
-    return Array.from(conversationsMap.values()).sort(
-        (a, b) =>
-            b.last_message_timestamp.getTime() -
-            a.last_message_timestamp.getTime()
+    return Array.from(conversationsMap.values());
+}
+
+/**
+ * Updates an existing conversation or creates a new one based on a new chat message.
+ *
+ * @param conversations The current array of ConversationType objects.
+ * @param newMessage The new ChatMessage to add.
+ * @param currentUserId The ID of the current logged-in user.
+ * @returns A new array of ConversationType objects with the update applied.
+ */
+export function updateConversation(
+    conversations: ConversationType[],
+    newMessage: ChatMessage,
+    currentUserId: string
+): ConversationType[] {
+    const structuredMessage = toStructuredMessage(newMessage);
+    const existingIndex = conversations.findIndex(
+        (conv) => conv.id === newMessage.room_id
     );
-};
 
-export const generateMockChatMessages = (count: number): ChatMessage[] => {
-    const mockMessages: ChatMessage[] = [];
-    const baseDate = new Date('2025-06-01T00:00:00Z').getTime();
-
-    for (let i = 0; i < count; i++) {
-        const isMedia = Math.random() > 0.7; // 30% chance of being media
-        const senderId = i % 2 === 0 ? 'user_me' : 'contact_kit';
-        const receiverId = senderId === 'user_me' ? 'contact_kit' : 'user_me';
-        const timestamp = new Date(baseDate + i * 1000 * 60 * 5); // 5-minute intervals
-
-        const message: ChatMessage = {
-            id: `msg_${i}`,
-            sender_id: senderId,
-            receiver_id: receiverId,
-            room_id: 'chat_kit_herrington',
-            message: isMedia
-                ? `https://picsum.photos/200?random=${i}` // Mock URL for media
-                : `This is mock message number ${i}.`,
-            is_media: isMedia,
-            created_at: timestamp.toISOString(),
-            updated_at: timestamp.toISOString(),
-            scope: 'private',
-        };
-
-        mockMessages.push(message);
+    let lastMessageSummary: string;
+    // Type narrowing to safely access properties
+    if (structuredMessage.type === 'text') {
+        lastMessageSummary = structuredMessage.content;
+    } else if (structuredMessage.type === 'image') {
+        lastMessageSummary = 'Image message';
+    } else if (structuredMessage.type === 'file') {
+        lastMessageSummary = 'File message';
+    } else {
+        lastMessageSummary = 'New message';
     }
 
-    return mockMessages;
-};
+    if (existingIndex !== -1) {
+        // ConversationType already exists, update it.
+        const updatedConversations = [...conversations];
+        const conv = updatedConversations[existingIndex];
+
+        conv.messages.push(structuredMessage);
+        conv.last_message = lastMessageSummary; // Use the safe summary
+        conv.last_message_timestamp = structuredMessage.timestamp;
+
+        // Increment unread count if the message is from another user.
+        if (structuredMessage.sender_id !== currentUserId) {
+            conv.unread_count++;
+        }
+
+        return updatedConversations;
+    } else {
+        // No existing conversation, create a new one.
+        const receiverId =
+            structuredMessage.sender_id === currentUserId
+                ? newMessage.receiver_id
+                : structuredMessage.sender_id;
+        const receiver = getUserById(receiverId);
+
+        const newConversation: ConversationType = {
+            id: newMessage.room_id,
+            receiver: receiver,
+            last_message: lastMessageSummary, // Use the safe summary
+            last_message_timestamp: structuredMessage.timestamp,
+            unread_count: structuredMessage.sender_id !== currentUserId ? 1 : 0,
+            messages: [structuredMessage],
+        };
+        return [newConversation, ...conversations];
+    }
+}
+
+/**
+ * Deletes a single message from a conversation based on its ID.
+ *
+ * @param conversations The current array of ConversationType objects.
+ * @param roomId The ID of the conversation (room) to find.
+ * @param messageIdToDelete The ID of the message to delete.
+ * @returns A new array of ConversationType objects with the message removed.
+ */
+export function deleteMessageFromConversation(
+    conversations: ConversationType[],
+    roomId: string,
+    messageIdToDelete: string
+): ConversationType[] {
+    const conversationIndex = conversations.findIndex(
+        (conv) => conv.id === roomId
+    );
+
+    if (conversationIndex === -1) {
+        return conversations;
+    }
+
+    const updatedConversations = [...conversations];
+    const conversationToUpdate = { ...updatedConversations[conversationIndex] };
+
+    // Filter out the message to be deleted
+    conversationToUpdate.messages = conversationToUpdate.messages.filter(
+        (message) => message.id !== messageIdToDelete
+    );
+
+    // Re-calculate last_message and timestamp based on the remaining messages
+    if (conversationToUpdate.messages.length > 0) {
+        // Find the last message in the *newly filtered* array
+        const lastMessage = conversationToUpdate.messages.sort(
+            (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+        )[0];
+
+        // Update the last_message and timestamp based on the new last message
+        if (lastMessage.type === 'text') {
+            conversationToUpdate.last_message = lastMessage.content;
+        } else if (lastMessage.type === 'image') {
+            conversationToUpdate.last_message = 'Image message';
+        } else if (lastMessage.type === 'file') {
+            conversationToUpdate.last_message = 'File message';
+        } else {
+            conversationToUpdate.last_message = 'Message deleted'; // Default fallback
+        }
+
+        conversationToUpdate.last_message_timestamp = lastMessage.timestamp;
+    } else {
+        // If all messages are deleted, clear the last message details
+        conversationToUpdate.last_message = '';
+        conversationToUpdate.last_message_timestamp = new Date(0);
+    }
+
+    updatedConversations[conversationIndex] = conversationToUpdate;
+    return updatedConversations;
+}
+
+/**
+ * Deletes a conversation from the list based on its room ID.
+ *
+ * @param conversations The current array of ConversationType objects.
+ * @param roomIdToDelete The ID of the room to delete.
+ * @returns A new array of ConversationType objects with the specified conversation removed.
+ */
+export function deleteConversation(
+    conversations: ConversationType[],
+    roomIdToDelete: string
+): ConversationType[] {
+    return conversations.filter((conv) => conv.id !== roomIdToDelete);
+}
 
 export class ChatState {
     /**
@@ -182,7 +351,7 @@ export class ChatState {
     initialize(
         chatMessages: ChatMessage[],
         loggedInUser: User
-    ): Conversation[] {
+    ): ConversationType[] {
         return this.transformMessagesToConversations(
             chatMessages,
             loggedInUser
@@ -193,8 +362,8 @@ export class ChatState {
     private transformMessagesToConversations = (
         chatMessages: ChatMessage[],
         loggedInUser: User
-    ): Conversation[] => {
-        const conversationsMap = new Map<string, Conversation>();
+    ): ConversationType[] => {
+        const conversationsMap = new Map<string, ConversationType>();
 
         for (const msg of chatMessages) {
             const conversationId = msg.room_id;
@@ -280,11 +449,11 @@ export class ChatState {
      * @returns The updated array of conversations.
      */
     updateMessageStatus = (
-        conversations: Conversation[],
+        conversations: ConversationType[],
         conversationId: string,
         messageId: string,
         newStatus: MessageStatus
-    ): Conversation[] => {
+    ): ConversationType[] => {
         return conversations.map((conv) => {
             if (conv.id === conversationId) {
                 const updatedMessages = conv.messages.map((msg) => {
@@ -309,11 +478,11 @@ export class ChatState {
      * @returns The updated array of conversations.
      */
     appendMessage = (
-        conversations: Conversation[],
+        conversations: ConversationType[],
         newMessage: Message,
         loggedInUser: User,
         getReceiverInfo: (receiverId: string) => User
-    ): Conversation[] => {
+    ): ConversationType[] => {
         const receiverId =
             newMessage.sender_id === loggedInUser.id
                 ? (newMessage as any).receiver_id // Assuming you have receiver_id on new messages
@@ -323,10 +492,10 @@ export class ChatState {
             (conv) => conv.receiver.id === receiverId
         );
 
-        let updatedConversations: Conversation[];
+        let updatedConversations: ConversationType[];
 
         if (existingConv) {
-            // Conversation already exists
+            // ConversationType already exists
             const updatedMessages = [...existingConv.messages, newMessage];
             const updatedConv = {
                 ...existingConv,
@@ -341,7 +510,7 @@ export class ChatState {
             );
         } else {
             // Create a new conversation
-            const newConversation: Conversation = {
+            const newConversation: ConversationType = {
                 id: uuidv4(),
                 receiver: getReceiverInfo(receiverId),
                 last_message: (newMessage as any).content || 'New File',
@@ -368,10 +537,10 @@ export class ChatState {
      * @returns The updated array of conversations.
      */
     deleteMessage = (
-        conversations: Conversation[],
+        conversations: ConversationType[],
         conversationId: string,
         messageId: string
-    ): Conversation[] => {
+    ): ConversationType[] => {
         return conversations.map((conv) => {
             if (conv.id === conversationId) {
                 const updatedMessages = conv.messages.filter(
@@ -405,9 +574,9 @@ export class ChatState {
      * @returns The updated array of conversations.
      */
     deleteConversation = (
-        conversations: Conversation[],
+        conversations: ConversationType[],
         conversationId: string
-    ): Conversation[] => {
+    ): ConversationType[] => {
         return conversations.filter((conv) => conv.id !== conversationId);
     };
 }

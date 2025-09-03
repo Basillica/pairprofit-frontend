@@ -11,7 +11,7 @@ import { NotificationBar } from '../../components';
 import { useAppContext } from '../../state';
 import { UserModel } from '../../models/auth';
 
-export const CallerPageV3 = () => {
+export const InAppCallPage = () => {
     // --- Call setup ---
     const { notification, inAppConnection, userType } = useAppContext();
     const [searchResults, setSearchResults] = createSignal<UserModel[]>([]);

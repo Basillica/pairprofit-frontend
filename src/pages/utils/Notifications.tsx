@@ -5,109 +5,6 @@ import { UserModel } from '../../models/auth';
 import { useAppContext } from '../../state';
 import { NotificationApiHandler } from '../../api/backend/notification';
 
-const initialNotifications: NotificationModel[] = [
-    {
-        id: 'notif_1',
-        type: 'message',
-        title: 'New Message from John Doe',
-        message:
-            'John Doe sent you a new message regarding your carpentry request.',
-        timestamp: new Date('2025-08-10T14:30:00Z'),
-        isRead: false,
-        link: '#chat_page_with_john',
-    },
-    {
-        id: 'notif_2',
-        type: 'job',
-        title: 'Job "Kitchen Renovation" Accepted!',
-        message:
-            'Your proposal for the kitchen renovation has been accepted by Jane Smith.',
-        timestamp: new Date('2025-08-10T10:15:00Z'),
-        isRead: false,
-        link: '#job_details_kitchen',
-    },
-    {
-        id: 'notif_3',
-        type: 'review',
-        title: 'New Review on Your Profile',
-        message:
-            'You have received a new 5-star review from Alex Johnson for your excellent work on his job.',
-        timestamp: new Date('2025-08-09T18:00:00Z'),
-        isRead: false,
-        link: '#profile_reviews',
-    },
-    {
-        id: 'notif_4',
-        type: 'payment',
-        title: 'Payment Received: $500',
-        message:
-            'Your payment of $500 for the "Kitchen Renovation" job has been successfully processed.',
-        timestamp: new Date('2025-08-09T09:00:00Z'),
-        isRead: true,
-        link: '#payment_history',
-    },
-    {
-        id: 'notif_5',
-        type: 'system',
-        title: 'System Update Complete',
-        message:
-            'The platform has been updated with new features and performance improvements. You can now use the advanced search filters.',
-        timestamp: new Date('2025-08-08T08:00:00Z'),
-        isRead: true,
-        link: '#new_features_guide',
-    },
-    {
-        id: 'notif_6',
-        type: 'contact',
-        title: 'New Contact Request',
-        message:
-            'Sarah Lee has added you as a contact. Review their profile to connect.',
-        timestamp: new Date('2025-08-07T12:00:00Z'),
-        isRead: false,
-        link: '#contacts',
-    },
-    {
-        id: 'notif_7',
-        type: 'appointment',
-        title: 'Appointment Confirmed',
-        message:
-            'Your appointment with Michael Brown on August 12 at 2:00 PM is confirmed.',
-        timestamp: new Date('2025-08-06T15:30:00Z'),
-        isRead: false,
-        link: '#appointments',
-    },
-    {
-        id: 'notif_8',
-        type: 'email',
-        title: 'Important Email: Account Verification',
-        message:
-            'Please verify your email address to ensure full access to all features.',
-        timestamp: new Date('2025-08-05T11:00:00Z'),
-        isRead: true,
-        link: '#account_settings',
-    },
-    {
-        id: 'notif_9',
-        type: 'goal',
-        title: 'Goal Achieved: 10 Jobs Completed!',
-        message:
-            'Congratulations! You have completed your goal of finishing 10 jobs this month. Keep up the great work!',
-        timestamp: new Date('2025-08-04T17:00:00Z'),
-        isRead: false,
-        link: '#goals_dashboard',
-    },
-    {
-        id: 'notif_10',
-        type: 'general',
-        title: 'Welcome to Our Platform!',
-        message:
-            'We are excited to have you on board. Explore your dashboard to get started.',
-        timestamp: new Date('2025-08-03T09:45:00Z'),
-        isRead: true,
-        link: '#dashboard',
-    },
-];
-
 function getNotificationIcon(type: NotificationType): string {
     switch (type) {
         case 'message':
@@ -160,17 +57,16 @@ function formatRelativeTime(date: Date): string {
 }
 
 export function NotificationsPage() {
-    const [notifications, setNotifications] =
-        createSignal<NotificationModel[]>(initialNotifications);
     const [filter, setFilter] = createSignal<string>('all');
     const [selectedNotification, setSelectedNotification] =
         createSignal<NotificationModel | null>(null);
     const {
         userType: { authUser, setAuthUser },
+        notification: { notificationList, setNotificationList },
     } = useAppContext();
     const notificationApi = new NotificationApiHandler();
     const filteredNotifications = () => {
-        let currentNotifications = [...notifications()];
+        let currentNotifications = [...notificationList()];
         const currentFilter = filter();
         if (currentFilter === 'unread') {
             currentNotifications = currentNotifications.filter(
@@ -199,12 +95,12 @@ export function NotificationsPage() {
             authUser()!.id
         );
         if (result.success) {
-            setNotifications([...initialNotifications, ...result.data]);
+            setNotificationList([...notificationList(), ...result.data]);
         }
     });
 
     const handleToggleReadStatus = async (notificationID: string) => {
-        const notification = notifications().find(
+        const notification = notificationList().find(
             (c) => c.id === notificationID
         )!;
         if (!notification) return;
@@ -215,7 +111,7 @@ export function NotificationsPage() {
         );
 
         if (result.success) {
-            setNotifications((prevNotifs) =>
+            setNotificationList((prevNotifs) =>
                 prevNotifs.map((notification) =>
                     notification.id === notificationID
                         ? { ...notification, isRead: !notification.isRead }
@@ -231,7 +127,7 @@ export function NotificationsPage() {
             status
         );
         if (result.success) {
-            setNotifications((prev) =>
+            setNotificationList((prev) =>
                 prev.map((notif) => ({ ...notif, isRead: status }))
             );
         }
@@ -521,7 +417,7 @@ export function NotificationDetailCard(props: NotificationDetailCardProps) {
                 </div>
 
                 {/* Action Button */}
-                <Show when={notification.link}>
+                {/* <Show when={notification.link}>
                     <a
                         href={notification.link}
                         target="_blank"
@@ -540,7 +436,7 @@ export function NotificationDetailCard(props: NotificationDetailCardProps) {
                             <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
                         </svg>
                     </a>
-                </Show>
+                </Show> */}
             </div>
         </div>
     );

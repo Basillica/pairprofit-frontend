@@ -101,7 +101,7 @@ export const ProviderProfileDetail: Component<{
     const [callbackTime, setCallbackTime] = createSignal('');
     const [callbackMessage, setCallbackMessage] = createSignal('');
     const [activeTab, setActiveTab] = createSignal('chat');
-    const { sendMessage, userType } = useAppContext();
+    const { sendChatMessage, userType } = useAppContext();
 
     const handleClose = () => {
         props.closeModal(false);
@@ -113,8 +113,8 @@ export const ProviderProfileDetail: Component<{
 
     const handleSendMessage = () => {
         const message = chatMessage().trim();
-        sendMessage({
-            type: 'chat_message',
+        sendChatMessage({
+            subtype: 'chat_message',
             sender_id: userType.userID(),
             receiver_id: props.listing()?.user_id,
             receiver_name: props.listing()?.name!,

@@ -19,12 +19,13 @@ import {
     MailApp,
     ComposeMailApp,
     LoggerPage,
-    CallerPage,
-    CallerPageV2,
-    CallerPageV3,
+    InAppCallPage,
 } from './pages';
 import './App.css';
-import { ServiceProviderListings } from './components/account';
+import {
+    ServiceProviderListings,
+    ProviderProfileDetail,
+} from './components/account';
 import { HomePage } from './pages/profile';
 import { GetEnvConfig } from './environments';
 import { UserLocationMap } from './pages/leaf';
@@ -48,9 +49,7 @@ render(
                 <Route path="/about" component={AboutUs} />
                 <Route path="/login" component={LoginPage} />
                 <Route path="/public/profile" />{' '}
-                <Route path="/caller" component={CallerPage} />
                 <Route path="/pricing" component={PricingPage} />
-                <Route path="/caller2" component={CallerPageV2} />
                 <Route path="/sw.js" />
                 <Route path="/brevo-frame.html" />
                 <Route path={'/location'} component={UserLocationMap} />
@@ -58,6 +57,10 @@ render(
                     <Route
                         path="/listings"
                         component={ServiceProviderListings}
+                    />
+                    <Route
+                        path="/listings/:id"
+                        component={ProviderProfileDetail}
                     />
                     <Route path="/requests" component={ServiceListings} />
                     <Route
@@ -72,7 +75,7 @@ render(
                         </Route>
                         <Route path="/chat" component={ChatPage} />
                         <Route path="/list" component={ContactList} />
-                        <Route path="/call" component={CallerPageV3} />
+                        <Route path="/call" component={InAppCallPage} />
                         {/* <Route path="/inbox" component={EmailInbox} />  */}
                         {/* <Route path="/message" component={LovelyChat} /> */}
                     </Route>

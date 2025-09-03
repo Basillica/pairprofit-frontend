@@ -1,3 +1,7 @@
+import { Accessor, Resource } from 'solid-js';
+import { UserModel } from '../../../models/auth';
+import { ChatMessageModel } from '../../../models/chat';
+
 export interface User {
     id: string;
     name: string;
@@ -6,47 +10,32 @@ export interface User {
 }
 
 export type MessageStatus = 'sent' | 'delivered' | 'seen' | 'failed';
-export type MessageType = 'text' | 'image' | 'file';
 
-export interface BaseMessage {
+export interface MessageModel {
     id: string;
+    room_id: string;
     sender_id: string;
-    type: MessageType;
-    timestamp: Date;
+    receiver_id: string;
+    message?: string;
+    is_media: boolean;
+    created_at: string;
+    updated_at: string;
+    scope: string;
     status: MessageStatus;
 }
 
-export interface TextMessage extends BaseMessage {
-    type: 'text';
-    content: string;
-}
-
-export interface ImageMessage extends BaseMessage {
-    type: 'image';
-    imageUrl: string; // Can be a single URL or an array for galleries
-}
-
-export interface FileMessage extends BaseMessage {
-    type: 'file';
-    fileName: string;
-    fileUrl: string;
-    fileSize: number;
-}
-
-export type Message = TextMessage | ImageMessage | FileMessage;
-
-export interface Conversation {
+export interface ConversationType {
     id: string;
     receiver: User;
     last_message: string;
     last_message_timestamp: Date;
     unread_count: number;
-    messages: Message[];
 }
 
 export interface ChatWindowProps {
-    activeConversation: Conversation | undefined;
-    loggedInUser: User;
+    activeConversationId: Accessor<string | null>;
+    authUser: Accessor<UserModel | undefined>;
+    roomMessages: Resource<ChatMessageModel[]>;
     sendMessage: (
         content: string,
         type?: 'text' | 'image' | 'file',

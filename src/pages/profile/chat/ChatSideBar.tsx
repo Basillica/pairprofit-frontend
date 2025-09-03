@@ -1,37 +1,39 @@
-import { createSignal, createEffect, For } from 'solid-js';
-import { User, Conversation } from './types';
-import { formatRelativeTime } from './functions';
+import { createSignal, createEffect, For, Accessor } from 'solid-js';
+import { formatRelativeTime, stringToHslColor, getInitials } from './functions';
 import chat_module from './chat.module.css';
+import { RoomModel } from '../../../models/chat';
+import { UserModel } from '../../../models/auth';
 
 interface SidebarProps {
-    conversations: Conversation[];
+    rooms: Accessor<RoomModel[]>;
     activeConversationId: string | null;
-    switchChat: (id: string) => void;
-    loggedInUser: User;
+    unreadCount: Accessor<number>;
+    isReceiverOnline: Accessor<boolean>;
+    authUser: Accessor<UserModel | undefined>;
+    setCurrentRoomID: (id: string) => void;
     showOnMobile: boolean;
 }
 
 export const ChatSidebar = (props: SidebarProps) => {
     const [searchTerm, setSearchTerm] = createSignal('');
-    const [filteredConversations, setFilteredConversations] = createSignal<
-        Conversation[]
+    const [filteredRooms, setFilteredRooms] = createSignal<
+        RoomModel[] | undefined
     >([]);
 
     createEffect(() => {
         const lowerCaseSearchTerm = searchTerm().toLowerCase();
-        const filtered = props.conversations.filter(
-            (conv) =>
-                conv.receiver.name
-                    .toLowerCase()
-                    .includes(lowerCaseSearchTerm) ||
-                conv.last_message.toLowerCase().includes(lowerCaseSearchTerm)
-        );
-        filtered.sort(
-            (a, b) =>
-                b.last_message_timestamp.getTime() -
-                a.last_message_timestamp.getTime()
-        );
-        setFilteredConversations(filtered);
+        const filtered = props
+            .rooms()
+            ?.filter((room) =>
+                room.title.toLowerCase().includes(lowerCaseSearchTerm)
+            );
+        // filtered.filter((room) => {room.});
+        // filtered.sort(
+        //     (a, b) =>
+        //         new Date(b.updated_at).getTime() -
+        //         a.updated_at.getTime()
+        // );
+        setFilteredRooms(filtered);
     });
 
     return (
@@ -43,11 +45,27 @@ export const ChatSidebar = (props: SidebarProps) => {
         >
             <div class="p-4 border-b border-gray-200 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <img
-                        class="h-10 w-10 rounded-full object-cover"
-                        src={props.loggedInUser.avatar}
-                        alt={props.loggedInUser.name}
-                    />
+                    <div
+                        class="h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                        style={{
+                            'background-color': stringToHslColor(
+                                `${props.authUser()?.firstname} ${
+                                    props.authUser()?.lastname
+                                }`,
+                                70,
+                                70
+                            ),
+                        }}
+                        aria-label={`${props.authUser()?.firstname} ${
+                            props.authUser()?.lastname
+                        }`}
+                    >
+                        {getInitials(
+                            `${props.authUser()?.firstname} ${
+                                props.authUser()?.lastname
+                            }`
+                        )}
+                    </div>
                     <span class="font-semibold text-gray-800">My Profile</span>
                 </div>
                 {/* No close button needed here, as App.tsx will handle showing/hiding this entire component */}
@@ -73,29 +91,38 @@ export const ChatSidebar = (props: SidebarProps) => {
                 id="conversationList"
                 class={`${chat_module.chat_sidebar_list} flex-grow`}
             >
-                <For each={filteredConversations()}>
-                    {(conv) => (
+                <For each={filteredRooms()}>
+                    {(room) => (
                         <div
                             class={`flex items-center p-3 cursor-pointer border-b border-gray-100 hover:bg-gray-50 relative ${
-                                props.activeConversationId === conv.id
+                                props.activeConversationId === room.id
                                     ? 'bg-blue-50 border-l-4 border-blue-600'
                                     : ''
                             }`}
-                            onClick={() => props.switchChat(conv.id)}
+                            onClick={() => props.setCurrentRoomID(room.id)}
                         >
-                            {conv.unread_count > 0 &&
-                                props.activeConversationId !== conv.id && (
+                            {props.unreadCount() > 0 &&
+                                props.activeConversationId !== room.id && (
                                     <div class="absolute left-0 top-0 h-full w-1 bg-blue-600 rounded-r-sm"></div>
                                 )}
                             <div class="relative flex-shrink-0">
-                                <img
-                                    class="h-10 w-10 rounded-full object-cover"
-                                    src={conv.receiver.avatar}
-                                    alt={conv.receiver.name}
-                                />
+                                <div
+                                    class="h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                                    style={{
+                                        'background-color': stringToHslColor(
+                                            room.title,
+                                            70,
+                                            70
+                                        ),
+                                    }}
+                                    aria-label={room.title}
+                                >
+                                    {getInitials(room.title)}
+                                </div>
+
                                 <span
                                     class={`absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-1 ring-white ${
-                                        conv.receiver.isOnline
+                                        props.isReceiverOnline()
                                             ? 'bg-green-500'
                                             : 'bg-gray-400'
                                     }`}
@@ -104,23 +131,24 @@ export const ChatSidebar = (props: SidebarProps) => {
                             <div class="flex-grow ml-3 overflow-hidden">
                                 <div class="flex justify-between items-center">
                                     <span class="font-medium text-gray-800 truncate">
-                                        {conv.receiver.name}
+                                        {room.title}
                                     </span>
                                     <span class="text-xs text-gray-500">
                                         {formatRelativeTime(
-                                            conv.last_message_timestamp
+                                            room.last_message_timestamp
                                         )}
                                     </span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm text-gray-600">
                                     <p class="truncate text-gray-500">
-                                        {conv.last_message}
+                                        {room.last_message ||
+                                            'No messages yet.'}
                                     </p>
-                                    {conv.unread_count > 0 &&
+                                    {props.unreadCount() > 0 &&
                                         props.activeConversationId !==
-                                            conv.id && (
+                                            room.id && (
                                             <span class="bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                                {conv.unread_count}
+                                                {props.unreadCount()}
                                             </span>
                                         )}
                                 </div>
@@ -128,7 +156,7 @@ export const ChatSidebar = (props: SidebarProps) => {
                         </div>
                     )}
                 </For>
-                {filteredConversations().length === 0 && (
+                {filteredRooms()?.length === 0 && (
                     <p class="text-center text-gray-500 py-4">
                         No conversations found.
                     </p>

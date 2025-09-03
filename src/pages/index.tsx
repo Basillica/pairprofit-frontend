@@ -11,7 +11,7 @@ export {
     ComposeMailApp,
     ChatPage,
 } from './profile';
-export { CallerPage, CallerPageV2, CallerPageV3 } from './caller';
+export { InAppCallPage } from './call_page';
 export {
     ServiceListings,
     ListingDetailPage,
