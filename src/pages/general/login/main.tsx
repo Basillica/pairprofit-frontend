@@ -13,6 +13,7 @@ import {
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../../oauth/manager';
 import { useAppContext } from '../../../state';
+import { SecureLocalStorage } from '../../../lib/localstore';
 
 interface AuthCardProps {
     id: string;
@@ -168,7 +169,7 @@ export const LoginPage = () => {
         }
 
         setCurrentProcess('OTPCard');
-        authService.confirmLogin('OTPCard', result.data.token);
+        // authService.confirmLogin('OTPCard', result.data.token);
         setIsLoading(false);
         setConfirmOTP({
             ...confirmOTP(),
@@ -198,7 +199,6 @@ export const LoginPage = () => {
         setIsLoading(true);
         let result = await publicApiHandler.signUp(newUser());
         if (!result.success) {
-            console.log(result, 'the frigging result');
             setIsLoading(false);
             notification.showAppNotification(
                 'error',
