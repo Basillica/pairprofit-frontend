@@ -13,7 +13,6 @@ import {
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../../oauth/manager';
 import { useAppContext } from '../../../state';
-import { SecureLocalStorage } from '../../../lib/localstore';
 
 interface AuthCardProps {
     id: string;
@@ -217,7 +216,7 @@ export const LoginPage = () => {
             token: result.data.token,
         });
         setCurrentProcess('ConfirmSignup');
-        authService.confirmLogin('ConfirmSignup', result.data.token);
+        // authService.confirmLogin('ConfirmSignup', result.data.token);
         setIsLoading(false);
     };
 
@@ -255,7 +254,7 @@ export const LoginPage = () => {
             ...confirmPasswordReset(),
             token: result.data.token,
         });
-        authService.setAuthProcess('ResetPassword');
+        // authService.setAuthProcess('ResetPassword');
     };
 
     const onInputChange = (
