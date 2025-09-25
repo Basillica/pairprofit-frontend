@@ -6,6 +6,7 @@ import {
     Setter,
     For,
     onMount,
+    createMemo,
 } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { PostServiceRequestForm } from '../modals';
@@ -143,7 +144,7 @@ export const NavBar: Component<{
         userType,
         notification: { notificationList },
     } = useAppContext();
-    const [unreadNotifications] = createSignal(
+    const unreadNotifications = createMemo(() =>
         notificationList().filter((el) => el.isRead === false)
     );
 

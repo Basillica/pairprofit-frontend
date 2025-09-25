@@ -15,7 +15,7 @@ export class ArtisanApiHandler extends ApiHandler {
     }
 
     async getArtisanByID(id: string) {
-        return await this.get(`/artisan/${id}`);
+        return await this.get(`/artisan/user/${id}`);
     }
 
     async getListingByEmail(email: string) {

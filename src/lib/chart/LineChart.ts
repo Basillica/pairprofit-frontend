@@ -34,21 +34,17 @@ export class LineChart extends BaseChartClass {
     private zoom: boolean;
     private element: any; // AnnotationElement;
     private lastEvent: any;
-    private ignoreRanges: { yMax: number; yMin: number }[];
     private yMax: number;
     private yMin: number;
     private chartProps: ChartProps;
-    private onHover: (e: ChartEvent, zoomEnabled: boolean) => void;
     private zoomAction: () => void;
     constructor(props: ChartProps) {
         super(props.chartType);
         this.zoom = props.zoom;
-        this.ignoreRanges = props.ignoreRanges;
         this.yMax = props.yMax;
         this.yMin = props.yMin;
         this.chartProps = props;
         this.zoomAction = props.zoomAction;
-        this.onHover = props.onHover;
     }
 
     drag(moveX: number, moveY: number) {

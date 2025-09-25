@@ -110,13 +110,7 @@ export class ScatterPlot extends BaseChartClass {
         return min + (this.seed / 233280) * (max - min);
     }
 
-    updateIgnoreRanges(
-        chart: any,
-        ranges: {
-            yMax: number;
-            yMin: number;
-        }[]
-    ) {
+    updateIgnoreRanges(chart: any) {
         chart.update();
     }
 }

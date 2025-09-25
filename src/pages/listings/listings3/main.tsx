@@ -1,4 +1,4 @@
-import { onMount, For, createSignal } from 'solid-js';
+import { For, createSignal, onMount } from 'solid-js';
 import L from 'leaflet';
 import './style.css';
 import { ServiceRequestDetails } from '../../../components';
@@ -89,29 +89,29 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
 
         const request: ListingPayload = {
             id: `req${i}`,
-            customerName: randomCustomer,
-            requestTitle: `${randomCategory} Request`,
-            serviceCategory: randomCategory,
-            requestDescription: `This is a sample request for ${randomCategory} services in ${randomCity.name}. The client needs assistance with various tasks related to this category.`,
-            locationStreet: `Sample Street ${i}`,
-            locationCity: randomCity.name,
-            locationPostalCode: randomCity.postalCode,
-            locationCountry: 'Germany',
-            specificLocationDetails: `Details for specific location ${i}.`,
-            desiredTimeline: randomTimeline as
+            customer_name: randomCustomer,
+            request_title: `${randomCategory} Request`,
+            category: randomCategory,
+            request_description: `This is a sample request for ${randomCategory} services in ${randomCity.name}. The client needs assistance with various tasks related to this category.`,
+            location_street: `Sample Street ${i}`,
+            location_city: randomCity.name,
+            location_postal_code: randomCity.postalCode,
+            location_country: 'Germany',
+            specific_location_details: `Details for specific location ${i}.`,
+            desired_timeline: randomTimeline as
                 | 'IMMEDIATE'
                 | 'FLEXIBLE'
                 | 'SPECIFIC_DATE',
-            specificDateTime: specificDateTime,
-            estimatedBudget: estimatedBudget,
-            additionalNotes:
+            specific_date_time: specificDateTime,
+            estimated_budget: estimatedBudget,
+            additional_notes:
                 Math.random() > 0.7
                     ? 'Client has some specific requirements.'
                     : '',
-            contactMethod: randomContact as 'Platform Chat' | 'Phone' | 'Email',
-            postedDate: new Date(
-                baseDate.getTime() - Math.random() * 7 * 24 * 60 * 60 * 1000
-            ), // Posted up to 7 days ago
+            contact_method: randomContact as
+                | 'Platform Chat'
+                | 'Phone'
+                | 'Email',
             attachments: hasAttachments
                 ? [
                       {
@@ -129,22 +129,14 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
 
             // Provider details (simplified for random generation)
             title: `${randomCategory} Provider`,
-            provider: `Provider ${String.fromCharCode(
-                65 + Math.floor(Math.random() * 26)
-            )}${i}`, // A-Z for provider names
             description: `Experienced provider offering top-notch ${randomCategory} services.`,
-            location: `Serving: ${randomCity.name} and nearby regions`,
-            availability:
-                Math.random() > 0.5
-                    ? 'Availability: Mon-Fri'
-                    : 'Availability: 24/7',
-            servicesOffered: [
-                `${randomCategory.split(' ')[0]} repair`,
-                `${randomCategory.split(' ')[0]} consultation`,
-            ],
-            price: Math.random() > 0.5 ? '€50/hour' : 'Negotiable',
-            isNegotiable: Math.random() > 0.5,
-            coordinates: randomCity.coords, // Using city coordinates for providers
+            price: Math.random(),
+            is_negotiable: Math.random() > 0.5,
+            longitude: randomCity.coords[0], // Using city coordinates for providers
+            latitude: randomCity.coords[1],
+            scope: '',
+            sub_category: '',
+            creator_id: '',
         };
         requests.push(request);
     }
@@ -172,10 +164,13 @@ export const ServiceListingsC = () => {
 
             const newMarkers: L.Marker[] = [];
             serviceListings().forEach((listing) => {
-                const marker = L.marker(listing.coordinates).addTo(map!);
+                const marker = L.marker([
+                    listing.longitude,
+                    listing.latitude,
+                ]).addTo(map!);
                 marker.bindPopup(
                     `<h3>${listing.title}</h3>
-            <p>${listing.location}</p>
+            <p>${listing.location_city}</p>
             <p>${listing.description}</p>
             <p><strong>${listing.price}</strong></p>`
                 );
@@ -212,7 +207,7 @@ export const ServiceListingsC = () => {
         <div class="flex flex-wrap md:flex-row flex-col">
             <ServiceRequestDetails
                 isOpen={viewListing}
-                listing={currentListing()!}
+                listing={currentListing}
                 closeModel={setViewListing}
             />
             <div class="md:w-4/12 px-2">
@@ -238,7 +233,7 @@ export const ServiceListingsC = () => {
                                                 </h3>
                                                 <p class="listing-provider">
                                                     Provided by:{' '}
-                                                    {service.provider}
+                                                    {service.creator_id}
                                                 </p>
                                             </div>
                                             <div class="listing-body">
@@ -249,24 +244,24 @@ export const ServiceListingsC = () => {
                                                     <div class="detail-item">
                                                         <i class="fas fa-map-marker-alt detail-icon"></i>
                                                         <span class="detail-text">
-                                                            {service.location}
+                                                            {
+                                                                service.location_city
+                                                            }
                                                         </span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <i class="fas fa-clock detail-icon"></i>
                                                         <span class="detail-text">
-                                                            {
-                                                                service.availability
-                                                            }
+                                                            {service.category}
                                                         </span>
                                                     </div>
                                                     <div class="detail-item">
                                                         <i class="fas fa-tools detail-icon"></i>
                                                         <span class="detail-text">
                                                             Services:{' '}
-                                                            {service.servicesOffered.join(
-                                                                ', '
-                                                            )}
+                                                            {
+                                                                service.sub_category
+                                                            }
                                                         </span>
                                                     </div>
                                                 </div>
@@ -275,7 +270,7 @@ export const ServiceListingsC = () => {
                                                 <span class="listing-price">
                                                     {service.price}
                                                 </span>
-                                                {service.isNegotiable && (
+                                                {service.is_negotiable && (
                                                     <span class="negotiable">
                                                         Negotiable
                                                     </span>

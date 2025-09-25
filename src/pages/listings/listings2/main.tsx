@@ -126,18 +126,13 @@ const generateServiceRequests = (count: number): ListingPayload[] => {
             // Provider details (simplified for random generation)
             title: `${randomCategory} Provider`,
             description: `Experienced provider offering top-notch ${randomCategory} services.`,
-            location: `Serving: ${randomCity.name} and nearby regions`,
-            availability:
-                Math.random() > 0.5
-                    ? 'Availability: Mon-Fri'
-                    : 'Availability: 24/7',
-            servicesOffered: [
-                `${randomCategory.split(' ')[0]} repair`,
-                `${randomCategory.split(' ')[0]} consultation`,
-            ],
             price: Math.random() > 0.5 ? 50 : 0,
-            isNegotiable: Math.random() > 0.5,
-            coordinates: randomCity.coords, // Using city coordinates for providers
+            category: '',
+            longitude: 2,
+            latitude: 2,
+            creator_id: '',
+            is_negotiable: false,
+            scope: '',
         };
         requests.push(request);
     }

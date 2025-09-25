@@ -90,7 +90,6 @@ export class BarChart extends BaseChartClass {
     }
 
     getActions() {
-        let smooth = false;
         return [
             {
                 name: 'Reset Zoom',
@@ -107,13 +106,7 @@ export class BarChart extends BaseChartClass {
         chart.update();
     }
 
-    updateIgnoreRanges(
-        chart: any,
-        ranges: {
-            yMax: number;
-            yMin: number;
-        }[]
-    ) {
+    updateIgnoreRanges(chart: any) {
         chart.update();
     }
 }

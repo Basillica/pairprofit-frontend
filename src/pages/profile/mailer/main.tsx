@@ -45,7 +45,7 @@ export function ComposeMailApp() {
     const [uploadedFiles, setUploadedFiles] = createSignal<
         { file: File; previewUrl: string; mimeType: string }[]
     >([]);
-    const [attachments, setAttachments] = createSignal<ImageProps[]>([]);
+    const [attachments, _] = createSignal<ImageProps[]>([]);
 
     onMount(() => {
         const styleElement = document.createElement('style');
@@ -118,19 +118,19 @@ export function ComposeMailApp() {
         e.target.value = '';
     };
 
-    const handleRemoveImage = (name: string) => {
-        const newAttachments = attachments()?.filter((el) => el.name !== name);
-        let att: ImageProps[] = [];
+    // const handleRemoveImage = (name: string) => {
+    //     const newAttachments = attachments()?.filter((el) => el.name !== name);
+    //     let att: ImageProps[] = [];
 
-        newAttachments!.map((el) => {
-            att.push({
-                url: el.url,
-                type: el.type,
-                name: el.name,
-            });
-        });
-        setAttachments(att);
-    };
+    //     newAttachments!.map((el) => {
+    //         att.push({
+    //             url: el.url,
+    //             type: el.type,
+    //             name: el.name,
+    //         });
+    //     });
+    //     setAttachments(att);
+    // };
 
     const removeFile = (fileNameToRemove: string) => {
         setUploadedFiles((prev) => {

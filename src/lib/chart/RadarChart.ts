@@ -1,4 +1,4 @@
-import { ChartConfiguration, ChartTypeRegistry } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartClass } from './BaseChartClass';
 import { resetZoom } from 'chartjs-plugin-zoom';
 import { ChartProps } from './LineChart';
@@ -94,13 +94,7 @@ export class RadarChart extends BaseChartClass {
         chart.update();
     }
 
-    updateIgnoreRanges(
-        chart: any,
-        ranges: {
-            yMax: number;
-            yMin: number;
-        }[]
-    ) {
+    updateIgnoreRanges(chart: any) {
         chart.update();
     }
 }
