@@ -1,7 +1,6 @@
 import { createSignal } from 'solid-js';
 import { AppContextProvider } from '../../../state';
 import { OAuthContextProvider } from '../../../oauth';
-import layout_css from './style.module.css';
 import { GetEnvConfig } from '../../../environments';
 
 export const RootLayout = (props: any) => {
@@ -30,10 +29,6 @@ export const RootLayout = (props: any) => {
                                 'flex-grow': 1,
                                 'min-height': '100vh',
                                 width: '100vw',
-                                // 'margin-right':
-                                //     window.innerWidth > 768 ? '15px' : '',
-                                // 'margin-left':
-                                //     window.innerWidth > 768 ? '40px' : '',
                             }}
                         >
                             {props.children}
@@ -41,63 +36,72 @@ export const RootLayout = (props: any) => {
                     </OAuthContextProvider>
                 </AppContextProvider>
             </div>
-
-            <footer
-                class={layout_css.site_footer}
-                style={{
-                    'flex-shrink': 0,
-                    'background-color': '#2c3e50',
-                    color: '#ecf0f1',
-                    padding: '0.5rem 0',
-                }}
-            >
-                <div class={layout_css.footer_container}></div>
-                <div class={`${layout_css.footer_bottom}`}>
-                    <p>
+            <footer class="w-full bg-[#0d2136] text-gray-300 py-2 sm:py-3">
+                <div class="px-4 mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 text-xs sm:text-sm">
+                    <p class="order-3 md:order-1 text-center md:text-left">
                         &copy; <span id="current-year"></span> PairProfit
                         Platform. All rights reserved.
                     </p>
-                    <div class={`${layout_css.footer_section} social`}>
-                        <div class={layout_css.social_icons}>
-                            <a
-                                href="https://facebook.com"
-                                target="_blank"
-                                aria-label="Facebook"
-                            >
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a
-                                href="https://twitter.com"
-                                target="_blank"
-                                aria-label="Twitter"
-                            >
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a
-                                href="https://linkedin.com"
-                                target="_blank"
-                                aria-label="LinkedIn"
-                            >
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
-                            <a
-                                href="https://instagram.com"
-                                target="_blank"
-                                aria-label="Instagram"
-                            >
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                        </div>
+
+                    <div class="order-2 md:order-3 flex space-x-4">
+                        <a
+                            href="https://facebook.com"
+                            target="_blank"
+                            aria-label="Facebook"
+                            class="hover:text-white transition duration-150"
+                        >
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a
+                            href="https://twitter.com"
+                            target="_blank"
+                            aria-label="Twitter"
+                            class="hover:text-white transition duration-150"
+                        >
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a
+                            href="https://linkedin.com"
+                            target="_blank"
+                            aria-label="LinkedIn"
+                            class="hover:text-white transition duration-150"
+                        >
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a
+                            href="https://instagram.com"
+                            target="_blank"
+                            aria-label="Instagram"
+                            class="hover:text-white transition duration-150"
+                        >
+                            <i class="fab fa-instagram"></i>
+                        </a>
                     </div>
-                    <ul class={layout_css.bottom_links}>
+
+                    <ul class="order-1 md:order-2 flex space-x-4 justify-center md:justify-start">
                         <li>
-                            <a href="#privacy">Privacy Policy</a>
+                            <a
+                                href="#privacy"
+                                class="hover:text-white transition duration-150"
+                            >
+                                Privacy Policy
+                            </a>
                         </li>
-                        <li>
-                            <a href="#terms">Terms of Service</a>
+                        <li class="hidden sm:block">
+                            <a
+                                href="#terms"
+                                class="hover:text-white transition duration-150"
+                            >
+                                Terms of Service
+                            </a>
                         </li>
-                        <li>
-                            <a href="#sitemap">Sitemap</a>
+                        <li class="hidden sm:block">
+                            <a
+                                href="#sitemap"
+                                class="hover:text-white transition duration-150"
+                            >
+                                Sitemap
+                            </a>
                         </li>
                     </ul>
                 </div>

@@ -12,8 +12,8 @@
 }
 
 .container_auth {
-  display: grid; /* Use grid for main layout */
-  grid-template-columns: 1fr 1fr; /* Two equal columns for desktop */
+  display: grid;
+  /* grid-template-columns: 1fr 1fr; */
   margin: 0;
   padding: 0;
   width: 100%;
@@ -25,14 +25,15 @@
   justify-content: center;
   align-items: center;
   background-color: var(--light-blue-bg);
-  padding: 2rem; /* Add some padding */
-  min-height: 95vh;
+  width: 100%;
+  /* padding: 2rem; */
+  /* min-height: 95vh; */
 }
 
 .logo {
-  max-width: 80%; /* Keep max-width for image scaling */
-  height: auto;
-  border-radius: 50%; /* Apply border-radius directly if it's always circular */
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%
 }
 
 .right_panel {
@@ -40,9 +41,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1.5rem; /* Adjust padding for better spacing */
-  width: 100%; /* Ensure it takes full available width in its grid column */
-  box-sizing: border-box; /* Include padding in the element's total width and height */
+  /* padding: 1.5rem; */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth_header {
@@ -253,6 +254,27 @@
   text-align: center;
 }
 
+/* Define the class for the list item */
+.search_result_item {
+    /* Base styles (matching your inline styles) */
+    width: 100%;
+    text-align: left;
+    padding: 4px 0;
+    color: #4B5565;
+    font-size: 12px;
+    font-family: Inter;
+    font-weight: 400;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.1s ease; /* Smooth transition for the hover effect */
+}
+
+/* Define the hover state */
+.search_result_item:hover {
+    background-color: #eef3f7; /* A light grey/blue for the hover background */
+    color: #1a1a1a; /* Optional: darken the text slightly */
+}
 /* --- Mobile Styles --- */
 @media (max-width: 768px) {
   .container_auth {
