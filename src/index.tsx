@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web';
-import { Route, Router } from '@solidjs/router';
+import { MatchFilters, Route, Router } from '@solidjs/router';
 import {
     LoginPage,
     RootLayout,
@@ -15,7 +15,7 @@ import {
     AboutUs,
     AccountSettings,
     NotificationsPage,
-    ChatPage,
+    // ChatPage,
     MailApp,
     ComposeMailApp,
     LoggerPage,
@@ -30,6 +30,19 @@ import { HomePage } from './pages/profile';
 import { GetEnvConfig } from './environments';
 import { UserLocationMap } from './pages/leaf';
 import { PricingPage } from './pages/pricing';
+import { NewRootLayout } from './pages/utils';
+import { ClientLayout } from './apps/client';
+import { ArtisanLayout } from './apps/artisan';
+import {
+    ClientsDashboardPage,
+    ClientsJobSearchPage,
+    ClientsJobPage,
+    JobDetailPage,
+    ClientPaymentPage,
+    ClientChatPage,
+    ClientNotificationPage,
+    HelpSupportPage,
+} from './apps/client/pages';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -40,12 +53,18 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 const config = GetEnvConfig();
 
+const filters: MatchFilters = {
+    parent: ['mom', 'dad'], // allow enum values
+    id: /^\d+$/, // only allow numbers
+    withHtmlExtension: (v: string) => v.length > 5 && v.endsWith('.html'), // only `*.html` extensions wanted
+};
+
 render(
     () => (
         <div>
             <title>{config?.title}</title>
             <Router root={RootLayout}>
-                <Route path="/" component={HomePage} />
+                <Route path="/home" component={HomePage} />
                 <Route path="/about" component={AboutUs} />
                 <Route path="/login" component={LoginPage} />
                 <Route path="/public/profile" />{' '}
@@ -54,6 +73,56 @@ render(
                 <Route path="/brevo-frame.html" />
                 <Route path={'/location'} component={UserLocationMap} />
                 <Route path="/" component={AuthLayout}>
+                    <Route path={'/client'} component={ClientLayout}>
+                        <Route path="/dashboard">
+                            <Route path="/" component={ClientsDashboardPage} />
+                            <Route
+                                path="/search"
+                                component={ClientsJobSearchPage}
+                            />
+                        </Route>
+                        <Route path="/jobs">
+                            <Route path="/" component={ClientsJobPage} />
+                            <Route path="/:jobId" component={JobDetailPage} />
+                        </Route>
+                        <Route path="/payments" component={ClientPaymentPage} />
+                        <Route path="/inbox" component={ClientChatPage} />
+                        <Route path="/email" />
+                        <Route
+                            path="/notification"
+                            component={ClientNotificationPage}
+                        />
+                        <Route
+                            path="/notifications"
+                            component={NotificationsPage}
+                        />
+                        <Route path="/ai" />
+                        <Route path="/support" component={HelpSupportPage} />
+                        <Route path="/settings" />
+                    </Route>
+                    <Route path={'/artisan'} component={ArtisanLayout}>
+                        <Route path="/dashboard" component={ProfileDashboard} />
+                        <Route
+                            path="/profile"
+                            component={ManageServiceProfiles}
+                        />
+                        <Route path="/job-requests" />
+                        <Route path="/jobs" />
+                        <Route path="/contacts" />
+                        <Route path="/earnings" />
+                        <Route path="/subscriptions" />
+                        <Route path="/inbox" />
+                        <Route path="/email" component={MailApp} />
+                        <Route
+                            path="/email/compose"
+                            component={ComposeMailApp}
+                        />
+                        <Route path="/calendar" component={Calendar} />
+                        <Route path="/kanban" component={KanbanBoard} />
+                        <Route path="/ai" />
+                        <Route path="/help" />
+                        <Route path="/settings" />
+                    </Route>
                     <Route
                         path="/listings"
                         component={ServiceProviderListings}
@@ -61,23 +130,14 @@ render(
                     <Route
                         path="/listings/:id"
                         component={ProviderProfileDetail}
+                        matchFilters={filters}
                     />
                     <Route path="/requests" component={ServiceListings} />
-                    <Route
-                        path="/notifications"
-                        component={NotificationsPage}
-                    />
                     <Route path="/logger" component={LoggerPage} />
                     <Route path="/contact">
-                        <Route path="/email">
-                            <Route path="/inbox" component={MailApp} />
-                            <Route path="/compose" component={ComposeMailApp} />
-                        </Route>
-                        <Route path="/chat" component={ChatPage} />
+                        <Route path="/email"></Route>
                         <Route path="/list" component={ContactList} />
                         <Route path="/call" component={InAppCallPage} />
-                        {/* <Route path="/inbox" component={EmailInbox} />  */}
-                        {/* <Route path="/message" component={LovelyChat} /> */}
                     </Route>
                     <Route path="/profile">
                         <Route path="/setting" component={AccountSettings} />
@@ -86,16 +146,8 @@ render(
                             component={ServiceProviderDashboard}
                         />
                     </Route>
-                    <Route path="/profiles">
-                        <Route
-                            path="/manage"
-                            component={ManageServiceProfiles}
-                        />
-                        <Route path="/kanban" component={KanbanBoard} />
-                        <Route path="/dashboard" component={ProfileDashboard} />
-                        <Route path="/calendar" component={Calendar} />
-                    </Route>
                 </Route>
+                <Route path={'/root'} component={NewRootLayout} />
                 <Route path="*404" component={Page404} />
             </Router>
         </div>

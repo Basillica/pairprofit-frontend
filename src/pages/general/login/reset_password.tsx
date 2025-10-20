@@ -46,16 +46,16 @@ export const ResetPasswordCard: Component<{
         );
     };
 
-    const handleSendEmail = () => {
-        // performs something
+    const handleResetPassword = () => {
+        props.loginStore.updateStore('updatingPassword', false);
         props.loginStore.updateStore(
             'currentStep',
-            StepTransitions.ClientVerifyAccount
+            StepTransitions.SetupComplete
         );
     };
 
     return (
-        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans w-628 p-4 bg-[#FCFCFD]">
+        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans bg-[#FCFCFD]">
             <div class="bg-white rounded-xl shadow-lg shadow-card-shadow p-10 w-full max-w-md text-center">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-2">
                     Create new password
@@ -87,7 +87,7 @@ export const ResetPasswordCard: Component<{
                     number
                 </span>
                 <button
-                    onClick={handleSendEmail}
+                    onClick={handleResetPassword}
                     class="w-full py-3 rounded-lg font-semibold transition duration-200 bg-[#1376A1] text-white cursor-pointer mt-6"
                 >
                     Reset password

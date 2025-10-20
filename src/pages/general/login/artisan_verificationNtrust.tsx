@@ -59,9 +59,8 @@ export const ArtisansVerificationNTrust: Component<{
             `${selectedCountryCode()}${phoneNumber()}`
         );
         console.log('Verification Code:', verificationCode());
-
         // Add actual form submission logic here
-        alert('Verification process finished! (Check console for data)');
+        console.log('Verification process finished! (Check console for data)');
     };
 
     // Determine if the "Finish" button should be active

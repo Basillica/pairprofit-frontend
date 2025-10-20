@@ -15,7 +15,6 @@ import { authService } from '../../../oauth/manager';
 import { MenuItem, GetMenuItems } from './menuitems';
 import logo from './../../../assets/A.png';
 
-// --- SubMenu Component ---
 // This component will recursively render menu items and their children
 const SubMenu: Component<{
     item: MenuItem;

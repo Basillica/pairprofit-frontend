@@ -155,16 +155,21 @@ export const OTPCard: Component<{
     const handleVerify = () => {
         const fullCode = code().join('');
         console.log('Verifying code:', fullCode);
-        props.loginStore.updateStore(
-            'currentStep',
-            StepTransitions.SetupComplete
-        );
-        // Add your API verification logic here
+        if (props.loginStore.updatingPassword) {
+            props.loginStore.updateStore(
+                'currentStep',
+                StepTransitions.ResetPassword
+            );
+        } else {
+            props.loginStore.updateStore(
+                'currentStep',
+                StepTransitions.SetupComplete
+            );
+        }
     };
 
     const handleResend = () => {
         if (isResendActive()) {
-            // Reset the code and restart the countdown
             setCode(Array(CODE_LENGTH).fill(''));
             setFocusedIndex(0);
             resetCountdown();

@@ -3,7 +3,7 @@ export enum StepTransitions {
     SetupComplete = 'SetupComplete',
     ForgotPassword = 'ForgotPassword',
     ResetPassword = 'ResetPassword',
-    ClientVerifyAccount = 'ClientVerifyAccount',
+    VerifyAccount = 'ClientVerifyAccount',
     // clients
     ClientLanding = 'ClientLanding',
     ClientCreateAccount = 'ClientCreateAccount',
@@ -20,12 +20,12 @@ export type StepTransitionType =
     // clients
     | StepTransitions.ClientLanding
     | StepTransitions.ClientCreateAccount
-    | StepTransitions.ClientVerifyAccount
     | StepTransitions.ClientWelcomeBack
     // general
     | StepTransitions.SetupComplete
     | StepTransitions.ForgotPassword
     | StepTransitions.ResetPassword
+    | StepTransitions.VerifyAccount
     // artisans
     | StepTransitions.ArtisanCreateAccount
     | StepTransitions.ArtisanSkillsNTitle
@@ -50,6 +50,7 @@ export type LoginStore = {
     }[];
     currentStep: StepTransitionType;
     updateStore: (key: string, value: any) => void;
+    updatingPassword: boolean;
 };
 
 export interface NominatimAddress {

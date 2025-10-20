@@ -54,7 +54,7 @@ export const SignUpForm: Component<{
         });
         props.loginStore.updateStore(
             'currentStep',
-            StepTransitions.ClientVerifyAccount
+            StepTransitions.VerifyAccount
         );
     };
 

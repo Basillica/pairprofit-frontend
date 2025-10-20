@@ -41,7 +41,7 @@ export const WelcomeBackPage: Component<{
         });
         props.loginStore.updateStore(
             'currentStep',
-            StepTransitions.ClientVerifyAccount
+            StepTransitions.VerifyAccount
         );
     };
 
@@ -115,12 +115,20 @@ export const WelcomeBackPage: Component<{
                                 value={password}
                                 onChange={setPassword}
                             />
-                            <div class="self-stretch inline-flex justify-end items-center gap-3">
+                            <button
+                                class="self-stretch inline-flex justify-end items-center gap-3"
+                                onClick={() =>
+                                    props.loginStore.updateStore(
+                                        'currentStep',
+                                        StepTransitions.ForgotPassword
+                                    )
+                                }
+                            >
                                 <span class="text-sky-800 text-sm font-semibold cursor-pointer">
                                     {' '}
                                     Forgot Password?
                                 </span>
-                            </div>
+                            </button>
                         </div>
                         <div class="self-stretch flex flex-col justify-start items-center gap-3">
                             <button

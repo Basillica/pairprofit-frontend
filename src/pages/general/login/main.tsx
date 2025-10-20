@@ -329,6 +329,7 @@ export const LoginPage: Component = () => {
         updateStore: (key: string, value: string) => {
             setLoginStore((state) => ({ ...state, [key]: value }));
         },
+        updatingPassword: false,
     });
 
     // 1. Memoized calculation of the current step's image config
@@ -394,21 +395,20 @@ export const LoginPage: Component = () => {
                         <Match
                             when={
                                 loginStore.currentStep ===
-                                StepTransitions.ClientVerifyAccount
-                            }
-                        >
-                            <OTPCard loginStore={loginStore} />
-                        </Match>
-
-                        <Match
-                            when={
-                                loginStore.currentStep ===
                                 StepTransitions.ClientWelcomeBack
                             }
                         >
                             <WelcomeBackPage loginStore={loginStore} />
                         </Match>
                         {/* General transitions */}
+                        <Match
+                            when={
+                                loginStore.currentStep ===
+                                StepTransitions.VerifyAccount
+                            }
+                        >
+                            <OTPCard loginStore={loginStore} />
+                        </Match>
                         <Match
                             when={
                                 loginStore.currentStep ===

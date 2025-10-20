@@ -1,0 +1,1 @@
+export { ClientPaymentPage } from './main';

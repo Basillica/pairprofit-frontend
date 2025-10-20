@@ -26,12 +26,13 @@ export const ForgotPasswordCard: Component<{
         // performs something
         props.loginStore.updateStore(
             'currentStep',
-            StepTransitions.ClientVerifyAccount
+            StepTransitions.VerifyAccount
         );
+        props.loginStore.updateStore('updatingPassword', true);
     };
 
     return (
-        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans w-628 p-4 bg-[#FCFCFD]">
+        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans p-4 bg-[#FCFCFD]">
             <div class="bg-white rounded-xl shadow-lg shadow-card-shadow p-10 w-full max-w-md text-center">
                 <div class="justify-center items-center flex mb-10">
                     <Flag />

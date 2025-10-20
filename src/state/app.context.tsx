@@ -75,6 +75,7 @@ export const AppContextProvider = (props: {
     const [callStatus, setCallStatus] = createSignal<
         'idle' | 'calling' | 'incoming' | 'connected'
     >('idle');
+
     // Define STUN/TURN servers
     const STUN_SERVERS: RTCConfiguration['iceServers'] = [
         { urls: 'stun:stun.l.google.com:19302' },

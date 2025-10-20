@@ -1,0 +1,1 @@
+export { ClientLayout } from './layout';

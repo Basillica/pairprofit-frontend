@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import { LoadingOverlay, LogoutModal, NavBar } from '../../../components';
+import { LoadingOverlay, LogoutModal } from '../../../components';
 import { useNavigate } from '@solidjs/router';
 import { authService } from '../../../oauth/manager';
 import { SecureLocalStorage, LocalStorageKey } from '../../../lib/localstore';
@@ -22,7 +22,7 @@ export const AuthLayout: Component = (props: any) => {
     return (
         <div>
             <LoadingOverlay isLoading={isAppLoading()} />
-            <NavBar setOpenLogout={setOpenLogout} openLogout={openLogout} />
+            {/* <NavBar setOpenLogout={setOpenLogout} openLogout={openLogout} /> */}
             <LogoutModal
                 isOpen={openLogout}
                 onCancel={() => setOpenLogout(false)}
