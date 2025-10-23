@@ -546,13 +546,13 @@ export function NotificationsPage() {
                     <div class="flex space-x-2">
                         <button
                             onClick={() => handleMarkAll(true)}
-                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
+                            class="px-4 py-2 bg-[#1376A1] text-white rounded-md cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
                         >
                             Mark All as Read
                         </button>
                         <button
                             onClick={() => handleMarkAll(false)}
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 cursor-pointer rounded-md hover:bg-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
                         >
                             Mark All as Unread
                         </button>
@@ -560,7 +560,7 @@ export function NotificationsPage() {
                     <select
                         value={filter()}
                         onInput={(e) => setFilter(e.currentTarget.value)}
-                        class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#1376A1] focus:border-[#1376A1] text-sm"
                     >
                         <option value="all">All Notifications</option>
                         <option value="unread">Unread</option>
@@ -595,8 +595,9 @@ export function NotificationsPage() {
                                     onClick={() =>
                                         handleNotificationClick(notif)
                                     }
-                                    class={`notification-item p-4 rounded-lg shadow-sm flex items-start space-x-4
-                          ${notif.isRead ? 'read' : 'unread'}`}
+                                    class={`notification-item p-4 rounded-lg shadow-sm flex items-start space-x-4 ${
+                                        notif.isRead ? 'read' : 'unread'
+                                    }`}
                                     style="margin-right: 6px"
                                 >
                                     <div
@@ -631,7 +632,7 @@ export function NotificationsPage() {
                               ${
                                   notif.isRead
                                       ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                      : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                      : 'bg-blue-100 text-[#1376A1]'
                               }`}
                                         >
                                             {notif.isRead
@@ -697,7 +698,7 @@ export function NotificationsPage() {
 
                 .notification-item.unread {
                 background-color: #eff6ff;
-                border-left: 4px solid #3b82f6;
+                border-left: 4px solid #1376A1;
                 }
                 .notification-item.read {
                 background-color: #ffffff;

@@ -1,0 +1,1 @@
+export { MrFixitChatPage } from './main';

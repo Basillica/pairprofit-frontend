@@ -1,0 +1,1 @@
+export { ClientSettingsPage } from './main';

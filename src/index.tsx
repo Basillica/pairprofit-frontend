@@ -40,8 +40,9 @@ import {
     JobDetailPage,
     ClientPaymentPage,
     ClientChatPage,
-    ClientNotificationPage,
     HelpSupportPage,
+    ClientSettingsPage,
+    MrFixitChatPage,
 } from './apps/client/pages';
 
 const root = document.getElementById('root');
@@ -89,16 +90,15 @@ render(
                         <Route path="/inbox" component={ClientChatPage} />
                         <Route path="/email" />
                         <Route
-                            path="/notification"
-                            component={ClientNotificationPage}
-                        />
-                        <Route
                             path="/notifications"
                             component={NotificationsPage}
                         />
-                        <Route path="/ai" />
+                        <Route path="/ai" component={MrFixitChatPage} />
                         <Route path="/support" component={HelpSupportPage} />
-                        <Route path="/settings" />
+                        <Route
+                            path="/settings"
+                            component={ClientSettingsPage}
+                        />
                     </Route>
                     <Route path={'/artisan'} component={ArtisanLayout}>
                         <Route path="/dashboard" component={ProfileDashboard} />
