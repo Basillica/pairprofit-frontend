@@ -8,8 +8,6 @@ import {
     ServiceProviderDashboard,
     KanbanBoard,
     Page404,
-    ProfileDashboard,
-    ManageServiceProfiles,
     Calendar,
     ContactList,
     AboutUs,
@@ -44,6 +42,10 @@ import {
     ClientSettingsPage,
     MrFixitChatPage,
 } from './apps/client/pages';
+import {
+    ArtisanDashboardComponent,
+    ProfessionalProfilePage,
+} from './apps/artisan/pages';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -101,16 +103,19 @@ render(
                         />
                     </Route>
                     <Route path={'/artisan'} component={ArtisanLayout}>
-                        <Route path="/dashboard" component={ProfileDashboard} />
+                        <Route
+                            path="/dashboard"
+                            component={ArtisanDashboardComponent}
+                        />
                         <Route
                             path="/profile"
-                            component={ManageServiceProfiles}
+                            component={ProfessionalProfilePage}
                         />
                         <Route path="/job-requests" />
                         <Route path="/jobs" />
                         <Route path="/contacts" />
                         <Route path="/earnings" />
-                        <Route path="/subscriptions" />
+                        <Route path="/subscription" />
                         <Route path="/inbox" />
                         <Route path="/email" component={MailApp} />
                         <Route

@@ -107,24 +107,39 @@ export const ArtisanLayout = (props: any) => {
             text: 'Dashboard',
         },
         {
-            href: '/artisan/jobs',
+            href: '/artisan/profile',
             iconClass: 'fas fa-briefcase',
-            text: 'My Jobs',
+            text: 'Profile',
         },
         {
-            href: '/artisan/payments',
+            href: '/artisan/jobs',
+            iconClass: 'fas fa-briefcase',
+            text: 'Job Requests',
+        },
+        {
+            href: '/artisan/contacts',
             iconClass: 'fas fa-credit-card',
-            text: 'Payments',
+            text: 'Contacts',
+        },
+        {
+            href: '/artisan/earnings',
+            iconClass: 'fas fa-credit-card',
+            text: 'Earnings',
+        },
+        {
+            href: '/artisan/subscription',
+            iconClass: 'fas fa-credit-card',
+            text: 'Subscription',
         },
         { href: '/artisan/inbox', iconClass: 'fas fa-inbox', text: 'Inbox' },
         {
-            href: '/artisan/notifications',
+            href: '/artisan/calendar',
             iconClass: 'fas fa-bell',
-            text: 'Notification',
+            text: 'Calendar',
         },
         { href: '/artisan/ai', iconClass: 'fas fa-robot', text: 'MrFixit AI' },
         {
-            href: '/artisan/support',
+            href: '/artisan/help',
             iconClass: 'fas fa-question-circle',
             text: 'Help & Support',
         },
@@ -132,6 +147,11 @@ export const ArtisanLayout = (props: any) => {
             href: '/artisan/settings',
             iconClass: 'fas fa-cog',
             text: 'Settings',
+        },
+        {
+            href: '/artisan/logout',
+            iconClass: 'fas fa-credit-card',
+            text: 'Logout',
         },
     ];
 
