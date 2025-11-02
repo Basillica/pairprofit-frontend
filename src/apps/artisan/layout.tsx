@@ -215,7 +215,11 @@ export const ArtisanLayout = (props: any) => {
                 ${isSidebarOpen() ? 'translate-x-0' : 'sidebar-hidden'} 
                 md:translate-x-0`}
             >
-                <img src={logo} alt="Company Logo" style={'width: 160px'} />
+                <img
+                    src={logo}
+                    alt="Company Logo"
+                    style={'width: 160px; margin: 20px'}
+                />
                 <nav class="mt-6 px-4 space-y-2 pb-10">
                     <For each={NAV_ITEMS}>
                         {(item) => (
