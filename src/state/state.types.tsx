@@ -1,4 +1,4 @@
-import { Accessor, Setter } from 'solid-js';
+import { Accessor, JSX, Setter } from 'solid-js';
 import { UserModel } from '../models/auth';
 import { CallHistoryItem, ActiveCall, ChatMessagePayload } from './app.types';
 import { NotificationModel } from '../models/notification';
@@ -48,6 +48,11 @@ export interface InAppConnection {
     setOpenLogout: Setter<boolean>;
 }
 
+export interface PublicAtrributes {
+    currentContent: Accessor<JSX.Element>;
+    setCurrentContent: Setter<JSX.Element>;
+}
+
 export interface AppContextType {
     isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
     sendChatMessage: (chatMessage: ChatMessagePayload) => void;
@@ -58,4 +63,5 @@ export interface AppContextType {
     notification: NotificationType;
     userType: UserType;
     inAppConnection: InAppConnection;
+    public: PublicAtrributes;
 }

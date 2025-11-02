@@ -70,6 +70,7 @@ export const AppContextProvider = (props: {
     );
     const [connectedClients, setConnectedClients] = createSignal<string[]>([]);
     const [_, setRemoteStream] = createSignal<MediaStream | null>(null);
+    const [currentContent, setCurrentContent] = createSignal('');
     const [peerConnection, setPeerConnection] =
         createSignal<RTCPeerConnection | null>(null);
     const [callStatus, setCallStatus] = createSignal<
@@ -968,6 +969,10 @@ export const AppContextProvider = (props: {
                     setIsAppLoading,
                     openLogout,
                     setOpenLogout,
+                },
+                public: {
+                    currentContent,
+                    setCurrentContent,
                 },
             }}
         >

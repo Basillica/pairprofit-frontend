@@ -424,7 +424,7 @@ const Footer: Component = () => {
 
     return (
         <footer
-            class="w-full bg-[#0d2136] text-gray-300 py-2 sm:py-3 flex-shrink-0"
+            class="w-full bg-[#0d2136] text-gray-300 py-2 sm:py-3 flex-shrink-0 mt-10"
             style={`
                 position: fixed;
                 bottom: 0px;

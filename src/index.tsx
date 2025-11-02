@@ -8,9 +8,9 @@ import {
     ServiceProviderDashboard,
     KanbanBoard,
     Page404,
+    UnauthorizedPage,
     Calendar,
     ContactList,
-    AboutUs,
     AccountSettings,
     NotificationsPage,
     // ChatPage,
@@ -24,11 +24,10 @@ import {
     ServiceProviderListings,
     ProviderProfileDetail,
 } from './components/account';
-import { HomePage } from './pages/profile';
 import { GetEnvConfig } from './environments';
 import { UserLocationMap } from './pages/leaf';
 import { PricingPage } from './pages/pricing';
-import { NewRootLayout } from './pages/utils';
+import { AboutPage, ContactPage, NewRootLayout } from './pages/utils';
 import { ClientLayout } from './apps/client';
 import { ArtisanLayout } from './apps/artisan';
 import {
@@ -46,6 +45,7 @@ import {
     ArtisanDashboardComponent,
     ProfessionalProfilePage,
 } from './apps/artisan/pages';
+import { LandingPage, PublicLayout } from './pages/general';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -67,8 +67,11 @@ render(
         <div>
             <title>{config?.title}</title>
             <Router root={RootLayout}>
-                <Route path="/home" component={HomePage} />
-                <Route path="/about" component={AboutUs} />
+                <Route path={''} component={PublicLayout}>
+                    <Route path={''} component={LandingPage}></Route>
+                    <Route path="/about" component={AboutPage} />
+                    <Route path="/contact" component={ContactPage} />
+                </Route>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/public/profile" />{' '}
                 <Route path="/pricing" component={PricingPage} />
@@ -153,6 +156,7 @@ render(
                     </Route>
                 </Route>
                 <Route path={'/root'} component={NewRootLayout} />
+                <Route path={'/401'} component={UnauthorizedPage} />
                 <Route path="*404" component={Page404} />
             </Router>
         </div>

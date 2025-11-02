@@ -17,6 +17,12 @@ export {
     ListingDetailPage,
     ServiceDetailsComponent,
 } from './listings';
-export { Page404, LoginPage, HomePage } from './general';
-export { Calendar, AboutUs, NotificationsPage } from './utils';
+export {
+    Page404,
+    UnauthorizedPage,
+    LoginPage,
+    LandingPage,
+    PublicLayout,
+} from './general';
+export { Calendar, AboutPage, NotificationsPage } from './utils';
 export { LoggerPage } from './logger';
