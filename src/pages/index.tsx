@@ -23,6 +23,8 @@ export {
     LoginPage,
     LandingPage,
     PublicLayout,
+    TermsNConditionsPage,
+    PrivacyPolicyLayout,
 } from './general';
 export { Calendar, AboutPage, NotificationsPage } from './utils';
 export { LoggerPage } from './logger';

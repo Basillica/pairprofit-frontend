@@ -45,7 +45,12 @@ import {
     ArtisanDashboardComponent,
     ProfessionalProfilePage,
 } from './apps/artisan/pages';
-import { LandingPage, PublicLayout } from './pages/general';
+import {
+    LandingPage,
+    PublicLayout,
+    TermsNConditionsPage,
+    PrivacyPolicyLayout,
+} from './pages/general';
 
 const root = document.getElementById('root');
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -71,6 +76,8 @@ render(
                     <Route path={''} component={LandingPage}></Route>
                     <Route path="/about" component={AboutPage} />
                     <Route path="/contact" component={ContactPage} />
+                    <Route path={'/terms'} component={TermsNConditionsPage} />
+                    <Route path={'/privacy'} component={PrivacyPolicyLayout} />
                 </Route>
                 <Route path="/login" component={LoginPage} />
                 <Route path="/public/profile" />{' '}

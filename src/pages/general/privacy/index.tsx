@@ -1,0 +1,1 @@
+export { PrivacyPolicyLayout } from './main';
