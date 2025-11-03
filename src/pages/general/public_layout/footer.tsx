@@ -143,7 +143,7 @@ export const FooterSection: Component = () => (
                             |
                         </span>
                         <a
-                            href="#"
+                            href="/privacy"
                             class="text-[#0D121C] hover:text-[#1376A1] transition-colors"
                         >
                             Privacy Policy
@@ -152,7 +152,7 @@ export const FooterSection: Component = () => (
                             |
                         </span>
                         <a
-                            href="#"
+                            href="/terms"
                             class="text-[#0D121C] hover:text-[#1376A1] transition-colors"
                         >
                             Terms & Conditions
