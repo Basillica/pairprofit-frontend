@@ -132,6 +132,10 @@ render(
                             path="/email/compose"
                             component={ComposeMailApp}
                         />
+                        <Route
+                            path="/notifications"
+                            component={NotificationsPage}
+                        />
                         <Route path="/calendar" component={Calendar} />
                         <Route path="/kanban" component={KanbanBoard} />
                         <Route path="/ai" />

@@ -7,8 +7,6 @@ import {
     onCleanup,
 } from 'solid-js';
 
-// --- Typescript Interfaces ---
-
 type NotificationType = 'proposal' | 'message';
 
 interface Notification {
@@ -88,7 +86,6 @@ const Icons = {
     ),
 };
 
-// --- Dummy Notification Data ---
 const NOTIFICATIONS_DATA: Notification[] = [
     {
         id: 1,
@@ -157,7 +154,9 @@ const NotificationItem: Component<{ notification: Notification }> = (props) => {
     );
 };
 
-export const NotificationDropdown: Component = () => {
+export const NotificationDropdown: Component<{
+    app: string;
+}> = (props) => {
     const [isOpen, setIsOpen] = createSignal(false);
     let containerRef: HTMLDivElement | undefined;
 
@@ -228,10 +227,20 @@ export const NotificationDropdown: Component = () => {
                     </div>
 
                     {/* Menu Footer (Optional) */}
-                    <div class="p-3 border-t border-gray-200">
-                        <button class="w-full text-center text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                    <div style="padding: 12px 20px; border-top: 1px solid #e9eceb; text-align: center;">
+                        <a
+                            href={`/${props.app}/notifications`}
+                            style="
+                            color: #4f46e5; /* Adjusted indigo color */
+                            font-size: 14px;
+                            font-weight: 500;
+                            text-decoration: none;
+                            /* Optional: Make it an inline-block if needed for padding */
+                            display: inline-block; 
+                        "
+                        >
                             View All Notifications
-                        </button>
+                        </a>
                     </div>
                 </div>
             </Show>

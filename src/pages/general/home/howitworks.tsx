@@ -134,7 +134,7 @@ export const HowItWorksSection: Component = () => (
                         src={painter}
                         alt="Mobile app screenshot showing the process"
                     />
-                    <button class="w-full lg:w-auto px-4 py-3 bg-[#1376A1] text-xl font-semibold text-white rounded-lg hover:bg-[#106283] transition">
+                    <button class="w-full lg:w-auto px-4 py-3 bg-[#1376A1] text-xl font-semibold text-white rounded-lg hover:bg-[#106283] transition cursor-pointer">
                         Get started now
                     </button>
                 </div>

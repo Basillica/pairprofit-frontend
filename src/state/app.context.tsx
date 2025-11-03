@@ -56,6 +56,8 @@ import {
     setUserID,
     callHistory,
     setCallHistory,
+    breadCrumbs,
+    setBreadCrumbs,
 } from './context';
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -70,7 +72,7 @@ export const AppContextProvider = (props: {
     );
     const [connectedClients, setConnectedClients] = createSignal<string[]>([]);
     const [_, setRemoteStream] = createSignal<MediaStream | null>(null);
-    const [currentContent, setCurrentContent] = createSignal('');
+    const [currentContent, setCurrentContent] = createSignal<JSX.Element>();
     const [peerConnection, setPeerConnection] =
         createSignal<RTCPeerConnection | null>(null);
     const [callStatus, setCallStatus] = createSignal<
@@ -973,6 +975,10 @@ export const AppContextProvider = (props: {
                 public: {
                     currentContent,
                     setCurrentContent,
+                },
+                breadCrumb: {
+                    breadCrumbs,
+                    setBreadCrumbs,
                 },
             }}
         >

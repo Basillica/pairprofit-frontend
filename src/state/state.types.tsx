@@ -53,6 +53,17 @@ export interface PublicAtrributes {
     setCurrentContent: Setter<JSX.Element>;
 }
 
+export type BreadItem = {
+    handler: () => void;
+    text: string;
+    default: boolean;
+};
+
+export interface BreadCrumbType {
+    breadCrumbs: Accessor<BreadItem[]>;
+    setBreadCrumbs: Setter<BreadItem[]>;
+}
+
 export interface AppContextType {
     isConnected: Accessor<boolean>; // More semantic than just 'socket' presence
     sendChatMessage: (chatMessage: ChatMessagePayload) => void;
@@ -64,4 +75,5 @@ export interface AppContextType {
     userType: UserType;
     inAppConnection: InAppConnection;
     public: PublicAtrributes;
+    breadCrumb: BreadCrumbType;
 }

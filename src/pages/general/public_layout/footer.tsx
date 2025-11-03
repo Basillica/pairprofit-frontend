@@ -134,7 +134,7 @@ export const FooterSection: Component = () => (
                     {/* Legal/Utility Links */}
                     <nav class="flex flex-wrap justify-start items-center gap-4 lg:gap-6 text-base font-medium">
                         <a
-                            href="#"
+                            href="/login"
                             class="text-[#0D121C] hover:text-[#1376A1] transition-colors"
                         >
                             Become an Artisan

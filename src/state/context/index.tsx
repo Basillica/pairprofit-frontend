@@ -5,6 +5,8 @@ export {
     setNotifWidget,
     syncMode,
     setSyncMode,
+    breadCrumbs,
+    setBreadCrumbs,
 } from './app';
 export {
     socket,

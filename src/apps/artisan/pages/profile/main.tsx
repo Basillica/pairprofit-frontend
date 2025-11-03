@@ -59,35 +59,42 @@ const LocationIcon: Component = () => (
 // Placeholder for the Preview/Eye Icon
 const PreviewIcon: Component = () => (
     <svg
-        class="w-6 h-6 text-slate-600"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-        <circle cx="12" cy="12" r="3" />
+        <path
+            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0"
+            stroke="#697586"
+            stroke-width="1.333"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+        <path
+            d="M2 12c1.6-4.097 5.336-7 10-7s8.4 2.903 10 7c-1.6 4.097-5.336 7-10 7s-8.4-2.903-10-7"
+            stroke="#697586"
+            stroke-width="1.333"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
     </svg>
 );
 
 // Placeholder for the Share Icon
 const ShareIcon: Component = () => (
     <svg
-        class="w-6 h-6 text-slate-600"
+        width="24"
+        height="24"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <circle cx="18" cy="5" r="3" />
-        <circle cx="6" cy="12" r="3" />
-        <circle cx="18" cy="19" r="3" />
-        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        <path
+            d="M19.59 12 15 7.41v2.46l-.86.13c-4.31.61-7.23 2.87-8.9 6.33 2.32-1.64 5.2-2.43 8.76-2.43h1v2.69m-2-1.67c-4.47.21-7.67 1.82-10 5.08 1-5 4-10 11-11V5l7 7-7 7v-4.1c-.33 0-.66.01-1 .02"
+            fill="#697586"
+        />
     </svg>
 );
 
@@ -231,7 +238,7 @@ const ProfileMetrics: Component<{ count: number; label: string }> = (props) => (
 );
 
 const ProfileHeader: Component = () => (
-    <div class="flex flex-col gap-6 sm:gap-4">
+    <div class="flex flex-col gap-6 sm:gap-4 bg-white rounded-xl border border-slate-300 p-6">
         {/* Row 1: Profile Title (Hidden on mobile for space, or smaller, kept 24px per HTML) */}
         <div class="text-2xl font-medium text-gray-900 leading-10">Profile</div>
 
@@ -241,7 +248,7 @@ const ProfileHeader: Component = () => (
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <img
                     class="w-32 h-32 rounded-full flex-shrink-0"
-                    src="https://placehold.co/120x120"
+                    src={`https://picsum.photos/200?random=${Math.random()}`}
                     alt="Stanley Agu profile"
                 />
                 <div class="flex flex-col gap-1">

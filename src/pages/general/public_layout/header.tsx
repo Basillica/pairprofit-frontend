@@ -10,8 +10,8 @@ import logo from './../../../assets/pairprofit.svg';
 
 // Define the structure for the navigation links
 const NAV_LINKS = [
-    { name: 'About Us', href: '#about' },
-    { name: 'Become an artisan', href: '#artisan' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Become an artisan', href: '/login' },
 ];
 
 export const Header: Component = () => {
