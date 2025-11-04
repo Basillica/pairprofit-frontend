@@ -1,4 +1,7 @@
-import { Component, For } from 'solid-js';
+import { Component, createSignal, For, Match, Setter, Switch } from 'solid-js';
+import { ArtisanProfile } from './preview';
+import { DisplayNameEditor } from './name';
+import { LanguagesEditor } from './language';
 
 // --- 1. Reusable Icon Components (Styled placeholders) ---
 
@@ -121,17 +124,22 @@ const StarIcon: Component = () => (
 );
 
 // Placeholder for Dropdown Icon
-const DropdownIcon: Component = () => (
+const DropdownIcon: Component<{ isToggled: boolean }> = (props) => (
     <svg
-        class="w-4 h-4 text-white"
+        class="w-5 h-5 transition-transform duration-200"
+        classList={{ 'rotate-180': props.isToggled }}
         viewBox="0 0 24 24"
         fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        xmlns="http://www.w3.org/2000/svg"
     >
-        <path d="M6 9l6 6 6-6" />
+        {/* Down arrow/chevron path */}
+        <path
+            d="M7 10L12 15L17 10"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
     </svg>
 );
 
@@ -237,87 +245,204 @@ const ProfileMetrics: Component<{ count: number; label: string }> = (props) => (
     </div>
 );
 
-const ProfileHeader: Component = () => (
-    <div class="flex flex-col gap-6 sm:gap-4 bg-white rounded-xl border border-slate-300 p-6">
-        {/* Row 1: Profile Title (Hidden on mobile for space, or smaller, kept 24px per HTML) */}
-        <div class="text-2xl font-medium text-gray-900 leading-10">Profile</div>
+// --- Dropdown Menu Item Component ---
+const MenuItemIcon: Component<{ color: string }> = (props) => (
+    // Converted the checkmark/select icon from the original CSS styles
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+            d="M6 12L10 16L18 8"
+            stroke={props.color}
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        />
+    </svg>
+);
 
-        {/* Row 2: Profile Info and Action Buttons */}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            {/* Left: Avatar & Info */}
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <img
-                    class="w-32 h-32 rounded-full flex-shrink-0"
-                    src={`https://picsum.photos/200?random=${Math.random()}`}
-                    alt="Stanley Agu profile"
-                />
-                <div class="flex flex-col gap-1">
-                    {/* Name and Edit Icon */}
-                    <div class="flex items-center gap-3">
-                        <h2 class="text-2xl font-semibold text-gray-900 leading-10">
-                            {mockProfile.name}
-                        </h2>
-                        <EditIcon />
-                    </div>
-                    {/* Location, Languages, and Actions (Mobile: stacked, Desktop: inline) */}
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                        <div class="flex items-center gap-2">
-                            <LocationIcon />
-                            <span class="text-lg font-normal text-slate-600 leading-7">
-                                {mockProfile.location}
-                            </span>
-                        </div>
-                        <div class="hidden sm:block w-2 h-2 bg-slate-400 rounded-full flex-shrink-0"></div>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                            <span class="text-lg font-medium text-slate-600 leading-7">
-                                {mockProfile.languages}
-                            </span>
-                            {/* Language Edit Icons (Placeholder structure maintained from HTML) */}
-                            <div class="flex items-center gap-3">
+const ProfileDropdown: Component = () => {
+    const PROFILE_OPTIONS = [
+        { id: 1, name: 'Profile 1' },
+        { id: 2, name: 'Profile 2' },
+        { id: 3, name: 'Profile 3' },
+    ];
+    const [showDropdown, setShowDropdown] = createSignal(false);
+    const [activeProfile, setActiveProfile] = createSignal(
+        PROFILE_OPTIONS[0].name
+    );
+    const toggleDropdown = () => setShowDropdown(!showDropdown());
+
+    const handleSelect = (profileName: string) => {
+        setActiveProfile(profileName);
+        setShowDropdown(false);
+    };
+
+    return (
+        // The container must be 'relative' for the dropdown content to be 'absolute'
+        <div class="relative inline-block text-left mt-4">
+            {/* The Toggle Button */}
+            <button
+                onClick={toggleDropdown}
+                class="flex items-center gap-3 px-4 py-3 bg-[#1376A1] rounded-lg text-white font-semibold text-base transition hover:bg-sky-800"
+                aria-expanded={showDropdown()}
+                aria-haspopup="true"
+            >
+                <span>{activeProfile()}</span>
+                <DropdownIcon isToggled={showDropdown()} />
+            </button>
+
+            {/* The Dropdown Content */}
+            <div
+                // Positioning and Visibility
+                class="absolute right-0 z-10 mt-2 w-[169px] p-2 bg-white shadow-xl rounded-xl flex flex-col justify-start items-start transition-opacity duration-200 origin-top-right"
+                // Conditional visibility logic
+                classList={{
+                    'opacity-100 scale-100 pointer-events-auto': showDropdown(),
+                    'opacity-0 scale-95 pointer-events-none': !showDropdown(),
+                }}
+            >
+                <For each={PROFILE_OPTIONS}>
+                    {(profile) => {
+                        const isActive = profile.name === activeProfile();
+                        return (
+                            <div
+                                onClick={() => handleSelect(profile.name)}
+                                class="w-full p-2 rounded-lg flex justify-start items-center gap-2 cursor-pointer transition-colors duration-150"
+                                classList={{
+                                    // Active style: Background/Text from user's example
+                                    'bg-[#1376A1] text-white': isActive,
+                                    // Inactive style: Hover from user's example, but keeping text color consistent
+                                    'text-[#202939] hover:bg-gray-100':
+                                        !isActive,
+                                }}
+                            >
+                                {/* Active Icon (Only visible when active) */}
+                                {isActive && <MenuItemIcon color="white" />}
+
+                                {/* Placeholder icon/space for alignment when inactive */}
+                                {!isActive && <div class="w-6 h-6"></div>}
+
+                                <div class="text-sm font-normal leading-5">
+                                    {profile.name}
+                                </div>
+                            </div>
+                        );
+                    }}
+                </For>
+            </div>
+        </div>
+    );
+};
+
+const ProfileHeader: Component<{
+    setProfilePreview: Setter<boolean>;
+    setProfileName: Setter<boolean>;
+    setProfileLanguage: Setter<boolean>;
+}> = (props) => {
+    return (
+        <div class="flex flex-col gap-6 sm:gap-4 bg-white rounded-xl border border-slate-300 p-6">
+            {/* Row 1: Profile Title (Hidden on mobile for space, or smaller, kept 24px per HTML) */}
+            <div class="text-2xl font-medium text-gray-900 leading-10">
+                Profile
+            </div>
+
+            {/* Row 2: Profile Info and Action Buttons */}
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                {/* Left: Avatar & Info */}
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <img
+                        class="w-32 h-32 rounded-full flex-shrink-0"
+                        src={`https://picsum.photos/200?random=${Math.random()}`}
+                        alt="Stanley Agu profile"
+                    />
+                    <div class="flex flex-col gap-1">
+                        {/* Name and Edit Icon */}
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-2xl font-semibold text-gray-900 leading-10">
+                                {mockProfile.name}
+                            </h2>
+                            <button onClick={() => props.setProfileName(true)}>
                                 <EditIcon />
-                                <MoreIcon />
+                            </button>
+                        </div>
+                        {/* Location, Languages, and Actions (Mobile: stacked, Desktop: inline) */}
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                            <div class="flex items-center gap-2">
+                                <LocationIcon />
+                                <span class="text-lg font-normal text-slate-600 leading-7">
+                                    {mockProfile.location}
+                                </span>
+                            </div>
+                            <div class="hidden sm:block w-2 h-2 bg-slate-400 rounded-full flex-shrink-0"></div>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                                <span class="text-lg font-medium text-slate-600 leading-7">
+                                    {mockProfile.languages}
+                                </span>
+                                {/* Language Edit Icons (Placeholder structure maintained from HTML) */}
+                                <div class="flex items-center gap-3">
+                                    <button
+                                        onClick={() =>
+                                            props.setProfileLanguage(true)
+                                        }
+                                    >
+                                        <EditIcon />
+                                    </button>
+                                    <MoreIcon />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Right: Preview & Share Buttons */}
+                <div class="flex-shrink-0 flex items-center gap-3 mt-4 sm:mt-0">
+                    <button
+                        class="flex items-center gap-2 px-4 py-3 border border-slate-400 rounded-lg text-slate-600 font-semibold text-base hover:bg-slate-50 transition"
+                        onClick={() => props.setProfilePreview(true)}
+                    >
+                        <PreviewIcon />
+                        <span>Preview</span>
+                    </button>
+                    <button class="flex items-center gap-2 px-4 py-3 border border-slate-400 rounded-lg text-slate-600 font-semibold text-base hover:bg-slate-50 transition">
+                        <ShareIcon />
+                        <span>Share</span>
+                    </button>
+                </div>
             </div>
 
-            {/* Right: Preview & Share Buttons */}
-            <div class="flex-shrink-0 flex items-center gap-3 mt-4 sm:mt-0">
-                <button class="flex items-center gap-2 px-4 py-3 border border-slate-400 rounded-lg text-slate-600 font-semibold text-base hover:bg-slate-50 transition">
-                    <PreviewIcon />
-                    <span>Preview</span>
-                </button>
-                <button class="flex items-center gap-2 px-4 py-3 border border-slate-400 rounded-lg text-slate-600 font-semibold text-base hover:bg-slate-50 transition">
-                    <ShareIcon />
-                    <span>Share</span>
-                </button>
+            {/* Row 3: Metrics and Profile Selector */}
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3 border-t border-slate-200">
+                {/* Left: Metrics */}
+                <div class="flex items-start sm:items-center gap-5 sm:gap-6">
+                    <ProfileMetrics
+                        count={mockProfile.followers}
+                        label="Followers"
+                    />
+                    <ProfileMetrics
+                        count={mockProfile.following}
+                        label="Following"
+                    />
+                    <ProfileMetrics
+                        count={mockProfile.listings}
+                        label="Listing"
+                    />
+                </div>
+
+                {/* Right: Profile Selector Button */}
+                {/* <button class="flex items-center gap-3 px-4 py-3 bg-sky-700 rounded-lg text-white font-semibold text-base mt-4 sm:mt-0 hover:bg-sky-800 transition">
+                    <span>Profile 1</span>
+                    <DropdownIcon />
+                </button> */}
+                <ProfileDropdown />
             </div>
         </div>
-
-        {/* Row 3: Metrics and Profile Selector */}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3 border-t border-slate-200">
-            {/* Left: Metrics */}
-            <div class="flex items-start sm:items-center gap-5 sm:gap-6">
-                <ProfileMetrics
-                    count={mockProfile.followers}
-                    label="Followers"
-                />
-                <ProfileMetrics
-                    count={mockProfile.following}
-                    label="Following"
-                />
-                <ProfileMetrics count={mockProfile.listings} label="Listing" />
-            </div>
-
-            {/* Right: Profile Selector Button */}
-            <button class="flex items-center gap-3 px-4 py-3 bg-sky-700 rounded-lg text-white font-semibold text-base mt-4 sm:mt-0 hover:bg-sky-800 transition">
-                <span>Profile 1</span>
-                <DropdownIcon />
-            </button>
-        </div>
-    </div>
-);
+    );
+};
 
 const InfoCard: Component<{ title: string; description: string }> = (props) => (
     <div class="w-full p-6 rounded-xl border border-slate-300 flex flex-col gap-3 bg-white">
@@ -614,31 +739,56 @@ const CertificationCard: Component<Certification[]> = (props) => (
 // --- 4. Main Page Component (Assembly) ---
 
 export const ProfessionalProfilePage: Component = () => {
+    const [showProfilePreview, setProfilePreview] = createSignal(false);
+    const [editProfileName, setProfileName] = createSignal(false);
+    const [editProfileLanauge, setProfileLanguage] = createSignal(false);
+
     return (
-        <div class="w-full flex flex-col gap-10 mx-auto p-4 sm:p-6">
-            <ProfileHeader />
-            <div class="flex flex-col gap-9">
-                {/* Profile Description Card */}
-                <InfoCard
-                    title={mockProfile.title}
-                    description={mockProfile.description}
-                />
-                {/* Portfolio Section */}
-                <PortfolioSection />
-                {/* Work History Section */}
-                <WorkHistorySection />
-                {/* Testimonials Section */}
-                <TestimonialsSection />
-                {/* Bottom Row: Skills & Contact Details (Layout change: Stack on mobile, side-by-side on large screens) */}
-                {/* <div class="flex flex-col lg:flex-row justify-start items-start gap-6"> */}
-                <div class="flex flex-col lg:flex-row justify-start items-start gap-6 mb-20">
-                    {/* Note: I'm combining the inferred 'Certifications' into the Skills or Contact section for simplicity, 
+        <Switch
+            fallback={
+                <div class="w-full flex flex-col gap-10 mx-auto p-4 sm:p-6">
+                    {editProfileName() && (
+                        <DisplayNameEditor setProfileName={setProfileName} />
+                    )}
+                    {editProfileLanauge() && (
+                        <LanguagesEditor
+                            setProfileLanguage={setProfileLanguage}
+                        />
+                    )}
+
+                    <ProfileHeader
+                        setProfilePreview={setProfilePreview}
+                        setProfileName={setProfileName}
+                        setProfileLanguage={setProfileLanguage}
+                    />
+                    <div class="flex flex-col gap-9">
+                        {/* Profile Description Card */}
+                        <InfoCard
+                            title={mockProfile.title}
+                            description={mockProfile.description}
+                        />
+                        {/* Portfolio Section */}
+                        <PortfolioSection />
+                        {/* Work History Section */}
+                        <WorkHistorySection />
+                        {/* Testimonials Section */}
+                        <TestimonialsSection />
+                        {/* Bottom Row: Skills & Contact Details (Layout change: Stack on mobile, side-by-side on large screens) */}
+                        {/* <div class="flex flex-col lg:flex-row justify-start items-start gap-6"> */}
+                        <div class="flex flex-col lg:flex-row justify-start items-start gap-6 mb-20">
+                            {/* Note: I'm combining the inferred 'Certifications' into the Skills or Contact section for simplicity,
                          or leaving space for two distinct cards that are flexible in width. */}
-                    <CertificationCard {...mockCertification} />
-                    <SkillsSection />
-                    <ContactDetailsSection />
+                            <CertificationCard {...mockCertification} />
+                            <SkillsSection />
+                            <ContactDetailsSection />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            }
+        >
+            <Match when={showProfilePreview()}>
+                <ArtisanProfile setProfilePreview={setProfilePreview} />
+            </Match>
+        </Switch>
     );
 };
