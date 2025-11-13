@@ -1,5 +1,6 @@
 import { Component, createSignal } from 'solid-js';
-import { Facebook, Google, Linkedin, Logo } from './svg';
+import { Facebook, Google, Linkedin } from './svg';
+import logo from './../../../assets/pairprofit.svg';
 import { LoginStore, StepTransitions } from './types';
 
 const VisibilityIcon = (props: any) => (
@@ -94,16 +95,26 @@ export const SignUpForm: Component<{
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
-                    <div class="flex items-center text-white text-2xl font-bold tracking-wide mb-6">
+                    {/* <div class="flex items-center text-white text-2xl font-bold tracking-wide mb-6">
                         <Logo />
                         <span class="text-2xl font-bold text-gray-900 text-center leading-snug ml-2">
                             Pairprofit
                         </span>
-                    </div>
+                    </div> */}
+                    <a
+                        class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent transition"
+                        href="/"
+                    >
+                        <img
+                            src={logo}
+                            alt="PairProfit Logo"
+                            class="h-7 w-auto"
+                        />
+                    </a>
                     <div class="flex flex-col justify-start items-center gap-1">
                         <h1 class="text-3xl font-bold text-gray-900 text-center leading-snug">
                             Create an Account

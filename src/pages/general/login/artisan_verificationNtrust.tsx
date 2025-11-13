@@ -85,7 +85,7 @@ export const ArtisansVerificationNTrust: Component<{
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">

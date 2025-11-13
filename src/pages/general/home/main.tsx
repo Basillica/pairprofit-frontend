@@ -1,7 +1,16 @@
-import { Component, For, Match, Switch, createSignal, onMount } from 'solid-js';
+import {
+    Component,
+    For,
+    Match,
+    Switch,
+    createSignal,
+    onCleanup,
+    onMount,
+} from 'solid-js';
 import p1 from './../../../assets/client/one.svg';
 import p2 from './../../../assets/client/two.svg';
 import p3 from './../../../assets/client/three.svg';
+import './styles.css';
 import {
     Cleaning,
     Event,
@@ -122,6 +131,29 @@ const serviceCategories = [
 ];
 
 const HeroSection: Component = () => {
+    const [word, setWord] = createSignal('Artisans');
+    const [animationClass, setAnimationClass] = createSignal('');
+
+    // Function to toggle the word
+    const toggleWord = () => {
+        setAnimationClass('fade-out'); // Start the fade-out animation
+
+        // Schedule the word change and fade-in animation after 0.5 seconds
+        setTimeout(() => {
+            setWord((prev) => (prev === 'Artisans' ? 'Provider' : 'Artisans'));
+            setAnimationClass('fade-in'); // Start the fade-in animation
+        }, 500);
+    };
+
+    // Set up an interval to toggle the word every 5 seconds
+    let intervalId: NodeJS.Timeout;
+    onMount(() => {
+        intervalId = setInterval(toggleWord, 5000);
+    });
+
+    // Clean up the interval when the component is unmounted
+    onCleanup(() => clearInterval(intervalId));
+
     return (
         <section class="w-full flex justify-center relative overflow-hidden py-24 md:py-[130px] px-4 md:px-[100px]">
             {/* Background Blur Gradients */}
@@ -148,8 +180,11 @@ const HeroSection: Component = () => {
                 <div class="flex flex-col items-center gap-10 max-w-4xl">
                     <h1 class="text-4xl sm:text-6xl md:text-[58px] font-bold text-[#0e0d13] leading-tight md:leading-[74px]">
                         Trusted
-                        <span class="inline-block mx-2 px-4 bg-gradient-to-r from-[#2196f3] to-[#1a7aa0] text-white rounded-lg">
-                            Artisans
+                        {/* <span class="inline-block mx-2 px-4 bg-gradient-to-r from-[#2196f3] to-[#1a7aa0] text-white rounded-lg"> */}
+                        <span
+                            class={`inline-block mx-2 px-4 bg-gradient-to-r from-[#2196f3] to-[#1a7aa0] text-white rounded-lg ${animationClass()}`}
+                        >
+                            {word()}
                         </span>
                         for all your
                         <span class="block">Home Needs and services</span>

@@ -1,11 +1,13 @@
 import { Component, createEffect } from 'solid-js';
 import { LoginStore } from './types';
+import { useNavigate } from '@solidjs/router';
 
 // This is the component for your success page
 export const SuccessPage: Component<{
     loginStore: LoginStore;
 }> = () => {
     let checkmarkRef: SVGPathElement; // Reference to the SVG path for animation
+    const navigate = useNavigate();
 
     // createEffect runs after initial render and when dependencies change.
     // We want to trigger the animation once when the component mounts.
@@ -28,9 +30,7 @@ export const SuccessPage: Component<{
     });
 
     const handleGoHome = () => {
-        console.log('Navigating to Home...');
-        // Implement your navigation logic here, e.g., using Solid Router:
-        // navigate('/home');
+        navigate('/');
     };
 
     return (
@@ -71,14 +71,13 @@ export const SuccessPage: Component<{
                 </p>
 
                 {/* Go to Home Button */}
-                <a
+                <button
                     onClick={handleGoHome}
-                    href="/"
                     class="w-full py-3 bg-[#1376A1] text-white rounded-lg font-semibold
                            hover:bg-[#1376A1] cursor-pointer transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 >
                     Go to Home
-                </a>
+                </button>
             </div>
         </div>
     );
