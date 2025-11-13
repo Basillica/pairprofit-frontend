@@ -29,48 +29,6 @@ import { TestimonialSection } from './testimonial';
 import { ArtisanRecruitmentSection } from './artisan_recruitment';
 import { useAppContext } from '../../../state';
 
-// Placeholder for the Search Icon (Magnifying Glass)
-const SearchIcon: Component<{
-    class: string;
-}> = (props: any) => (
-    <svg
-        class="w-5 h-5 text-gray-700"
-        viewBox="0 0 20 20"
-        fill="none"
-        stroke="currentColor"
-        {...props}
-    >
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M14.5833 14.5833L18.3333 18.3333"
-        />
-        <circle cx="9.16667" cy="9.16667" r="7.5" />
-    </svg>
-);
-
-// Placeholder for the Down Arrow Icon (Country Selector)
-const ChevronDownIcon: Component<{
-    class: string;
-}> = (props) => (
-    <svg
-        class={`${props.class ?? 'w-6 h-6 text-gray-700'}`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        // {...props}
-    >
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-        ></path>
-    </svg>
-);
-
 // Placeholder for the Service Icon (Wrench, for mounting)
 const ServiceIcon: Component<{
     active: boolean;
@@ -154,11 +112,31 @@ const HeroSection: Component = () => {
     // Clean up the interval when the component is unmounted
     onCleanup(() => clearInterval(intervalId));
 
+    const [isOpen, setIsOpen] = createSignal(false);
+    const [selectedCountry, setSelectedCountry] = createSignal('Nigeria');
+
+    const countries = [
+        { name: 'Nigeria' },
+        { name: 'United States' },
+        { name: 'Canada' },
+        // { name: 'United Kingdom' },
+        // { name: 'Australia' },
+    ];
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen());
+    };
+
+    const selectCountry = (country: string) => {
+        setSelectedCountry(country);
+        setIsOpen(false);
+    };
+
     return (
         <section class="w-full flex justify-center relative overflow-hidden py-24 md:py-[130px] px-4 md:px-[100px]">
             {/* Background Blur Gradients */}
             <div
-                class="absolute top-[-112px] left-[-260px] w-[956px] h-[643px] rounded-full blur-[200px] z-0"
+                class="absolute top-[-112px] left-[-260px] w-[956px] h-[643px] rounded-full blur-[200px]"
                 style={{
                     background:
                         'linear-gradient(148deg, rgba(218, 250, 126, 0.08) 0%, rgba(218, 250, 126, 0.1) 100%)',
@@ -166,7 +144,7 @@ const HeroSection: Component = () => {
                 }}
             ></div>
             <div
-                class="absolute top-0 right-[-260px] w-[956px] h-[597px] rounded-full blur-[200px] z-0"
+                class="absolute top-0 right-[-260px] w-[956px] h-[597px] rounded-full blur-[200px]"
                 style={{
                     background:
                         'linear-gradient(148deg, rgba(26, 122, 160, 0.11) 0%, rgba(20, 119, 161, 0.18) 100%)',
@@ -175,7 +153,7 @@ const HeroSection: Component = () => {
             ></div>
 
             {/* Content Container */}
-            <div class="relative z-10 w-full max-w-[1100px] flex flex-col items-center text-center gap-14">
+            <div class="relative w-full max-w-[1100px] flex flex-col items-center text-center gap-14">
                 {/* Text Block */}
                 <div class="flex flex-col items-center gap-10 max-w-4xl">
                     <h1 class="text-4xl sm:text-6xl md:text-[58px] font-bold text-[#0e0d13] leading-tight md:leading-[74px]">
@@ -200,22 +178,74 @@ const HeroSection: Component = () => {
                 <div class="w-full max-w-4xl p-4 bg-white rounded-xl shadow-lg border border-[#e3e8ef] flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     <div class="flex-1 w-full p-4 bg-[#f2f2f2] rounded-xl border border-[#e3e8ef] flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <SearchIcon class="w-5 h-5 text-[#4b5565]" />
+                            <svg
+                                class="w-5 h-5 text-[#4b5565]"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
                             <input
                                 type="text"
                                 placeholder="What services do you need?"
                                 class="bg-transparent text-base font-medium text-[#4b5565] focus:outline-none w-full"
                             />
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-base font-medium text-[#4b5565]">
-                                Nigeria
+                        <div class="relative flex items-center gap-2">
+                            <span
+                                class="text-base font-medium text-[#4b5565] cursor-pointer"
+                                onClick={toggleDropdown}
+                            >
+                                {selectedCountry()}
                             </span>
-                            <ChevronDownIcon class="w-6 h-6 text-[#4b5565]" />
+                            <svg
+                                class="w-6 h-6 text-[#4b5565] transition-transform duration-300"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                style={{
+                                    transform: isOpen()
+                                        ? 'rotate(180deg)'
+                                        : 'rotate(0deg)',
+                                }}
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                            {isOpen() && (
+                                <div
+                                    class="absolute top-full left-0 right-0 mt-1 w-[120px] bg-white border border-[#e3e8ef] rounded-b-lg shadow-lg z-10"
+                                    style={'background: red'}
+                                >
+                                    <For each={countries}>
+                                        {(country) => (
+                                            <div
+                                                class="px-4 py-2 text-base font-medium text-[#4b5565] cursor-pointer hover:bg-[#f2f2f2]"
+                                                onClick={() =>
+                                                    selectCountry(country.name)
+                                                }
+                                            >
+                                                {country.name}
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+                            )}
                         </div>
                     </div>
-
-                    <button class="w-full md:w-auto px-6 py-3 bg-[#1376a1] text-lg font-semibold text-white rounded-lg hover:bg-[#106283] transition">
+                    <button class="w-full md:w-auto px-6 py-3 bg-[#1376a1] text-lg font-semibold text-white rounded-lg hover:bg-[#106283] transition cursor-pointer">
                         Search
                     </button>
                 </div>

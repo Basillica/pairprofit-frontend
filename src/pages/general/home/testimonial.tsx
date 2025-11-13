@@ -1,4 +1,5 @@
-import { Component, For, JSX, createSignal } from 'solid-js';
+import { Component, For, createSignal } from 'solid-js';
+import styles from './styles.module.css';
 
 // --- Data Structure ---
 interface Testimonial {
@@ -144,7 +145,7 @@ const AvatarRing: Component<{
     currentIndex: number;
     onAvatarClick: (index: number) => void;
 }> = (props) => (
-    <div class="flex justify-center items-center gap-6 md:gap-11 overflow-x-scroll p-4 sm:p-0">
+    <div class={styles.container}>
         <For each={props.testimonials}>
             {(testimonial, index) => {
                 const isActive = index() === props.currentIndex;
@@ -152,21 +153,15 @@ const AvatarRing: Component<{
                     <button
                         onClick={() => props.onAvatarClick(index())}
                         classList={{
-                            // Common Image Style
-                            'rounded-full flex-shrink-0 transition-all duration-300 transform':
-                                true,
-
-                            // Normal Avatar Style
-                            'w-16 h-16 hover:scale-105': !isActive,
-
-                            // Active Avatar Style (90px container)
-                            'w-[90px] h-[90px] p-1.5 md:p-[13px] relative bg-[#D0E4EC80] ring-4 ring-[#1376A1] ring-offset-[-4px] ring-inset scale-100':
-                                isActive,
+                            [styles.avatar]: true,
+                            [styles.avatarNormal]: !isActive,
+                            [styles.avatarActive]: isActive,
+                            [styles.scale100]: isActive,
                         }}
                         aria-label={`View testimonial from ${testimonial.name}`}
                     >
                         <img
-                            class="w-16 h-16 rounded-full object-cover"
+                            class={`${styles.avatar} ${styles.avatarImage}`}
                             src={testimonial.avatar}
                             alt={`Avatar of ${testimonial.name}`}
                         />
