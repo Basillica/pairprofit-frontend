@@ -71,13 +71,14 @@ export const SuccessPage: Component<{
                 </p>
 
                 {/* Go to Home Button */}
-                <button
+                <a
                     onClick={handleGoHome}
+                    href="/"
                     class="w-full py-3 bg-[#1376A1] text-white rounded-lg font-semibold
                            hover:bg-[#1376A1] cursor-pointer transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
                 >
                     Go to Home
-                </button>
+                </a>
             </div>
         </div>
     );

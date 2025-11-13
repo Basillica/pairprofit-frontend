@@ -7,6 +7,7 @@ import {
     Show,
 } from 'solid-js';
 import logo from './../../../assets/pairprofit.svg';
+import { useNavigate } from '@solidjs/router';
 
 // Define the structure for the navigation links
 const NAV_LINKS = [
@@ -16,8 +17,12 @@ const NAV_LINKS = [
 
 export const Header: Component = () => {
     // State to track if the mobile menu is open
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = createSignal(false);
-    const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+    const toggleMenu = (path: string) => {
+        setIsMenuOpen((prev) => !prev);
+        navigate(path);
+    };
 
     // --- EFFECT FOR SCROLL LOCK ---
     // This effect runs whenever isMenuOpen changes and manipulates the document body.
@@ -43,7 +48,7 @@ export const Header: Component = () => {
 
     const MenuIcon: Component<{ open: boolean }> = (props) => (
         <button
-            onClick={toggleMenu}
+            onClick={() => toggleMenu('')}
             class="p-2 lg:hidden text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#1376a1] rounded transition-transform"
             aria-label={props.open ? 'Close menu' : 'Open menu'}
         >
@@ -83,7 +88,16 @@ export const Header: Component = () => {
                 {/* Desktop/Mobile Header Row */}
                 <div class="flex justify-between items-center py-4 border-b border-[#e3e8ef] lg:border-none">
                     {/* Logo (Visible on all sizes) */}
-                    <img src={logo} alt="PairProfit Logo" class="h-7 w-auto" />
+                    <a
+                        class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent hover:bg-slate-50 transition"
+                        href="/"
+                    >
+                        <img
+                            src={logo}
+                            alt="PairProfit Logo"
+                            class="h-7 w-auto"
+                        />
+                    </a>
 
                     {/* Desktop Navigation (Hidden on mobile/tablet) */}
                     <nav class="hidden lg:flex items-center gap-6">
@@ -101,12 +115,18 @@ export const Header: Component = () => {
 
                     {/* Desktop Actions (Hidden on mobile/tablet) */}
                     <div class="hidden lg:flex items-center gap-4">
-                        <button class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent hover:bg-slate-50 transition">
+                        <a
+                            class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent hover:bg-slate-50 transition"
+                            href="/login"
+                        >
                             Login
-                        </button>
-                        <button class="px-4 py-3 bg-[#1376a1] text-base font-semibold text-white rounded-lg hover:bg-[#106283] transition">
+                        </a>
+                        <a
+                            class="px-4 py-3 bg-[#1376a1] text-base font-semibold text-white rounded-lg hover:bg-[#106283] transition"
+                            href="/login"
+                        >
                             Sign Up
-                        </button>
+                        </a>
                     </div>
 
                     {/* Mobile Menu Icon (Visible only on mobile/tablet) */}
@@ -126,13 +146,12 @@ export const Header: Component = () => {
                         {/* Mobile Navigation Links */}
                         <For each={NAV_LINKS}>
                             {(link) => (
-                                <a
-                                    href={link.href}
-                                    onClick={toggleMenu} // Close menu on click
+                                <button
+                                    onClick={() => toggleMenu(link.href)} // Close menu on click
                                     class="w-full p-3 text-lg font-medium text-[#0d121c] hover:bg-[#f0f4f8] rounded transition"
                                 >
                                     {link.name}
-                                </a>
+                                </button>
                             )}
                         </For>
 
@@ -142,13 +161,13 @@ export const Header: Component = () => {
                         {/* Mobile Actions */}
                         <button
                             class="w-full px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-[#1376a1] hover:bg-slate-50 transition"
-                            onClick={toggleMenu}
+                            onClick={() => toggleMenu('/login')}
                         >
                             Login
                         </button>
                         <button
                             class="w-full px-4 py-3 bg-[#1376a1] text-base font-semibold text-white rounded-lg hover:bg-[#106283] transition"
-                            onClick={toggleMenu}
+                            onClick={() => toggleMenu('/login')}
                         >
                             Sign Up
                         </button>

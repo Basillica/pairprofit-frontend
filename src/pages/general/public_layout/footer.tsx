@@ -98,7 +98,7 @@ const InstagramIcon: Component = () => (
 
 export const FooterSection: Component = () => (
     <footer
-        class="w-full flex justify-center bg-white border-t border-[#E3E8EF] px-4 lg:px-[100px] py-16"
+        class="w-full flex justify-center bg-white border-t border-[#E3E8EF] px-4 lg:px-[100px] py-2"
         data-property-1="Default"
     >
         <div class="w-full flex flex-col justify-start items-start gap-16">
