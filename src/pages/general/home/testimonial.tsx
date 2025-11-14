@@ -163,7 +163,6 @@ const AvatarRing: Component<{
     const onAvatarClick = (index: number) => {
         setCurrentIndex(index);
         props.onAvatarClick(index);
-        console.log('Avatar clicked:', index);
     };
 
     return (

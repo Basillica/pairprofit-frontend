@@ -187,7 +187,7 @@ const HeroSection: Component = () => {
                 {/* Search Bar */}
                 <div class="w-full max-w-4xl p-4 bg-white rounded-xl shadow-lg border border-[#e3e8ef] flex flex-col md:flex-row items-center gap-4 md:gap-6">
                     <div class="flex-1 w-full p-4 bg-[#f2f2f2] rounded-xl border border-[#e3e8ef] flex justify-between items-center">
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 w-[50%]">
                             <svg
                                 class="w-5 h-5 text-[#4b5565]"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -235,10 +235,7 @@ const HeroSection: Component = () => {
                                 />
                             </svg>
                             {isOpen() && (
-                                <div
-                                    class="absolute top-full left-0 right-0 mt-1 w-[120px] bg-white border border-[#e3e8ef] rounded-b-lg shadow-lg z-10"
-                                    style={'background: red'}
-                                >
+                                <div class="absolute top-full left-0 right-0 mt-1 w-[120px] bg-white border border-[#e3e8ef] rounded-b-lg shadow-lg z-10">
                                     <For each={countries}>
                                         {(country) => (
                                             <div
