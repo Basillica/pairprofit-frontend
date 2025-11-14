@@ -321,14 +321,14 @@ export const ContactSupportForm: Component = () => {
                                 </div>
                                 <p class="text-lg font-normal text-[#4B5565] leading-relaxed">
                                     All artisans on our platform undergo a
-                                    **verification process**. We also provide
-                                    secure messaging, transparent review systems
-                                    and a dedicated support team to assist with
-                                    any issues.
+                                    verification process. We also provide secure
+                                    messaging, transparent review systems and a
+                                    dedicated support team to assist with any
+                                    issues.
                                 </p>
                                 <p class="text-lg font-normal text-[#4B5565] leading-relaxed">
                                     In case of dispute, our team offers
-                                    **mediation services** to help reach a fair
+                                    mediation services to help reach a fair
                                     resolution. We encourage all our users to
                                     communicate clearly and adhere to our
                                     community guidelines. Learn more about our

@@ -27,7 +27,7 @@ import {
 import { GetEnvConfig } from './environments';
 import { UserLocationMap } from './pages/leaf';
 import { PricingPage } from './pages/pricing';
-import { AboutPage, ContactPage, NewRootLayout } from './pages/utils';
+import { AboutPage, ContactPage } from './pages/utils';
 import { ClientLayout } from './apps/client';
 import { ArtisanLayout } from './apps/artisan';
 import {
@@ -80,7 +80,6 @@ render(
                     <Route path={'/privacy'} component={PrivacyPolicyLayout} />
                 </Route>
                 <Route path="/login" component={LoginPage} />
-                <Route path="/public/profile" />{' '}
                 <Route path="/pricing" component={PricingPage} />
                 <Route path="/sw.js" />
                 <Route path="/brevo-frame.html" />
@@ -166,7 +165,6 @@ render(
                         />
                     </Route>
                 </Route>
-                <Route path={'/root'} component={NewRootLayout} />
                 <Route path={'/401'} component={UnauthorizedPage} />
                 <Route path="*404" component={Page404} />
             </Router>

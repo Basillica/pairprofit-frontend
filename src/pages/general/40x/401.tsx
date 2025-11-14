@@ -23,8 +23,8 @@ export const UnauthorizedPage: Component = () => (
                 </h1>
                 <p class="text-lg text-[#4B5565] font-normal leading-relaxed">
                     You do not have the necessary permissions to view this page.
-                    Please **log in** with an authorized account or **sign up**
-                    to get access.
+                    Please log in with an authorized account or sign up to get
+                    access.
                 </p>
             </div>
 
@@ -55,7 +55,7 @@ export const UnauthorizedPage: Component = () => (
                 <img
                     src={unauthorized}
                     alt="A friendly illustration indicating a secured area"
-                    class="rounded-xl mx-auto"
+                    class="rounded-xl mx-auto w-[300px] md:w-[400px]"
                 />
             </div>
         </div>

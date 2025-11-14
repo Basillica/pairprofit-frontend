@@ -38,14 +38,6 @@ const LocationComponent = () => {
 
     // Run this code once when the component is mounted to the DOM
     onMount(() => {
-        // if (!mapContainer) {
-        //     setError('Map container not found.');
-        //     return;
-        // }
-
-        // Type the map instance
-        // const map: Map = L.map(mapContainer).setView([51.505, -0.09], 13); // Default view
-
         if (mapDiv) {
             // Initialize Leaflet Map
             const map: Map = L.map(mapDiv).setView([50.94, 11.09], 6); // Erfurt, Germany
@@ -91,7 +83,7 @@ const LocationComponent = () => {
                         name: `New Location ${locations().length + 1}`,
                         coordinates: [e.latlng.lat, e.latlng.lng],
                     };
-                    setLocations((prev) => [...prev, newLocation]);
+                    setLocations(() => [newLocation]);
                 } catch (error) {
                     console.error('Reverse geocoding failed:', error);
                     const newLocation: StoredLocation = {

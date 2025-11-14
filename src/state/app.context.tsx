@@ -576,7 +576,6 @@ export const AppContextProvider = (props: {
                     setConnectedClients(msg.payload.clients!);
                     break;
                 case 'clients_online_status':
-                    console.log(msg, '**********************');
                     break;
                 case 'error':
                     const errorMsg = msg as ErrorMessage;

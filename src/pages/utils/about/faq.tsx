@@ -10,18 +10,17 @@ interface Faq {
 // JSX for the complex answers (using Solid's JSX type)
 const Answer1: JSX.Element = (
     <p class="text-xl font-normal text-[#E3E8EF] leading-loose">
-        Posting a services request as a customer is completely free. **Artisans
-        pay a small service fee** on completed jobs or a subscription fee for
+        Posting a services request as a customer is completely free. Artisans
+        pay a small service fee on completed jobs or a subscription fee for
         premium features which helps us maintain and improve the platforms.
     </p>
 );
 
 const Answer2: JSX.Element = (
     <p class="text-xl font-normal text-[#E3E8EF] leading-loose">
-        Our platform uses **escrow services** to ensure secure payments.
-        Customers fund the job upfront, and the payment is released to the
-        artisan only after the customer confirms the job is completed to
-        satisfaction.
+        Our platform uses escrow services to ensure secure payments. Customers
+        fund the job upfront, and the payment is released to the artisan only
+        after the customer confirms the job is completed to satisfaction.
     </p>
 );
 
@@ -43,7 +42,7 @@ const Answer3: JSX.Element = (
 const Answer4: JSX.Element = (
     <p class="text-xl font-normal text-[#E3E8EF] leading-loose">
         To increase your chances, ensure your profile is complete with detailed
-        services, a **strong portfolio**, and **competitive pricing**. Prompt
+        services, a strong portfolio, and competitive pricing. Prompt
         communication and excellent reviews for completed jobs significantly
         boost your visibility and trustworthiness.
     </p>
