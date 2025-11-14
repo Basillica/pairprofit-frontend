@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js';
+import { Accessor, Component, For } from 'solid-js';
 import electrician from './../../../assets/general/about_electrician.svg';
 
 // --- Data Structure ---
@@ -39,48 +39,50 @@ const ARTISAN_STEPS: Step[] = [
 ];
 
 // --- Sub-Components (Utilities) ---
+type StepWidths = {
+    [key: string]: string;
+};
 
-const StepCard: Component<Step> = (props) => (
-    <div class="self-stretch p-4 md:p-6 flex flex-col justify-center items-start gap-4 md:gap-6">
-        {/* Step Number Badge */}
-        <div class="w-12 px-3 py-1 bg-sky-100/40 flex justify-center items-center rounded-lg">
-            <div class="text-xl font-semibold text-[#1376A1] leading-loose">
-                {props.number}
+const StepCard: Component<{
+    step: Step;
+    index: Accessor<number>;
+}> = (props) => {
+    const stepWidths: StepWidths = {
+        1: 'w-[25%]',
+        2: 'w-[50%]',
+        3: 'w-[75%]',
+        4: 'w-full',
+    };
+    return (
+        <div class="self-stretch p-4 md:p-6 flex flex-col justify-center items-start gap-4 md:gap-6">
+            {/* Step Number Badge */}
+            <div class="w-12 px-3 py-1 bg-sky-100/40 flex justify-center items-center rounded-lg">
+                <div class="text-xl font-semibold text-[#1376A1] leading-loose">
+                    {props.step.number}
+                </div>
+            </div>
+
+            {/* Content */}
+            <div class="self-stretch flex flex-col justify-start items-start gap-4">
+                <div class="text-2xl font-semibold text-[#191919] leading-loose">
+                    {props.step.title}
+                </div>
+                <p class="text-xl font-normal text-[#4B5565] leading-loose">
+                    {props.step.description}
+                </p>
+            </div>
+
+            {/* Progress Bar (simplified to a line) */}
+            <div class="self-stretch h-[3px] relative bg-[#EEF2F6] rounded-xl overflow-hidden">
+                <div
+                    class={`${
+                        stepWidths[props.index() + 1]
+                    } h-full absolute top-0 left-0 bg-[#1376A1] rounded-xl`}
+                ></div>
             </div>
         </div>
-
-        {/* Content */}
-        <div class="self-stretch flex flex-col justify-start items-start gap-4">
-            <div class="text-2xl font-semibold text-[#191919] leading-loose">
-                {props.title}
-            </div>
-            <p class="text-xl font-normal text-[#4B5565] leading-loose">
-                {props.description}
-            </p>
-        </div>
-
-        {/* Progress Bar (simplified to a line) */}
-        <div class="self-stretch h-[3px] relative bg-[#EEF2F6] rounded-xl overflow-hidden">
-            <div
-                class="h-[3px] absolute top-0 left-0 bg-[#1376A1] rounded-xl transition-all duration-500"
-                classList={{
-                    'w-1/3': props.isProgressActive,
-                    'w-0': !props.isProgressActive,
-                }}
-            />
-        </div>
-    </div>
-);
-
-const PrimaryButton: Component<{ text: string }> = (props) => (
-    <button
-        class="px-4 py-3 bg-[#1376A1] rounded-lg text-base font-semibold text-white hover:bg-[#0E5B7C] transition-colors"
-        aria-label={props.text}
-    >
-        {props.text}
-    </button>
-);
-
+    );
+};
 // --- Main Component ---
 
 export const JoinAsArtisansSection: Component = () => (
@@ -128,7 +130,13 @@ export const JoinAsArtisansSection: Component = () => (
                             looking for your expertise. Take control of your
                             work, set your own rates and expand your reach.
                         </p>
-                        <PrimaryButton text="Create provider profile" />
+                        <a
+                            class="px-4 py-3 bg-[#1376A1] rounded-lg text-base font-semibold text-white hover:bg-[#0E5B7C] transition-colors"
+                            href="/login"
+                            aria-label={'Create provider profile'}
+                        >
+                            {'Create provider profile'}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -149,7 +157,9 @@ export const JoinAsArtisansSection: Component = () => (
                 <div class="flex-1 self-stretch flex flex-col justify-start items-start gap-8 w-full">
                     <div class="grid grid-cols-1 gap-4 w-full">
                         <For each={ARTISAN_STEPS}>
-                            {(step) => <StepCard {...step} />}
+                            {(step, index) => (
+                                <StepCard step={step} index={index} />
+                            )}
                         </For>
                     </div>
                 </div>

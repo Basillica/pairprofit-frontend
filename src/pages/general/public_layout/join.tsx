@@ -1,24 +1,6 @@
 import { Component, JSX } from 'solid-js';
 import artisan_images from './../../../assets/profiles/artisans.png';
 
-const PrimaryButton: Component<{ text: string }> = (props) => (
-    <button
-        class="px-4 py-3 bg-[#1376A1] rounded-lg text-base font-semibold text-white hover:bg-[#0E5B7C] transition-colors flex-shrink-0"
-        aria-label={props.text}
-    >
-        {props.text}
-    </button>
-);
-
-const SecondaryOutlineButton: Component<{ text: string }> = (props) => (
-    <button
-        class="px-4 py-3 rounded-lg border border-[#1376A1] text-base font-semibold text-[#1376A1] hover:bg-[#1376A1]/10 transition-colors flex-shrink-0"
-        aria-label={props.text}
-    >
-        {props.text}
-    </button>
-);
-
 export const JoinHomeServicesCTA: Component<{
     currentContent: () => JSX.Element;
 }> = (props) => {
@@ -42,8 +24,20 @@ export const JoinHomeServicesCTA: Component<{
 
                         {/* Buttons */}
                         <div class="flex flex-wrap justify-start items-center gap-3">
-                            <PrimaryButton text="Find Artisans" />
-                            <SecondaryOutlineButton text="Become a provider" />
+                            <a
+                                class="px-4 py-3 bg-[#1376A1] rounded-lg text-base font-semibold text-white hover:bg-[#0E5B7C] transition-colors flex-shrink-0 cursor-pointer"
+                                aria-label={'Find Artisans'}
+                                href="/login?type=client"
+                            >
+                                {'Find Artisans'}
+                            </a>
+                            <a
+                                class="px-4 py-3 rounded-lg border border-[#1376A1] text-base font-semibold text-[#1376A1] hover:bg-[#1376A1]/10 transition-colors flex-shrink-0 cursor-pointer"
+                                aria-label={'Become a provider'}
+                                href="/login?type=artisan"
+                            >
+                                {'Become a provider'}
+                            </a>
                         </div>
                     </div>
 

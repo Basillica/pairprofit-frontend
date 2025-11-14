@@ -15,10 +15,6 @@ const useCountdown = (initialDuration = 59) => {
 
     // Formats seconds into MM:SS
     const formatTime = (time: number) => {
-        // Logging here is okay, as it's an accessor, but moving it out of the
-        // main component body prevents excessive logs if other reactive parts
-        // of the component re-run.
-        // If you MUST log, log inside the setTimeLeft callback only.
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
         return `${minutes.toString().padStart(2, '0')}:${seconds
@@ -26,7 +22,6 @@ const useCountdown = (initialDuration = 59) => {
             .padStart(2, '0')}`;
     };
 
-    // Effect to run the timer
     createEffect(() => {
         if (!isRunning()) {
             return;
@@ -35,13 +30,9 @@ const useCountdown = (initialDuration = 59) => {
         const interval = setInterval(() => {
             setTimeLeft((t) => {
                 const newTime = t - 1;
-                // 💡 Log ONLY when time is explicitly decreased by the interval
-                console.log(newTime);
-
                 if (newTime <= 0) {
                     setIsRunning(false); // Stop the timer
                     setIsFinished(true); // Mark as finished
-                    // No need to return clearInterval here, onCleanup handles it
                     return 0; // Set final time to 0
                 }
                 return newTime;
