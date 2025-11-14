@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js';
+import { Accessor, Component, For } from 'solid-js';
 import painter from './../.././../assets/landing_painter.svg';
 import p2 from './../../../assets/client/two.svg';
 
@@ -44,38 +44,60 @@ const howItWorksSteps = [
 
 // --- Step Item Component ---
 
-const StepItem: Component<{ step: (typeof howItWorksSteps)[number] }> = (
-    props
-) => (
-    <div class="self-stretch px-4 flex flex-col justify-center items-start gap-4">
-        {/* Number Badge */}
-        <div class="w-[47px] px-3 py-1 bg-[#D0E4EC]/40 flex justify-center items-center rounded">
-            <div class="text-xl font-semibold text-[#1376A1] leading-relaxed">
-                {props.step.number}
-            </div>
-        </div>
+const StepItem: Component<{
+    step: (typeof howItWorksSteps)[number];
+    index: Accessor<number>;
+}> = (props) => {
+    type StepWidths = {
+        [key: string]: string;
+    };
 
-        {/* Title and Description */}
-        <div class="self-stretch flex flex-col justify-start items-start">
-            <div class="self-stretch py-3">
-                <div class="text-2xl font-semibold text-[#191919] leading-relaxed">
-                    {props.step.title}
+    const stepWidths: StepWidths = {
+        1: 'w-1/5',
+        2: 'w-[40%]',
+        3: 'w-[60%]',
+        4: 'w-[80%]',
+        5: 'w-full',
+    };
+
+    return (
+        <div class="self-stretch px-4 flex flex-col justify-center items-start gap-4">
+            {/* Number Badge */}
+            <div class="w-[47px] px-3 py-1 bg-[#D0E4EC]/40 flex justify-center items-center rounded">
+                <div class="text-xl font-semibold text-[#1376A1] leading-relaxed">
+                    {props.step.number}
                 </div>
             </div>
-            <div class="self-stretch text-xl font-normal text-[#4B5565] leading-loose">
-                {props.step.description}
+
+            {/* Title and Description */}
+            <div class="self-stretch flex flex-col justify-start items-start">
+                <div class="self-stretch py-3">
+                    <div class="text-2xl font-semibold text-[#191919] leading-relaxed">
+                        {props.step.title}
+                    </div>
+                </div>
+                <div class="self-stretch text-xl font-normal text-[#4B5565] leading-loose">
+                    {props.step.description}
+                </div>
+            </div>
+
+            {/* Progress/Separator Line */}
+            <div class="self-stretch h-[3px] relative bg-[#EEF2F6] rounded-xl overflow-hidden">
+                {/* The first step has a partial fill, others are empty, matching the HTML logic */}
+                {/* {props.step.progress === 'full' && ( */}
+                <div
+                    // class={`w-${
+                    //     props.index() + 1
+                    // }/5 h-full absolute top-0 left-0 bg-[#1376A1] rounded-xl`}
+                    class={`${
+                        stepWidths[String(props.index() + 1)]
+                    } h-full absolute top-0 left-0 bg-[#1376A1] rounded-xl`}
+                ></div>
+                {/* )} */}
             </div>
         </div>
-
-        {/* Progress/Separator Line */}
-        <div class="self-stretch h-[3px] relative bg-[#EEF2F6] rounded-xl overflow-hidden">
-            {/* The first step has a partial fill, others are empty, matching the HTML logic */}
-            {props.step.progress === 'full' && (
-                <div class="w-1/3 h-full absolute top-0 left-0 bg-[#1376A1] rounded-xl"></div>
-            )}
-        </div>
-    </div>
-);
+    );
+};
 
 // --- Main Component ---
 
@@ -98,9 +120,9 @@ export const HowItWorksSection: Component = () => (
                     <div class="flex flex-col justify-center items-start gap-3">
                         <div class="flex flex-wrap items-center gap-4 text-4xl sm:text-5xl font-bold">
                             <h1 class="text-[#0E0D13] capitalize">guiding &</h1>
-                            <div class="px-4 h-15 bg-gradient-to-r from-[#2196F3] to-[#1A7AA0]/72 rounded-lg text-[#FCFCFD] capitalize">
+                            <span class="px-2 h-[3.2rem] bg-gradient-to-r from-[#2196F3] to-[#1A7AA0]/72 rounded-lg text-[#FCFCFD] capitalize">
                                 Connecting
-                            </div>
+                            </span>
                             <h1 class="text-[#0E0D13] capitalize">You</h1>
                         </div>
                         <h1 class="text-4xl sm:text-5xl font-bold text-[#0E0D13] capitalize">
@@ -134,16 +156,21 @@ export const HowItWorksSection: Component = () => (
                         src={painter}
                         alt="Mobile app screenshot showing the process"
                     />
-                    <button class="w-full lg:w-auto px-4 py-3 bg-[#1376A1] text-xl font-semibold text-white rounded-lg hover:bg-[#106283] transition cursor-pointer">
+                    <a
+                        class="w-full lg:w-auto px-4 py-3 bg-[#1376A1] text-xl font-semibold text-white rounded-lg hover:bg-[#106283] transition cursor-pointer"
+                        href="/login"
+                    >
                         Get started now
-                    </button>
+                    </a>
                 </div>
 
                 {/* Right Column: Steps */}
                 <div class="flex-1 w-full lg:w-1/2 flex flex-col justify-start items-start gap-8">
                     <div class="self-stretch flex flex-col justify-start items-start gap-9">
                         <For each={howItWorksSteps}>
-                            {(step) => <StepItem step={step} />}
+                            {(step, index) => (
+                                <StepItem step={step} index={index} />
+                            )}
                         </For>
                     </div>
                 </div>

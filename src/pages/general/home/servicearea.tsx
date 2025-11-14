@@ -1,6 +1,10 @@
 import { Component, For } from 'solid-js';
-
-// --- Icon & Data Setup ---
+import catering from './../../../assets/profiles/catering.jpg';
+import hvac from './../../../assets/profiles/hvac.jpg';
+import it_support from './../../../assets/profiles/it_support.jpg';
+import carpentary from './../../../assets/profiles/carpentary.jpg';
+import plumbing from './../../../assets/profiles/plumbing.jpg';
+import electrician from './../../../assets/profiles/electrician.jpg';
 
 // Icon for the "View artisans" link (Right Arrow)
 const RightArrowIcon: Component = (props) => (
@@ -18,33 +22,6 @@ const RightArrowIcon: Component = (props) => (
     </svg>
 );
 
-// Placeholder for the Left Arrow Button (Slider Navigation)
-const ArrowLeftIcon: Component = (props) => (
-    <svg
-        class="w-6 h-6 transform rotate-180 text-black"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        {...props}
-    >
-        <path d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-);
-
-// Placeholder for the Right Arrow Button (Slider Navigation)
-const ArrowRightIcon: Component = () => (
-    <svg
-        class="w-6 h-6 text-black"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-    >
-        <path d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-);
-
 // Mock data for the service cards
 const serviceAreaCards = [
     {
@@ -52,39 +29,39 @@ const serviceAreaCards = [
         description:
             'Repairs installations, and maintenance for all plumbing needs',
         jobsCompleted: 893,
-        imageUrl: 'https://placehold.co/397x336/0f4c75/white?text=Plumbing',
+        imageUrl: plumbing,
     },
     {
         title: 'Electrical',
         description:
             'Licensed electricians for wiring, repairs and installations',
         jobsCompleted: 124,
-        imageUrl: 'https://placehold.co/397x336/fdc539/black?text=Electrical',
+        imageUrl: electrician,
     },
     {
         title: 'Carpentry',
         description: 'Custom furniture, repairs, and woodworking projects',
         jobsCompleted: 2943,
-        imageUrl: 'https://placehold.co/397x336/708b73/white?text=Carpentry',
+        imageUrl: carpentary,
     },
     {
         title: 'Expert IT & Tech Support',
         description: 'Need help with web design, software or network issues',
         jobsCompleted: 345,
-        imageUrl: 'https://placehold.co/397x336/12cfae/white?text=IT+Support',
+        imageUrl: it_support,
     },
     {
         title: 'HVAC',
         description: 'Heating and cooling system installation and repair',
         jobsCompleted: 458,
-        imageUrl: 'https://placehold.co/397x336/a07855/white?text=HVAC',
+        imageUrl: hvac,
     },
     {
         title: 'Chefs and Catering',
         description:
             'Elevate your events with gourmet meals and professional catering services',
         jobsCompleted: 1054,
-        imageUrl: 'https://placehold.co/397x336/2196F3/white?text=Catering',
+        imageUrl: catering,
     },
 ];
 
@@ -132,7 +109,7 @@ const ServiceAreaCard: Component<{
 
                 {/* View Artisans Link */}
                 <a
-                    href="#"
+                    href="/login" // TODO: Update with actual link to artisans listing
                     class="inline-flex justify-start items-center gap-3 group"
                 >
                     <span class="text-base font-semibold text-[#1376A1] leading-relaxed group-hover:underline">
@@ -150,7 +127,7 @@ const ServiceAreaCard: Component<{
 export const ServicesInYourArea: Component = () => {
     return (
         <section class="w-full flex justify-center py-16 px-4 md:px-[100px] bg-white">
-            <div class="w-full max-w-[1440px] flex flex-col items-center gap-16">
+            <div class="w-full flex flex-col items-center gap-16">
                 {/* Heading Block */}
                 <div class="flex flex-col items-center gap-3 text-center max-w-4xl">
                     <div class="p-1 rounded-lg flex items-center gap-2">
@@ -178,9 +155,8 @@ export const ServicesInYourArea: Component = () => {
                 </div>
 
                 {/* Navigation Arrows (for future pagination/slider) */}
-                <div class="self-stretch flex justify-center items-center gap-6">
+                {/* <div class="self-stretch flex justify-center items-center gap-6">
                     <div class="flex justify-start items-center gap-6">
-                        {/* Left Arrow - Inactive/Disabled Style */}
                         <button
                             class="w-12 h-12 bg-[#EEF2F6] rounded-full flex items-center justify-center border border-[#E2E6E9] cursor-not-allowed transition"
                             disabled
@@ -188,12 +164,11 @@ export const ServicesInYourArea: Component = () => {
                             <ArrowLeftIcon />
                         </button>
 
-                        {/* Right Arrow - Active Style */}
                         <button class="w-12 h-12 bg-[#E3E8EF] rounded-full flex items-center justify-center hover:bg-gray-300 transition">
                             <ArrowRightIcon />
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </section>
     );

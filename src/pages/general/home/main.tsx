@@ -10,6 +10,16 @@ import {
 import p1 from './../../../assets/client/one.svg';
 import p2 from './../../../assets/client/two.svg';
 import p3 from './../../../assets/client/three.svg';
+import baking from './../../../assets/profiles/baking.jpg';
+import carwash from './../../../assets/profiles/carwash.jpg';
+import catering from './../../../assets/profiles/catering.jpg';
+import cleaning from './../../../assets/profiles/cleaning.jpg';
+import cooking from './../../../assets/profiles/cooking.jpg';
+import events from './../../../assets/profiles/events.jpg';
+import officecleaning from './../../../assets/profiles/officecleaning.jpg';
+import plumbing from './../../../assets/profiles/plumbing.jpg';
+import tutoring from './../../../assets/profiles/tutoring.jpg';
+
 import './styles.css';
 import {
     Cleaning,
@@ -98,7 +108,7 @@ const HeroSection: Component = () => {
 
         // Schedule the word change and fade-in animation after 0.5 seconds
         setTimeout(() => {
-            setWord((prev) => (prev === 'Artisans' ? 'Provider' : 'Artisans'));
+            setWord((prev) => (prev === 'Artisans' ? 'Providers' : 'Artisans'));
             setAnimationClass('fade-in'); // Start the fade-in animation
         }, 500);
     };
@@ -319,31 +329,55 @@ const mockServiceCards = [
         title: 'Carpet & Car Washing',
         artisans: 2300,
         services: 1900,
-        imageUrl: 'https://placehold.co/527x550/093b50/white?text=Carpet',
+        imageUrl: carwash,
     },
     {
         title: 'Office Cleaning',
         artisans: 2300,
         services: 1900,
-        imageUrl: 'https://placehold.co/527x550/1376a1/white?text=Office+Clean',
+        imageUrl: officecleaning,
     },
     {
-        title: 'House Warming',
+        title: 'House Cleaning',
         artisans: 2300,
         services: 1900,
-        imageUrl: 'https://placehold.co/527x550/fdad34/white?text=House+Warm',
+        imageUrl: cleaning,
     },
     {
-        title: 'Deep Cleaning Services',
+        title: 'Baking Services',
         artisans: 1500,
         services: 1200,
-        imageUrl: 'https://placehold.co/527x550/5d6b78/white?text=Deep+Clean',
+        imageUrl: baking,
     },
     {
         title: 'Event Setup & Takedown',
         artisans: 1800,
         services: 1600,
-        imageUrl: 'https://placehold.co/527x550/12cfae/white?text=Events',
+        imageUrl: events,
+    },
+    {
+        title: 'Cooking Services',
+        artisans: 1800,
+        services: 1600,
+        imageUrl: cooking,
+    },
+    {
+        title: 'Catering Services',
+        artisans: 1800,
+        services: 1600,
+        imageUrl: catering,
+    },
+    {
+        title: 'Plumbing Services',
+        artisans: 1800,
+        services: 1600,
+        imageUrl: plumbing,
+    },
+    {
+        title: 'Tutoring Services',
+        artisans: 1800,
+        services: 1600,
+        imageUrl: tutoring,
     },
 ];
 
@@ -427,7 +461,7 @@ const HorizontalServiceCard: Component<{
     );
 };
 
-export const ServicesCategory: Component = () => {
+const ServicesCategory: Component = () => {
     const [activeTab, setActiveTab] = createSignal('Mounting');
 
     // Ref for the scrolling container to allow button control
@@ -445,7 +479,7 @@ export const ServicesCategory: Component = () => {
 
     return (
         // <section class="w-full flex justify-center py-20 px-4 md:px-[100px] bg-white">
-        <section class="w-full flex justify-center py-2 px-4 md:px-[1px] bg-white">
+        <section class="w-full flex justify-center py-2 px-4 md:px-[10px] bg-white">
             <div class="w-full flex flex-col items-center gap-16">
                 {/* Heading Block */}
                 <div class="flex flex-col items-center gap-3 text-center max-w-4xl">
@@ -526,6 +560,7 @@ export const ServicesCategory: Component = () => {
         </section>
     );
 };
+
 // Combine all components into the final landing page
 export const LandingPage: Component = () => {
     const {

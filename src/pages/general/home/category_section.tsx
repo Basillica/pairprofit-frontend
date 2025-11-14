@@ -1,25 +1,45 @@
 import { Component, For } from 'solid-js';
+import hvac from './../../../assets/profiles/hvac.jpg';
+import it_support from './../../../assets/profiles/it_support.jpg';
+import carpentary from './../../../assets/profiles/carpentary.jpg';
+import electrician from './../../../assets/profiles/electrician.jpg';
+import baking from './../../../assets/profiles/baking.jpg';
+import carwash from './../../../assets/profiles/carwash.jpg';
+import catering from './../../../assets/profiles/catering.jpg';
+import cleaning from './../../../assets/profiles/cleaning.jpg';
+import cooking from './../../../assets/profiles/cooking.jpg';
+import events from './../../../assets/profiles/events.jpg';
+import officecleaning from './../../../assets/profiles/officecleaning.jpg';
+import plumbing from './../../../assets/profiles/plumbing.jpg';
+import tutoring from './../../../assets/profiles/tutoring.jpg';
 
 // --- Data Structure ---
 interface Category {
     name: string;
     count: number;
     variant: 'default' | 'active';
+    url?: string;
 }
 
 const CATEGORIES: Category[] = [
-    { name: 'Plumbing', count: 143, variant: 'active' },
-    { name: 'Lawn Care', count: 58, variant: 'default' },
-    { name: 'Carpentry', count: 945, variant: 'default' },
-    { name: 'Phone Repair', count: 248, variant: 'default' },
-    { name: 'Appliances', count: 43, variant: 'default' },
-    { name: 'Appliances', count: 90, variant: 'default' },
-    { name: 'Plumbing', count: 57, variant: 'default' },
-    { name: 'Yard work', count: 75, variant: 'default' },
-    { name: 'Electrician', count: 12, variant: 'default' }, // Highlighted variant
-    { name: 'Gift Wrapper', count: 18, variant: 'default' },
-    { name: 'Cooking', count: 48, variant: 'default' },
-    { name: 'Cooking', count: 48, variant: 'default' },
+    { name: 'Plumbing', count: 143, variant: 'active', url: plumbing },
+    { name: 'Carpentry', count: 945, variant: 'default', url: carpentary },
+    { name: 'Phone Repair', count: 248, variant: 'default', url: it_support },
+    { name: 'Electrician', count: 12, variant: 'default', url: electrician }, // Highlighted variant
+    { name: 'Cooking', count: 48, variant: 'default', url: cooking },
+    { name: 'Cleaning', count: 320, variant: 'default', url: cleaning },
+    { name: 'Catering', count: 27, variant: 'default', url: catering },
+    { name: 'Baking Services', count: 1500, variant: 'default', url: baking },
+    { name: 'Event Setup', count: 85, variant: 'default', url: events },
+    { name: 'Car Wash', count: 60, variant: 'default', url: carwash },
+    {
+        name: 'Office Cleaning',
+        count: 110,
+        variant: 'default',
+        url: officecleaning,
+    },
+    { name: 'Tutoring', count: 200, variant: 'default', url: tutoring },
+    { name: 'HVAC', count: 34, variant: 'default', url: hvac },
 ];
 
 // --- Sub-Components ---
@@ -75,7 +95,7 @@ const CategoryChip: Component<Category> = (props) => {
             {/* Image Placeholder */}
             <img
                 class="w-12 h-12 rounded-full"
-                src="https://placehold.co/48x48"
+                src={props.url}
                 alt={`${props.name} category icon`}
             />
 
@@ -120,6 +140,7 @@ export const ArtisanCategorySection: Component = () => (
                             name={category.name}
                             count={category.count}
                             variant={category.variant}
+                            url={category.url}
                         />
                     )}
                 </For>

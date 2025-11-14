@@ -1,4 +1,10 @@
 import { Component, For } from 'solid-js';
+import person1 from './../../../assets/persons/person1.jpg';
+import person2 from './../../../assets/persons/person2.jpg';
+import person3 from './../../../assets/persons/person3.jpg';
+import person4 from './../../../assets/persons/person4.jpg';
+import person5 from './../../../assets/persons/person5.jpg';
+import person6 from './../../../assets/persons/person6.jpg';
 
 // --- Data Structure ---
 interface Artisan {
@@ -19,7 +25,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.5,
         reviewCount: 234,
         hourlyRate: 12,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Eleanor',
+        imageUrl: person1,
     },
     {
         name: 'Wade Warren',
@@ -28,7 +34,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.5,
         reviewCount: 234,
         hourlyRate: 12,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Wade',
+        imageUrl: person2,
     },
     {
         name: 'Jane Cooper',
@@ -37,7 +43,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.5,
         reviewCount: 234,
         hourlyRate: 12,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Jane',
+        imageUrl: person3,
     },
     {
         name: 'Cameron Williamson',
@@ -46,7 +52,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.8,
         reviewCount: 198,
         hourlyRate: 15,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Cameron',
+        imageUrl: person4,
     },
     {
         name: 'Jerome Bell',
@@ -55,7 +61,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.2,
         reviewCount: 112,
         hourlyRate: 10,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Jerome',
+        imageUrl: person5,
     },
     {
         name: 'Jenny Wilson',
@@ -64,7 +70,7 @@ const ARTISANS_DATA: Artisan[] = [
         rating: 4.9,
         reviewCount: 301,
         hourlyRate: 20,
-        imageUrl: 'https://placehold.co/158x181/1376A1/ffffff?text=Jenny',
+        imageUrl: person6,
     },
 ];
 
@@ -193,8 +199,6 @@ const NavArrow: Component<{
 
 export const ArtisanRecruitmentSection: Component = () => {
     let cardRowRef: HTMLDivElement | undefined;
-
-    // Define the scroll step: Card width (~300px) + Gap (24px) = 324px
     const SCROLL_STEP = 324;
 
     const goToPrev = () => {

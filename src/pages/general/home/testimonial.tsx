@@ -1,4 +1,17 @@
-import { Component, For, createSignal } from 'solid-js';
+import {
+    Component,
+    For,
+    createEffect,
+    createMemo,
+    createSignal,
+} from 'solid-js';
+import person1 from './../../../assets/persons/person1.jpg';
+import person2 from './../../../assets/persons/person2.jpg';
+import person3 from './../../../assets/persons/person3.jpg';
+import person4 from './../../../assets/persons/person4.jpg';
+import person5 from './../../../assets/persons/person5.jpg';
+import person6 from './../../../assets/persons/person6.jpg';
+import person7 from './../../../assets/persons/person7.jpg';
 import styles from './styles.module.css';
 
 // --- Data Structure ---
@@ -16,64 +29,64 @@ const TESTIMONIAL_DATA: Testimonial[] = [
         name: 'Sarah Chen',
         role: 'Homeowner',
         rating: 2,
-        avatar: 'https://placehold.co/64x64/FFC0CB/FF69B4',
+        avatar: person1,
     },
     {
         quote: 'The platform is intuitive and the selection of verified craftsmen is excellent. My recent plumbing job was done perfectly and on budget.',
         name: 'David Lee',
         role: 'Tenant',
         rating: 4,
-        avatar: 'https://placehold.co/64x64/ADD8E6/00008B',
+        avatar: person2,
     },
     {
         quote: 'Excellent service and great value for money. The support team is also very responsive if you ever need help with a booking.',
         name: 'Emily Carter',
         role: 'Realtor',
         rating: 5,
-        avatar: 'https://placehold.co/64x64/90EE90/006400',
+        avatar: person3,
     },
     {
         quote: 'As a property manager, I need reliable artisans quickly. PairProfit has been a game changer. The quality of professionals and customer service is outstanding',
         name: 'Herbert Kunkle',
         role: 'Property Manager',
         rating: 4,
-        avatar: 'https://placehold.co/64x64/D0E4EC/1376A1',
+        avatar: person4,
     }, // Active in the visual
     {
         quote: 'I use PairProfit for all my rental property maintenance. It saves me hours of searching and vetting contractors every month.',
         name: 'Michael Brown',
         role: 'Investor',
         rating: 3,
-        avatar: 'https://placehold.co/64x64/E6E6FA/483D8B',
+        avatar: person5,
     },
     {
         quote: 'Switched from a competitor and never looked back. PairProfit’s pricing transparency and quality guarantees are unmatched.',
         name: 'Jessica Alba',
         role: 'Designer',
         rating: 4,
-        avatar: 'https://placehold.co/64x64/FFA07A/CD5C5C',
+        avatar: person6,
     },
     {
         quote: 'From small fixes to major renovations, this is the only tool I need. The filtering by artisan type is a life saver.',
         name: 'Ryan Gosling',
         role: 'Developer',
         rating: 5,
-        avatar: 'https://placehold.co/64x64/F0E68C/B8860B',
+        avatar: person7,
     },
 ];
 
-// --- Sub-Components ---
 const StarRating: Component<{ rating: number }> = (props) => {
-    // Generate an array of indices to iterate over
-    const starIndices = Array.from({ length: props.rating }, (_, i) => i);
-    console.log(props.rating, 'ääääääääääääääää');
-    // This is the correct way to generate multiple, distinct JSX elements in a loop
+    const starIndices = createMemo(() => {
+        const numStars = Math.max(0, Math.min(5, Math.round(props.rating)));
+        return Array.from({ length: numStars }, (_, i) => i);
+    });
+
     return (
         <div class="flex justify-start items-start gap-1">
-            <For each={starIndices}>
+            <For each={starIndices()}>
                 {() => (
                     <svg
-                        class="w-8 h-8" // Using class for styling
+                        class="w-8 h-8"
                         width="32"
                         height="32"
                         viewBox="0 0 32 32"
@@ -96,8 +109,6 @@ const NavArrow: Component<{
     onClick: () => void;
 }> = (props) => {
     const isPrev = props.direction === 'prev';
-
-    // Styling based on the provided HTML structure
     const containerClasses = isPrev
         ? 'bg-[#EEF2F6] border border-[#E2E6E9]'
         : 'bg-[#E3E8EF] border border-[#EEF2F6]';
@@ -120,7 +131,6 @@ const NavArrow: Component<{
                     isPrev ? 'rotate-180' : ''
                 }`}
             >
-                {/* Simplified inner arrow icon */}
                 <svg
                     class="w-4 h-4"
                     viewBox="0 0 16 16"
@@ -144,40 +154,50 @@ const AvatarRing: Component<{
     testimonials: Testimonial[];
     currentIndex: number;
     onAvatarClick: (index: number) => void;
-}> = (props) => (
-    <div class={styles.container}>
-        <For each={props.testimonials}>
-            {(testimonial, index) => {
-                const isActive = index() === props.currentIndex;
-                return (
-                    <button
-                        onClick={() => props.onAvatarClick(index())}
-                        classList={{
-                            [styles.avatar]: true,
-                            [styles.avatarNormal]: !isActive,
-                            [styles.avatarActive]: isActive,
-                            [styles.scale100]: isActive,
-                        }}
-                        aria-label={`View testimonial from ${testimonial.name}`}
-                    >
-                        <img
-                            class={`${styles.avatar} ${styles.avatarImage}`}
-                            src={testimonial.avatar}
-                            alt={`Avatar of ${testimonial.name}`}
-                        />
-                    </button>
-                );
-            }}
-        </For>
-    </div>
-);
+}> = (props) => {
+    const [currentIndex, setCurrentIndex] = createSignal(props.currentIndex);
+    createEffect(() => {
+        setCurrentIndex(props.currentIndex);
+    });
 
-// --- Main Component: Testimonial Section ---
+    const onAvatarClick = (index: number) => {
+        setCurrentIndex(index);
+        props.onAvatarClick(index);
+        console.log('Avatar clicked:', index);
+    };
+
+    return (
+        <div class={styles.container}>
+            <For each={props.testimonials}>
+                {(testimonial, index) => {
+                    return (
+                        <button
+                            onClick={() => onAvatarClick(index())}
+                            classList={{
+                                [styles.avatar]: true,
+                                [styles.avatarNormal]:
+                                    index() !== currentIndex(),
+                                [styles.avatarActive]:
+                                    index() === currentIndex(),
+                                [styles.scale100]: index() === currentIndex(),
+                            }}
+                            aria-label={`View testimonial from ${testimonial.name}`}
+                        >
+                            <img
+                                class={`${styles.avatar} ${styles.avatarImage}`}
+                                src={testimonial.avatar}
+                                alt={`Avatar of ${testimonial.name}`}
+                            />
+                        </button>
+                    );
+                }}
+            </For>
+        </div>
+    );
+};
 
 export const TestimonialSection: Component = () => {
-    // Start at index 3 to match the initially highlighted 4th avatar in the visual
     const [currentIndex, setCurrentIndex] = createSignal(3);
-
     const activeTestimonial = () => TESTIMONIAL_DATA[currentIndex()];
 
     const goToPrev = () => {
@@ -191,7 +211,7 @@ export const TestimonialSection: Component = () => {
         setCurrentIndex((prev) => (prev + 1) % TESTIMONIAL_DATA.length);
     };
 
-    const goToTestimonial = (index: number) => {
+    const onAvatarClick = (index: number) => {
         setCurrentIndex(index);
     };
 
@@ -222,7 +242,7 @@ export const TestimonialSection: Component = () => {
                     <AvatarRing
                         testimonials={TESTIMONIAL_DATA}
                         currentIndex={currentIndex()}
-                        onAvatarClick={goToTestimonial}
+                        onAvatarClick={onAvatarClick}
                     />
 
                     {/* Testimonial Card */}

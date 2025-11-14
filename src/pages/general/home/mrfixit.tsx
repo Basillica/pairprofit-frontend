@@ -181,66 +181,45 @@ const AiChatMockup: Component = () => (
             {/* Right: Profile Controls */}
             <div class="w-full lg:w-auto p-4 lg:p-0 lg:pr-12 flex justify-end items-center gap-8 border-t lg:border-t-0 border-[#EEF2F6] lg:border-l">
                 {/* Switch to Client */}
-                <div class="hidden md:flex items-center gap-3">
-                    {/* Icon Placeholder */}
+                <button class="flex items-center text-gray-600 hover:text-gray-800 text-sm">
+                    <i class="fas fa-sync-alt mr-0 sm:mr-2 pl-2"></i>
+                    <span class="hidden sm:inline">Switch to Client</span>{' '}
+                    {/* Text hidden on mobile */}
+                </button>
+
+                <button class="p-2 text-gray-500 hover:text-gray-700 relative">
                     <svg
-                        class="w-4 h-4 text-[#364152]"
-                        viewBox="0 0 16 16"
+                        width="18"
+                        height="19"
+                        viewBox="0 0 18 19"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                        <rect
-                            x="1.33"
-                            y="1.33"
-                            width="13.33"
-                            height="13.33"
-                            rx="2"
-                            stroke="currentColor"
+                        <path
+                            d="M12.75 15.875H5.25C3 15.875 1.5 14.75 1.5 12.125V6.875C1.5 4.25 3 3.125 5.25 3.125H12.75C15 3.125 16.5 4.25 16.5 6.875V12.125C16.5 14.75 15 15.875 12.75 15.875Z"
+                            stroke="#697586"
                             stroke-width="1.5"
+                            stroke-miterlimit="10"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                        <path
+                            d="M12.75 7.25L10.4025 9.125C9.63 9.74 8.3625 9.74 7.59 9.125L5.25 7.25"
+                            stroke="#697586"
+                            stroke-width="1.5"
+                            stroke-miterlimit="10"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
                         />
                     </svg>
-                    <span class="text-base font-medium text-[#4B5565]">
-                        Switch to Client
-                    </span>
-                </div>
-
-                {/* Notification/Settings Icons (Hidden on small mobile) */}
-                <div class="hidden sm:flex justify-start items-center gap-6">
-                    {/* Icons Placeholder: Message, Status Dots, Setting */}
-                    <div class="flex justify-start items-center gap-3">
-                        <svg
-                            class="w-5 h-5 text-[#697586]"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                        <div class="w-1.5 h-1.5 bg-[#34A853] rounded-full"></div>
-                        <div class="w-1.5 h-1.5 bg-[#EA4335] rounded-full"></div>
-                        <svg
-                            class="w-5 h-5 text-[#697586]"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        >
-                            <path d="M12.22 2h-.44A2 2 0 0 0 9.8 3.28L8.7 4.97A2 2 0 0 1 6.96 5.8L5.13 6.64A2 2 0 0 0 3.27 8.35L2.17 10.04A2 2 0 0 0 2 11.5v1A2 2 0 0 0 2.17 12.96L3.27 14.65A2 2 0 0 0 5.13 15.48L6.96 16.32A2 2 0 0 1 8.7 17.03l1.1.95A2 2 0 0 0 12.22 19h.44a2 2 0 0 0 1.95-1.28l1.1-1.95A2 2 0 0 1 17.04 15.8L18.87 14.96A2 2 0 0 0 20.73 13.25L21.83 11.56A2 2 0 0 0 22 10v-1a2 2 0 0 0-.17-1.46L20.73 6.35A2 2 0 0 0 18.87 5.52L17.04 4.68A2 2 0 0 1 15.3 3.97L14.2 2.02A2 2 0 0 0 12.22 2z"></path>
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    </div>
-                </div>
+                    <span class="absolute top-2 right-1 block h-1 w-1 rounded-full bg-green-500 ring-1 ring-white"></span>
+                </button>
 
                 {/* Profile Dropdown */}
                 <div class="flex justify-start items-center gap-2">
                     <img
                         class="w-12 h-12 rounded-full"
-                        src="https://placehold.co/50x50?text=S"
+                        src={`https://picsum.photos/200?random=${Math.random()}`}
                         alt="User Avatar"
                     />
                     <div class="hidden md:flex flex-col justify-start items-start">
@@ -404,14 +383,27 @@ const AiChatMockup: Component = () => (
                 {/* 3. Bottom Input Bar */}
                 <div class="self-stretch p-6 bg-[#F8FAFC] border-t border-[#CDD5DF] flex justify-between items-center">
                     {/* Attachment Icon */}
-                    <div class="flex justify-start items-center gap-4">
+                    <div class="w-6 h-6 relative text-gray-600 flex-shrink-0 cursor-pointer">
+                        <i class="fa-solid fa-paperclip fa-lg"></i>
+                    </div>
+                    <div
+                        class="w-6 h-6 relative text-gray-600 flex-shrink-0 cursor-pointer"
+                        title="Select Emoji"
+                    >
+                        {/* Simple Smiley Face Icon */}
                         <svg
-                            class="w-6 h-6 fill-[#697586]"
                             viewBox="0 0 24 24"
                             fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="w-full h-full"
                         >
-                            <path d="M16 9h-3V5h-2v4H8l4 4 4-4zM14 18h-4v-1h4v1zM18 6h-2V4h2v2zM8 4H6v2h2V4zM18 10h-2V8h2v2zM8 8H6v2h2V8zM18 12h-2v-2h2v2zM8 10H6v2h2v-2zM18 14h-2v-2h2v2zM8 12H6v2h2v-2zM18 16h-2v-2h2v2zM8 14H6v2h2v-2zM18 18h-2v-2h2v2zM8 16H6v2h2v-2z" />
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
                         </svg>
                     </div>
 
@@ -423,19 +415,11 @@ const AiChatMockup: Component = () => (
                     </div>
 
                     {/* Send Button */}
-                    <button class="w-10 h-10 rounded-3xl bg-[#1376A1] flex items-center justify-center hover:bg-[#106283] transition">
-                        {/* Send Icon Placeholder (Simplified) */}
-                        <svg
-                            class="w-6 h-6 fill-white"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                                fill="currentColor"
-                            />
-                        </svg>
+                    <button class="w-10 h-10 relative bg-[#1376A1] rounded-full flex items-center justify-center flex-shrink-0 cursor-pointer">
+                        <i
+                            class="fa-regular fa-paper-plane fa-lg"
+                            style={'color: white'}
+                        ></i>
                     </button>
                 </div>
             </div>
