@@ -5,8 +5,6 @@ export const Cleaning: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}
@@ -27,8 +25,6 @@ export const Settings: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}
@@ -51,8 +47,6 @@ export const Transport: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}
@@ -80,8 +74,6 @@ export const Personal: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}
@@ -118,8 +110,6 @@ export const Event: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}
@@ -190,8 +180,6 @@ export const Trending: Component<{
 }> = (props) => {
     return (
         <svg
-            // width="24"
-            // height="24"
             class={`w-6 h-6 ${
                 props.active ? 'text-[#1376a1]' : 'text-gray-800'
             }`}

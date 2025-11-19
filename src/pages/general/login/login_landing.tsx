@@ -9,35 +9,26 @@ export const LandingLogin: Component<{
     const handleSubmit = (e: any) => {
         e.preventDefault();
         if (props.loginStore.activeProfile === AccountEnum.Client) {
-            props.loginStore.updateStore(
-                'currentStep',
+            props.loginStore.setCurrentStep(
                 StepTransitions.ClientCreateAccount
             );
         } else {
-            props.loginStore.updateStore(
-                'currentStep',
+            props.loginStore.setCurrentStep(
                 StepTransitions.ArtisanCreateAccount
             );
         }
+    };
 
-        console.log(
-            'Form submitted. Selected Profile:',
-            props.loginStore.activeProfile
-        );
+    const handleProfileSelection = (accountType: AccountEnum) => {
+        props.loginStore.setActiveProfile(accountType);
     };
 
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
-                {/* <div class="flex items-center text-white text-2xl font-bold tracking-wide mb-10">
-                    <Logo />
-                    <span class="text-2xl font-bold text-gray-900 text-center leading-snug ml-2">
-                        Pairprofit
-                    </span>
-                </div> */}
                 <a
                     class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent transition"
                     href="/"
@@ -57,16 +48,14 @@ export const LandingLogin: Component<{
                         <button
                             type="button"
                             onClick={() =>
-                                props.loginStore.updateStore(
-                                    'activeProfile',
-                                    AccountEnum.Client
-                                )
+                                handleProfileSelection(AccountEnum.Client)
                             }
                             class={`
                                 w-full p-8 rounded-xl flex flex-col items-center gap-5 cursor-pointer border-2
                                 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#1376A1]/50 
                                 ${
-                                    props.loginStore.activeProfile === 'Client'
+                                    props.loginStore.activeProfile ===
+                                    AccountEnum.Client
                                         ? 'border-[#1376A1] bg-[#D0E4EC] shadow-md'
                                         : 'border-gray-300 bg-white hover:border-[#1376A1]/50 hover:shadow-sm'
                                 }
@@ -97,10 +86,7 @@ export const LandingLogin: Component<{
                         <button
                             type="button"
                             onClick={() =>
-                                props.loginStore.updateStore(
-                                    'activeProfile',
-                                    AccountEnum.Provider
-                                )
+                                handleProfileSelection(AccountEnum.Provider)
                             }
                             class={`
                                 w-full p-8 rounded-xl flex flex-col items-center gap-5 cursor-pointer border-2

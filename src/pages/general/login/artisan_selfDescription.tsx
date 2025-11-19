@@ -1,4 +1,4 @@
-import { Component, createSignal, For, Show } from 'solid-js';
+import { Component, createMemo, createSignal, For, Show } from 'solid-js';
 import { LoginStore, StepTransitions } from './types';
 
 interface LanguageEntry {
@@ -11,38 +11,48 @@ interface LanguageEntry {
 export const ArtisansSelfDescription: Component<{
     loginStore: LoginStore;
 }> = (props) => {
-    const [description, setDescription] = createSignal('');
     const [currentLanguage, setCurrentLanguage] = createSignal('');
     const [currentProficiency, setCurrentProficiency] = createSignal('');
 
+    const isFormValid = createMemo(() => {
+        const { description, languages } = props.loginStore;
+
+        const isDescriptionValid = description.trim().length >= 10;
+        const areLanguagesValid = languages.length > 0;
+
+        return isDescriptionValid && areLanguagesValid;
+    }, [props.loginStore]);
+
     const availableLanguages = [
-        'Spanish',
-        'French',
-        'German',
+        'Igbo',
+        'Hausa',
+        'Yoruba',
+        'English',
         'Mandarin',
-        'Japanese',
+        'French',
     ];
-    const proficiencies = ['Beginner', 'Intermediate', 'Advanced', 'Native'];
-    const isFormValid = () =>
-        description().length > 10 && selectedLanguages().length > 0;
-    const [selectedLanguages, setSelectedLanguages] = createSignal<
-        LanguageEntry[]
-    >([
-        {
-            id: Date.now(),
-            language: 'English',
-            proficiency: 'Native',
-            isRemovable: false,
-        },
-    ]);
+
+    const proficiencies = ['Basic', 'Intermediate', 'Advanced', 'Native'];
 
     const handleSubmit = (e: Event) => {
         e.preventDefault();
+        const languageDuplicates = props.loginStore.languages.map(
+            (entry) => entry.language
+        );
+        const hasDuplicates =
+            new Set(languageDuplicates).size !== languageDuplicates.length;
+
+        if (!isFormValid() || hasDuplicates) {
+            console.log('Form is invalid or has duplicate languages.');
+            return;
+        }
+
         props.loginStore.updateStore(
             'currentStep',
             StepTransitions.ArtisanVerificationNTrust
         );
     };
+
     const isInputReady = () =>
         currentLanguage() !== '' && currentProficiency() !== '';
 
@@ -52,33 +62,51 @@ export const ArtisansSelfDescription: Component<{
             StepTransitions.ArtisanLocationNAvailability
         );
     };
+
     const addLanguage = () => {
         const lang = currentLanguage();
         const prof = currentProficiency();
         if (lang && prof) {
             // Check if the language is already added
-            const isDuplicate = selectedLanguages().some(
+            const isDuplicate = props.loginStore.languages.some(
                 (entry) => entry.language === lang
             );
-            if (isDuplicate) {
-                console.log(`${lang} is already listed.`);
-                return;
+            if (!isDuplicate) {
+                const newEntry: LanguageEntry = {
+                    id: Date.now(),
+                    language: lang,
+                    proficiency: prof,
+                    isRemovable: true,
+                };
+                props.loginStore.updateStore('languages', [
+                    ...props.loginStore.languages,
+                    newEntry,
+                ]);
+                // Reset inputs
+                setCurrentLanguage('');
+                setCurrentProficiency('');
             }
-            const newEntry: LanguageEntry = {
-                id: Date.now(),
-                language: lang,
-                proficiency: prof,
-                isRemovable: true,
-            };
-            setSelectedLanguages((prev) => [...prev, newEntry]);
-            // Reset inputs
-            setCurrentLanguage('');
-            setCurrentProficiency('');
         }
     };
+
     const deleteLanguage = (id: number) => {
-        setSelectedLanguages((prev) => prev.filter((entry) => entry.id !== id));
+        props.loginStore.updateStore(
+            'languages',
+            props.loginStore.languages.filter((entry) => entry.id !== id)
+        );
     };
+
+    const handleDescription = (
+        e: InputEvent & {
+            currentTarget: HTMLTextAreaElement;
+            target: HTMLTextAreaElement;
+        }
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+        props.loginStore.updateStore('description', e.currentTarget.value);
+    };
+
     const totalSteps = 5;
     const currentStep = 4;
     const progressWidth = `${(currentStep / totalSteps) * 100}%`;
@@ -86,7 +114,7 @@ export const ArtisansSelfDescription: Component<{
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
@@ -131,10 +159,10 @@ export const ArtisansSelfDescription: Component<{
                     </div>
                     <div class="w-full flex flex-col items-center justify-center gap-10">
                         <div class="w-full flex flex-col items-center gap-1">
-                            <h1 class="w-full text-center text-dark-text text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
+                            <h1 class="w-full text-center text-gray-900 dark:text-white text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
                                 Tell us a little about yourself
                             </h1>
-                            <p class="text-center text-gray-text text-sm md:text-base font-normal leading-relaxed">
+                            <p class="text-center text-gray-600 dark:text-gray-400 text-sm md:text-base font-normal leading-relaxed">
                                 This will help clients trust and know you
                                 better.
                             </p>
@@ -146,32 +174,22 @@ export const ArtisansSelfDescription: Component<{
                             {/* Main Form Section */}
                             <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
                                 {/* 1. Description Textarea (remains the same) */}
-                                <div style="align-self: stretch; height: 115px; border-radius: 8px; outline: 1px #CDD5DF solid; outline-offset: -0.50px; display: flex;">
+                                <div class="w-full h-[115px] border border-gray-300 rounded-lg flex dark:border-gray-600 dark:bg-gray-800">
                                     <textarea
-                                        value={description()}
-                                        onInput={(e) =>
-                                            setDescription(
-                                                e.currentTarget.value
-                                            )
-                                        }
+                                        value={props.loginStore.description}
+                                        onInput={handleDescription}
                                         placeholder="Tell clients about your craft"
                                         rows={5}
-                                        style="
-                                            flex-grow: 1; 
-                                            padding: 12px; 
-                                            border: none; 
-                                            border-radius: 8px;
-                                            font-size: 14px; 
-                                            font-family: Geist; 
-                                            line-height: 22.40px;
-                                            color: #1E1E1E;
-                                            resize: none; 
-                                            box-sizing: border-box;
+                                        class="
+                                            flex-grow p-3 border-none rounded-lg text-sm font-normal outline-none resize-none box-border
+                                            bg-white dark:bg-gray-800
+                                            text-[#1E1E1E] dark:text-white
+                                            placeholder-gray-500 dark:placeholder-gray-400
                                         "
                                     />
                                 </div>
                                 {/* 2. List of Selected Languages */}
-                                <For each={selectedLanguages()}>
+                                <For each={props.loginStore.languages}>
                                     {(entry) => (
                                         <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
                                             {/* Language and Proficiency Containers */}
@@ -179,7 +197,7 @@ export const ArtisansSelfDescription: Component<{
                                                 {/* Language Display (Left Slot) */}
                                                 <div style="flex: 1; max-width: 272px; height: 46px; padding: 12px; border-radius: 8px; outline: 1px #CDD5DF solid; outline-offset: -0.50px; justify-content: flex-start; align-items: center; display: flex; background: ${entry.isRemovable ? '#FFFFFF' : '#F3F6F9'};">
                                                     <div style="text-align: left;">
-                                                        <span style="text-align: center; color: #697586; font-size: 14px; font-family: Geist; font-weight: 400; line-height: 22.40px; word-wrap: break-word">
+                                                        <span style="text-align: center; color: #697586; font-size: 14px; font-weight: 400; line-height: 22.40px; word-wrap: break-word">
                                                             {entry.language}
                                                         </span>
                                                         {/* Show the required message only for the non-removable language */}
@@ -188,7 +206,7 @@ export const ArtisansSelfDescription: Component<{
                                                                 !entry.isRemovable
                                                             }
                                                         >
-                                                            <span style="color: #697586; font-size: 12px; font-family: Geist; font-weight: 400; line-height: 19.20px; word-wrap: break-word">
+                                                            <span style="color: #697586; font-size: 12px; font-weight: 400; line-height: 19.20px; word-wrap: break-word">
                                                                 &nbsp;(all
                                                                 profile includes
                                                                 this)
@@ -199,7 +217,7 @@ export const ArtisansSelfDescription: Component<{
 
                                                 {/* Proficiency Display (Right Slot) */}
                                                 <div style="flex: 1; max-width: 272px; height: 46px; padding: 12px; border-radius: 8px; outline: 1px #CDD5DF solid; outline-offset: -0.50px; justify-content: space-between; align-items: center; display: flex; background: ${entry.isRemovable ? '#FFFFFF' : '#F3F6F9'};">
-                                                    <div style="text-align: center; color: #697586; font-size: 14px; font-family: Geist; font-weight: 400; line-height: 22.40px; word-wrap: break-word">
+                                                    <div style="text-align: center; color: #697586; font-size: 14px; font-weight: 400; line-height: 22.40px; word-wrap: break-word">
                                                         {entry.proficiency}
                                                     </div>
                                                 </div>
@@ -237,14 +255,7 @@ export const ArtisansSelfDescription: Component<{
                                 </For>
 
                                 {/* 3. Dropdowns for Adding New Language (Hidden when not adding) */}
-                                <Show
-                                    when={
-                                        selectedLanguages().length
-                                        // selectedLanguages().filter(
-                                        //     (e) => e.isRemovable
-                                        // ).length
-                                    }
-                                >
+                                <Show when={props.loginStore.languages.length}>
                                     <div style="width: 100%; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
                                         {/* Language Dropdown Input */}
                                         <div style="width: 50%; height: 46px; border-radius: 8px; outline: 1px #CDD5DF solid; outline-offset: -0.50px;">
@@ -256,7 +267,7 @@ export const ArtisansSelfDescription: Component<{
                                                         e.currentTarget.value
                                                     );
                                                 }}
-                                                style="width: 100%; height: 100%; padding: 12px; border: none; border-radius: 8px; background-color: transparent; font-size: 14px; font-family: Geist; line-height: 22.40px; color: #697586; appearance: none; cursor: pointer;"
+                                                style="width: 100%; height: 100%; padding: 12px; border: none; border-radius: 8px; background-color: transparent; font-size: 14px; line-height: 22.40px; color: #697586; appearance: none; cursor: pointer;"
                                             >
                                                 <option
                                                     value=""
@@ -285,7 +296,7 @@ export const ArtisansSelfDescription: Component<{
                                                         e.currentTarget.value
                                                     );
                                                 }}
-                                                style="width: 100%; height: 100%; padding: 12px; border: none; border-radius: 8px; background-color: transparent; font-size: 14px; font-family: Geist; line-height: 22.40px; color: #697586; appearance: none; cursor: pointer;"
+                                                style="width: 100%; height: 100%; padding: 12px; border: none; border-radius: 8px; background-color: transparent; font-size: 14px; line-height: 22.40px; color: #697586; appearance: none; cursor: pointer;"
                                             >
                                                 <option
                                                     value=""
@@ -362,7 +373,7 @@ export const ArtisansSelfDescription: Component<{
                                             isInputReady()
                                                 ? '#1376A1'
                                                 : '#9AA4B2'
-                                        }; font-size: 14px; font-family: Geist; font-weight: 400; line-height: 22.40px; word-wrap: break-word`}
+                                        }; font-size: 14px; font-weight: 400; line-height: 22.40px; word-wrap: break-word`}
                                     >
                                         Add a language
                                     </div>
@@ -393,8 +404,7 @@ export const ArtisansSelfDescription: Component<{
                                     color: ${
                                         isFormValid() ? '#FFFFFF' : '#9AA4B2'
                                     }; 
-                                    font-size: 16px; 
-                                    font-family: Geist; 
+                                    font-size: 16px;
                                     font-weight: 600; 
                                     line-height: 25.60px;
                                     transition: background-color 0.2s;

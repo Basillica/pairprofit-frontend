@@ -4,8 +4,7 @@ import artisan_onboarding from './../../../assets/artisan_welcome_back.svg';
 import artisan_create_account from './../../../assets/artisan_create_account.svg';
 import login_css from './style.module.css';
 import { Switch, Match, createMemo, Component, onMount } from 'solid-js';
-import { createStore } from 'solid-js/store';
-import { LoginStore, StepTransitions, AccountEnum } from './types';
+import { createLoginStore, StepTransitions, AccountEnum } from './types';
 import { SignUpForm } from './client_create_account';
 import { LandingLogin } from './login_landing';
 import { OTPCard } from './otp_card';
@@ -64,22 +63,13 @@ const imageConfig: ImageConfigMap = {
 
 export const LoginPage: Component = () => {
     const [searchParams] = useSearchParams();
-    const [loginStore, setLoginStore] = createStore<LoginStore>({
-        activeProfile: AccountEnum.Client,
-        users: [],
-        currentStep: StepTransitions.ClientLanding,
-        updateStore: (key: string, value: string) => {
-            setLoginStore((state) => ({ ...state, [key]: value }));
-        },
-        updatingPassword: false,
-    });
-
-    // 1. Memoized calculation of the current step's image config
+    const loginStore = createLoginStore();
+    // Memoized calculation of the current step's image config
     const currentImageConfig = createMemo(
         () => imageConfig[loginStore.currentStep]
     );
 
-    // 2. Memoized calculation of the image source
+    // Memoized calculation of the image source
     const currentImageSource = createMemo(() => {
         const config = currentImageConfig();
         if (!config) return null;
@@ -89,7 +79,7 @@ export const LoginPage: Component = () => {
             : config.artisanImage;
     });
 
-    // 3. Memoized grid layout class
+    // Memoized grid layout class
     const gridLayoutClass = createMemo(() => {
         const hasImage = !!currentImageConfig();
         return hasImage ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
@@ -98,9 +88,9 @@ export const LoginPage: Component = () => {
     onMount(() => {
         const accountType = () => searchParams.type;
         if (accountType() === 'artisan') {
-            setLoginStore('activeProfile', AccountEnum.Provider);
+            loginStore.setActiveProfile(AccountEnum.Provider);
         } else {
-            setLoginStore('activeProfile', AccountEnum.Client);
+            loginStore.setActiveProfile(AccountEnum.Client);
         }
     });
 
@@ -119,8 +109,8 @@ export const LoginPage: Component = () => {
                 </div>
             )}
 
-            {/* 2. RIGHT COLUMN: FORM CONTENT */}
-            <div class="bg-[#FCFCFD] flex justify-center p-4 font-sans w-full md:items-start md:pt-20">
+            {/* RIGHT COLUMN: FORM CONTENT */}
+            <div class="bg-[#FCFCFD] dark:bg-gray-900 flex justify-center p-4 font-sans w-full md:items-start md:pt-20">
                 <div class="w-full md:max-w-[720px]">
                     <Switch>
                         {/* Client Transitions */}

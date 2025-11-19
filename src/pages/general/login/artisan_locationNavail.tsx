@@ -7,6 +7,7 @@ import {
     Match,
     For,
     Setter,
+    createMemo,
 } from 'solid-js';
 import { LocationSearchResult, LoginStore, StepTransitions } from './types';
 import L from 'leaflet';
@@ -29,16 +30,17 @@ L.Marker.prototype.options.icon = L.icon({
 type Coordinates = { lat: number; lng: number };
 type AvailabilityOption = { label: string; value: string };
 const availabilityOptions: AvailabilityOption[] = [
-    { label: 'Full time', value: 'full-time' },
-    { label: 'Part time', value: 'part-time' },
+    { label: 'Full-time', value: 'full-time' },
+    { label: 'Part-time', value: 'part-time' },
     { label: 'Evenings/Weekends', value: 'evenings-weekends' },
     { label: 'Emergency calls', value: 'emergency-calls' },
+    { label: 'Project-based', value: 'project-based' },
 ];
 
 export const ArtisansLocationNAvialability: Component<{
     loginStore: LoginStore;
 }> = (props) => {
-    const [availability, setAvailability] = createSignal<string[]>([]);
+    const [availabilities, setAvailabilities] = createSignal<string[]>([]);
     const defaultCoords: Coordinates = { lat: 40.7128, lng: -74.006 };
     const [map, setMap] = createSignal<L.Map>();
     const [marker, setMarker] = createSignal<L.Marker<any>>();
@@ -49,8 +51,19 @@ export const ArtisansLocationNAvialability: Component<{
     >([]);
     const [locationPermission, setLocationPermission] = createSignal<
         'prompt' | 'granted' | 'denied' | 'default' | 'pending'
-    >('prompt'); // Start as 'pending'
+    >('prompt');
     let mapContainerRef: HTMLDivElement | undefined;
+
+    const isFormValid = createMemo(() => {
+        const { address, availabilities } = props.loginStore;
+        const isAddressPresent = address.trim() !== '';
+        const areAvailabilitiesSelected = availabilities.length > 0;
+        return (
+            isAddressPresent &&
+            areAvailabilitiesSelected &&
+            locationPermission() === 'granted'
+        );
+    }, [props.loginStore]);
 
     const reverseGeocodeAndUpdate = async (lat: number, lng: number) => {
         setCoordinates({ lat, lng });
@@ -68,6 +81,7 @@ export const ArtisansLocationNAvialability: Component<{
                 `Location at [${lat.toFixed(4)}, ${lng.toFixed(4)}]`;
             const street = data.address?.road || data.address?.pedestrian || '';
             setSearchAddress(fullAddress);
+            props.loginStore.updateStore('address', fullAddress);
             console.log('New Street:', street); // You can use this for a separate street input if needed
             return fullAddress;
         } catch (error) {
@@ -76,6 +90,7 @@ export const ArtisansLocationNAvialability: Component<{
                 4
             )}, ${lng.toFixed(4)}]`;
             setSearchAddress(fallbackAddress);
+            props.loginStore.updateStore('address', fallbackAddress);
         } finally {
             // setIsGeocoding(false);
         }
@@ -93,6 +108,7 @@ export const ArtisansLocationNAvialability: Component<{
             currentMarker.setLatLng([lat, lng]);
         }
         setSearchAddress(location.display_name);
+        props.loginStore.updateStore('address', location.display_name);
     };
 
     const getInitialLocation = async (isRetry = false) => {
@@ -173,7 +189,6 @@ export const ArtisansLocationNAvialability: Component<{
 
     // Utility function to convert Lat/Lng to an Address (Reverse Geocoding)
     const reverseGeocode = async (lat: number, lng: number) => {
-        // setIsGeocoding(true);
         try {
             const response = await fetch(
                 `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
@@ -182,12 +197,11 @@ export const ArtisansLocationNAvialability: Component<{
             // Use the display_name from the geocoding service
             const address = data.display_name || 'Address not found';
             setSearchAddress(address); // Pre-fill the search input with the address
+            props.loginStore.updateStore('address', address);
             return address;
         } catch (error) {
             console.error('Reverse geocoding failed:', error);
             return 'Address not found';
-        } finally {
-            // setIsGeocoding(false);
         }
     };
 
@@ -228,7 +242,7 @@ export const ArtisansLocationNAvialability: Component<{
                 console.log(e);
                 const pos = newMarker.getLatLng();
                 setCoordinates({ lat: pos.lat, lng: pos.lng });
-                setSearchAddress('Location Updated via Map Drag');
+                // setSearchAddress('Location Updated via Map Drag');
                 setLocationPermission('granted');
                 reverseGeocodeAndUpdate(pos.lat, pos.lng);
             });
@@ -236,7 +250,7 @@ export const ArtisansLocationNAvialability: Component<{
                 const { lat, lng } = e.latlng;
                 newMarker.setLatLng(e.latlng);
                 setCoordinates({ lat: e.latlng.lat, lng: e.latlng.lng });
-                setSearchAddress('Location Updated via Map Click');
+                // setSearchAddress('Location Updated via Map Click');
                 setLocationPermission('granted');
                 reverseGeocodeAndUpdate(lat, lng);
             });
@@ -249,9 +263,10 @@ export const ArtisansLocationNAvialability: Component<{
     });
 
     const handleAvailabilityChange = (value: string, checked: boolean) => {
-        setAvailability((prev) =>
+        setAvailabilities((prev) =>
             checked ? [...prev, value] : prev.filter((item) => item !== value)
         );
+        props.loginStore.updateStore('availabilities', availabilities());
     };
 
     // --- Submit Handler ---
@@ -312,7 +327,7 @@ export const ArtisansLocationNAvialability: Component<{
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
@@ -357,14 +372,14 @@ export const ArtisansLocationNAvialability: Component<{
                     </div>
                     <div class="w-full flex flex-col items-center justify-center gap-10">
                         <div class="w-full flex flex-col items-center gap-1">
-                            <h1 class="w-full text-center text-dark-text text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
+                            <h1 class="w-full text-center text-gray-900 dark:text-white text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
                                 Tell us your location & Availability
                             </h1>
-                            <p class="text-center text-gray-text text-sm md:text-base font-normal leading-relaxed">
+                            <p class="text-center text-gray-600 dark:text-gray-400 text-sm md:text-base font-normal leading-relaxed">
                                 This will help clients near you to find you.
                             </p>
                         </div>
-                        {/* 🌟 FIX 3: Conditional Rendering Logic */}
+                        {/* 🌟Conditional Rendering Logic */}
                         <Switch
                             fallback={
                                 <AskForLocationPermission
@@ -423,9 +438,7 @@ export const ArtisansLocationNAvialability: Component<{
                                                 class="flex-grow h-11 px-3 py-2 border border-border-gray rounded-l-lg text-gray-800 text-sm font-normal outline-none focus:border-primary-blue placeholder-gray-400"
                                                 value={searchAddress()}
                                                 onInput={(e) =>
-                                                    setSearchAddress(
-                                                        e.currentTarget.value
-                                                    )
+                                                    e.currentTarget.value
                                                 }
                                             />
                                             <button
@@ -509,13 +522,13 @@ export const ArtisansLocationNAvialability: Component<{
                                                 </div>
                                             </div>
                                         </div>
-                                        {/* 🌟 FIX 4: Assign ref directly to the variable */}
+                                        {/* 🌟 Assign ref directly to the variable */}
                                         <div
                                             ref={mapContainerRef}
                                             class="w-full rounded-lg border border-border-gray"
                                             style={{ height: '250px' }}
                                         ></div>
-                                        <p class="text-xs text-light-gray-text mt-[-10px]">
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-[-10px]">
                                             {coordinates()
                                                 ? `Confirmed Coords: ${coordinates()?.lat.toFixed(
                                                       4
@@ -528,7 +541,7 @@ export const ArtisansLocationNAvialability: Component<{
 
                                     {/* --- AVAILABILITY CHECKBOXES --- */}
                                     <div class="w-full flex flex-col items-start gap-4 pt-2">
-                                        <h2 class="text-dark-text text-base font-semibold">
+                                        <h2 class="text-gray-900 dark:text-white text-base font-semibold">
                                             Availability
                                         </h2>
                                         <div class="flex flex-wrap gap-x-6 gap-y-3">
@@ -538,7 +551,7 @@ export const ArtisansLocationNAvialability: Component<{
                                                         <input
                                                             type="checkbox"
                                                             value={option.value}
-                                                            checked={availability().includes(
+                                                            checked={availabilities().includes(
                                                                 option.value
                                                             )}
                                                             onInput={(e) =>
@@ -549,9 +562,9 @@ export const ArtisansLocationNAvialability: Component<{
                                                                         .checked
                                                                 )
                                                             }
-                                                            class="form-checkbox h-5 w-5 text-primary-blue rounded border-gray-300 focus:ring-primary-blue accent-primary-blue"
+                                                            class="form-checkbox h-5 w-5 text-primary-blue rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-primary-blue accent-primary-blue"
                                                         />
-                                                        <span class="text-light-gray-text text-sm font-normal whitespace-nowrap">
+                                                        <span class="text-gray-600 dark:text-gray-400 text-sm font-normal whitespace-nowrap">
                                                             {option.label}
                                                         </span>
                                                     </label>
@@ -561,15 +574,16 @@ export const ArtisansLocationNAvialability: Component<{
                                     </div>
                                     <button
                                         type="submit"
-                                        disabled={
-                                            !coordinates() ||
-                                            (availability().length === 0 &&
-                                                locationPermission() ===
-                                                    'granted')
-                                        }
-                                        class="w-full h-13 px-4 py-3 bg-[#1376A1] text-white rounded-lg font-semibold text-base transition duration-200
-                                        disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer
-                                        hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200 mt-6"
+                                        disabled={!isFormValid()}
+                                        class={`
+                                            self-stretch h-12 px-4 py-3 bg-cyan-700 rounded-lg inline-flex justify-center items-center gap-2.5 text-white text-base font-semibold leading-relaxed
+                                            transition duration-150
+                                            ${
+                                                !isFormValid()
+                                                    ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                                                    : 'hover:bg-[#1376A1] focus:outline-none focus:ring-4 focus:ring-cyan-700/50 cursor-pointer'
+                                            }
+                                        `}
                                     >
                                         Next
                                     </button>

@@ -1,57 +1,136 @@
-import { Component, createSignal } from 'solid-js';
+import { Component, createMemo, createSignal } from 'solid-js';
 import { Facebook, Google, Linkedin } from './svg';
 import logo from './../../../assets/pairprofit.svg';
 import { LoginStore, StepTransitions } from './types';
 
 const VisibilityIcon = (props: any) => (
-    <div class="w-5 h-5 text-gray-500 cursor-pointer" onClick={props.onClick}>
+    // <div class="w-5 h-5 text-gray-500 cursor-pointer" onClick={props.onClick}>
+    <div
+        class="w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer"
+        onClick={props.onClick}
+    >
         <i class="fas fa-eye text-sm"></i>
     </div>
 );
 
-const CheckboxIcon = (props: any) => (
-    <div
-        class="w-6 h-6 rounded border border-gray-300 flex items-center justify-center cursor-pointer"
-        onClick={props.onClick}
-        classList={{ 'bg-sky-800 border-sky-800': props.checked }}
-    >
-        <i
-            class="fas fa-check text-white text-xs"
-            style={{ display: props.checked() ? 'block' : 'none' }}
-        ></i>
-    </div>
-);
+const CheckboxIcon = ({
+    onChange,
+    storeKey,
+    checked,
+}: {
+    onChange: any;
+    storeKey: string;
+    checked: boolean;
+}) => {
+    const [isChecked, setIsChecked] = createSignal(checked);
+    const handleChecked = () => {
+        const newValue = !isChecked();
+        setIsChecked(newValue);
+        onChange(newValue, storeKey);
+    };
+
+    return (
+        <div
+            onClick={handleChecked}
+            classList={{
+                'w-6 h-6 rounded border flex items-center justify-center cursor-pointer transition-all duration-150 ease-in-out':
+                    true,
+                'border-sky-800 bg-sky-800': isChecked(), // Styles when checked (blue fill)
+                'border-gray-300 bg-white': !isChecked(), // Styles when NOT checked (white fill, gray border)
+            }}
+        >
+            <i
+                class="fas fa-check text-white text-xs"
+                // Show the checkmark only when checked
+                style={{ display: isChecked() ? 'block' : 'none' }}
+            ></i>
+        </div>
+    );
+};
+
+const InputField = ({
+    type = 'text',
+    value,
+    onChange,
+    placeholder,
+    key,
+    isPassword = false,
+    label,
+}: {
+    type?: string;
+    value: string;
+    onChange: any;
+    placeholder: string;
+    key: string;
+    isPassword?: boolean;
+    label: string;
+}) => {
+    const [showPassword, setShowPassword] = createSignal(false);
+    const [inputType, setInputType] = createSignal(type);
+    const toggleShowPassword = () => {
+        setInputType(showPassword() ? 'text' : 'password');
+        setShowPassword(!showPassword());
+    };
+
+    return (
+        // <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300">
+        <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300 dark:border-gray-700">
+            <input
+                type={inputType()}
+                name={label}
+                value={value}
+                onInput={(e) => onChange(e.target.value, key)}
+                placeholder={placeholder}
+                // class="w-full text-gray-900 text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 bg-transparent"
+                class="w-full text-gray-900 dark:text-black text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 bg-transparent"
+            />
+            {isPassword && <VisibilityIcon onClick={toggleShowPassword} />}
+        </div>
+    );
+};
+
+const isValidEmail = (email: string) => {
+    if (!email) return false;
+    return /\S+@\S+\.\S+/.test(email);
+};
 
 export const SignUpForm: Component<{
     loginStore: LoginStore;
 }> = (props) => {
-    // 1. State Management
-    const [firstName, setFirstName] = createSignal('');
-    const [lastName, setLastName] = createSignal('');
-    const [email, setEmail] = createSignal('');
-    const [password, setPassword] = createSignal('');
-    const [confirmPassword, setConfirmPassword] = createSignal('');
-    const [acceptedTerms, setAcceptedTerms] = createSignal(false);
+    const isFormValid = createMemo(() => {
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            acceptedTerms,
+        } = props.loginStore;
 
-    // 2. Handler
+        const isNamePresent = firstName.trim() && lastName.trim();
+        const isEmailValid = isValidEmail(email);
+        const isPasswordPresent =
+            password.length >= 8 && confirmPassword.length >= 8;
+        const doPasswordsMatch = password === confirmPassword;
+
+        return (
+            isNamePresent &&
+            isEmailValid &&
+            isPasswordPresent &&
+            doPasswordsMatch &&
+            acceptedTerms
+        );
+    }, [props.loginStore]);
+
+    // Handler
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        // Simple validation check
-        if (!acceptedTerms()) {
-            console.log('You must accept the terms and privacy policy.');
-            return;
-        }
-        if (password() !== confirmPassword()) {
-            console.log('Passwords do not match.');
-            return;
-        }
-
         console.log({
-            firstName: firstName(),
-            lastName: lastName(),
-            email: email(),
-            password: password(),
-            termsAccepted: acceptedTerms(),
+            firstName: props.loginStore.firstName,
+            lastName: props.loginStore.lastName,
+            email: props.loginStore.email,
+            password: props.loginStore.password,
+            termsAccepted: props.loginStore.acceptedTerms,
         });
         props.loginStore.updateStore(
             'currentStep',
@@ -59,52 +138,39 @@ export const SignUpForm: Component<{
         );
     };
 
-    // 3. Reusable Input Component
-    const InputField = ({
-        type = 'text',
-        value,
-        onChange,
-        placeholder,
-        isPassword = false,
-    }: any) => {
-        const [showPassword, setShowPassword] = createSignal(false);
-        const inputType = isPassword
-            ? showPassword()
-                ? 'text'
-                : 'password'
-            : type;
+    const handleInputField = (
+        value: string,
+        key: keyof Omit<
+            LoginStore,
+            | 'updateStore'
+            | 'setCurrentStep'
+            | 'setActiveProfile'
+            | 'handleTransition'
+        >
+    ) => {
+        props.loginStore.updateStore(key, value);
+    };
 
-        return (
-            <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300">
-                <input
-                    type={inputType}
-                    value={value()}
-                    onInput={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    class="w-full text-gray-900 text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 bg-transparent"
-                />
-                {isPassword && (
-                    <VisibilityIcon
-                        onClick={() => setShowPassword(!showPassword())}
-                    />
-                )}
-            </div>
-        );
+    const handleCheckboxChange = (
+        newValue: boolean,
+        key: keyof Omit<
+            LoginStore,
+            | 'updateStore'
+            | 'setCurrentStep'
+            | 'setActiveProfile'
+            | 'handleTransition'
+        >
+    ) => {
+        props.loginStore.updateStore(key, newValue);
     };
 
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
-                    {/* <div class="flex items-center text-white text-2xl font-bold tracking-wide mb-6">
-                        <Logo />
-                        <span class="text-2xl font-bold text-gray-900 text-center leading-snug ml-2">
-                            Pairprofit
-                        </span>
-                    </div> */}
                     <a
                         class="px-4 py-3 text-base font-semibold text-[#1376a1] rounded-lg border border-transparent transition"
                         href="/"
@@ -128,48 +194,52 @@ export const SignUpForm: Component<{
                             <InputField
                                 label="First Name"
                                 placeholder="Enter your first name"
-                                value={firstName}
-                                onChange={setFirstName}
+                                value={props.loginStore.firstName}
+                                key="firstName"
+                                onChange={handleInputField}
                             />
                             <InputField
                                 label="Last Name"
                                 placeholder="Enter your last name"
-                                value={lastName}
-                                onChange={setLastName}
+                                value={props.loginStore.lastName}
+                                key="lastName"
+                                onChange={handleInputField}
                             />
                             <InputField
                                 label="Email"
                                 type="email"
+                                key="email"
                                 placeholder="Enter your email address"
-                                value={email}
-                                onChange={setEmail}
+                                value={props.loginStore.email}
+                                onChange={handleInputField}
                             />
                             <div class="self-stretch inline-flex justify-start items-start gap-4">
                                 <div class="flex-1">
                                     <InputField
                                         label="Password"
+                                        key="password"
                                         placeholder="Enter password"
                                         isPassword
-                                        value={password}
-                                        onChange={setPassword}
+                                        value={props.loginStore.password}
+                                        onChange={handleInputField}
                                     />
                                 </div>
                                 <div class="flex-1">
                                     <InputField
                                         label="Confirm Password"
                                         placeholder="Confirm password"
+                                        key="confirmPassword"
                                         isPassword
-                                        value={confirmPassword}
-                                        onChange={setConfirmPassword}
+                                        value={props.loginStore.confirmPassword}
+                                        onChange={handleInputField}
                                     />
                                 </div>
                             </div>
                             <div class="self-stretch inline-flex justify-start items-center gap-3">
                                 <CheckboxIcon
-                                    checked={acceptedTerms}
-                                    onClick={() =>
-                                        setAcceptedTerms(!acceptedTerms())
-                                    }
+                                    checked={props.loginStore.acceptedTerms}
+                                    onChange={handleCheckboxChange}
+                                    storeKey="acceptedTerms"
                                 />
                                 <div class="flex-1 text-gray-600 text-sm font-normal leading-snug">
                                     By signing up to create an account, I accept
@@ -183,9 +253,17 @@ export const SignUpForm: Component<{
                         </div>
                         <div class="self-stretch flex flex-col justify-start items-center gap-3">
                             <button
+                                disabled={!isFormValid()}
                                 type="submit"
-                                class="self-stretch h-12 px-4 py-3 bg-cyan-700 rounded-lg inline-flex justify-center items-center gap-2.5 text-white text-base font-semibold leading-relaxed
-                                       transition duration-150 hover:bg-[#1376A1] focus:outline-none focus:ring-4 focus:ring-cyan-700/50 cursor-pointer"
+                                class={`
+                                    self-stretch h-12 px-4 py-3 bg-cyan-700 rounded-lg inline-flex justify-center items-center gap-2.5 text-white text-base font-semibold leading-relaxed
+                                    transition duration-150
+                                    ${
+                                        !isFormValid()
+                                            ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                                            : 'hover:bg-[#1376A1] focus:outline-none focus:ring-4 focus:ring-cyan-700/50 cursor-pointer'
+                                    }
+                                `}
                             >
                                 Sign Up
                             </button>

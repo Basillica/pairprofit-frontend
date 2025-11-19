@@ -1,3 +1,5 @@
+import { createStore } from 'solid-js/store';
+
 export enum StepTransitions {
     // general
     SetupComplete = 'SetupComplete',
@@ -39,18 +41,149 @@ export enum AccountEnum {
 }
 
 export type AccountType = AccountEnum.Provider | AccountEnum.Client;
+type AvailabilityType =
+    | 'Full-time'
+    | 'Part-time'
+    | 'Evenings/Weekends'
+    | 'Emergency calls'
+    | 'Project-based';
+
+interface LanguageType {
+    language: string;
+    id: number; // Unique identifier for keying and deletion
+    isRemovable: boolean;
+    proficiency: 'Basic' | 'Conversational' | 'Fluent' | 'Native' | string;
+}
 
 export type LoginStore = {
+    // 1. ⚙️ Flow & State Management Attributes
     activeProfile: AccountType;
-    users: {
-        id: number;
-        username: string;
-        location: string;
-        loggedIn: boolean;
-    }[];
     currentStep: StepTransitionType;
-    updateStore: (key: string, value: any) => void;
-    updatingPassword: boolean;
+    updatingPassword: boolean; // Flag used during ResetPassword / ForgotPassword
+    // 2. 🔐 General Account/Verification Data
+    firstName: string;
+    lastName: string;
+    password: string;
+    confirmPassword: string;
+    email: string;
+
+    verificationCode: string; // Used for OTPCard
+    resetToken: string | null; // Token received for password reset
+    acceptedTerms: boolean;
+    // 3. 👤 Client/Login Specific Data
+    clientName: string;
+    // 4. 🎨 Artisan/Signup Specific Data
+    title: string;
+    description: string;
+    languages: LanguageType[];
+    address: string;
+    skills: string[];
+    yearsOfExperience: string;
+    location: string;
+    availabilities: AvailabilityType[];
+    profileImage: File | null;
+    idDocument: File | null;
+    countryCallingCode: string;
+    phoneNumber: string;
+    // 5. 🛠️ Store Methods (Updated for clarity)
+
+    /**
+     * Updates a single attribute in the store (e.g., email, clientName).
+     * @param key The key of the attribute to update.
+     * @param value The new value for the attribute.
+     */
+    updateStore: (
+        key: keyof Omit<
+            LoginStore,
+            | 'updateStore'
+            | 'setCurrentStep'
+            | 'setActiveProfile'
+            | 'handleTransition'
+        >,
+        value: any
+    ) => void;
+
+    /**
+     * Changes the current step, triggering the component transition in the <Switch>.
+     * This is the core method for flow control.
+     * @param step The new StepTransitionType to navigate to.
+     */
+    setCurrentStep: (step: StepTransitionType) => void;
+
+    /**
+     * Initializes the account type for the flow.
+     * @param type The ActiveProfile ('Client' or 'Provider').
+     */
+    setActiveProfile: (type: AccountType) => void;
+
+    // /**
+    //  * Handles complex transitions or API calls that result in a step change.
+    //  * The implementation would decide the next step based on the current state.
+    //  * @param action A string or enum describing the action (e.g., 'SUBMIT_LOGIN', 'NEXT_SIGNUP_STEP').
+    //  */
+    // handleTransition: (action: string) => void;
+};
+
+export const createLoginStore = () => {
+    // 1. Initial State Definition (Same as yours)
+    const initialStoreState = {
+        // --- Flow & State Management ---
+        activeProfile: AccountEnum.Client as AccountType,
+        currentStep: StepTransitions.ClientLanding as StepTransitionType,
+        updatingPassword: false,
+
+        // personal info
+        firstName: '',
+        lastName: '',
+        password: '',
+        confirmPassword: '',
+        acceptedTerms: false,
+        email: '',
+        verificationCode: '',
+        resetToken: null as string | null,
+
+        // --- Client/Login Data ---
+        clientName: '',
+
+        // --- Artisan/Signup Data ---
+        address: '',
+        title: '',
+        description: '',
+        languages: [
+            {
+                id: Date.now(),
+                language: 'English',
+                proficiency: 'Native',
+                isRemovable: false,
+            },
+        ],
+        skills: [],
+        yearsOfExperience: 'Years of experience',
+        location: '',
+        availabilities: [] as AvailabilityType[],
+        profileImage: null,
+        idDocument: null,
+        countryCallingCode: '+1',
+        phoneNumber: '',
+
+        setCurrentStep: (step: StepTransitionType) => {
+            setStore('currentStep', step);
+        },
+
+        updateStore: (key: string, value: any) => {
+            setStore((state) => ({ ...state, [key]: value }));
+        },
+
+        setActiveProfile: (type: AccountType) => {
+            setStore((state) => ({ ...state, activeProfile: type }));
+        },
+    };
+
+    // 2. Create the reactive store
+    const [store, setStore] = createStore<LoginStore>(initialStoreState);
+
+    // 4. Return the complete LoginStore object
+    return store;
 };
 
 export interface NominatimAddress {

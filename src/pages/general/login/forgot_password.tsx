@@ -32,7 +32,7 @@ export const ForgotPasswordCard: Component<{
     };
 
     return (
-        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans p-4 bg-[#FCFCFD]">
+        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans p-4 bg-[#FCFCFD] dark:bg-gray-900">
             <div class="bg-white rounded-xl shadow-lg shadow-card-shadow p-10 w-full max-w-md text-center">
                 <div class="justify-center items-center flex mb-10">
                     <Flag />

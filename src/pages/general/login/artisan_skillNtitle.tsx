@@ -1,36 +1,33 @@
-import { Component, createSignal, For } from 'solid-js';
+import { Component, createMemo, createSignal, For } from 'solid-js';
 import { LoginStore, StepTransitions } from './types';
 
 export const ArtisansSkillNTitle: Component<{
     loginStore: LoginStore;
 }> = (props) => {
-    const [title, setTitle] = createSignal('Culinary Chef');
-    const [skills, setSkills] = createSignal([
-        'Home made pastries',
-        'Soups',
-        'Salad',
-    ]);
     const [newSkillInput, setNewSkillInput] = createSignal('');
     const maxSkills = 10;
-    const [selectedYears, setSelectedYears] = createSignal<string>(
-        'Skills / Specialization'
-    ); // For the dropdown
 
     const addSkill = (e: Event) => {
-        e.preventDefault(); // Prevent form submission if this is part of a form
+        e.preventDefault();
         const trimmedSkill = newSkillInput().trim();
         if (
             trimmedSkill &&
-            skills().length < maxSkills &&
-            !skills().includes(trimmedSkill)
+            props.loginStore.skills.length < maxSkills &&
+            !props.loginStore.skills.includes(trimmedSkill)
         ) {
-            setSkills([...skills(), trimmedSkill]);
+            props.loginStore.updateStore('skills', [
+                ...props.loginStore.skills,
+                trimmedSkill,
+            ]);
             setNewSkillInput('');
         }
     };
 
     const removeSkill = (skillToRemove: string) => {
-        setSkills(skills().filter((skill) => skill !== skillToRemove));
+        props.loginStore.updateStore(
+            'skills',
+            props.loginStore.skills.filter((skill) => skill !== skillToRemove)
+        );
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,11 +36,9 @@ export const ArtisansSkillNTitle: Component<{
         }
     };
 
-    // 2. Handler
+    // Handler
     const handleSubmit = (e: any) => {
         e.preventDefault();
-
-        console.log();
         props.loginStore.updateStore(
             'currentStep',
             StepTransitions.ArtisanLocationNAvailability
@@ -61,10 +56,32 @@ export const ArtisansSkillNTitle: Component<{
     const currentStep = 2;
     const progressWidth = `${(currentStep / totalSteps) * 100}%`;
 
+    const updateArtisanTitle = (e: Event) => {
+        const input = e.target as HTMLInputElement;
+        props.loginStore.updateStore('title', input.value);
+    };
+
+    const handleYearsofExperienceChange = (e: Event) => {
+        const select = e.target as HTMLSelectElement;
+        props.loginStore.updateStore('yearsOfExperience', select.value);
+    };
+
+    const isFormValid = createMemo(() => {
+        const { title, skills, yearsOfExperience } = props.loginStore;
+
+        const isTitlePresent = title.trim();
+        const areSkillsPresent = skills.length > 0;
+        const isYearsOfExperience =
+            yearsOfExperience.trim() &&
+            yearsOfExperience !== 'Years of experience';
+
+        return isTitlePresent && areSkillsPresent && isYearsOfExperience;
+    }, [props.loginStore]);
+
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
@@ -129,17 +146,15 @@ export const ArtisansSkillNTitle: Component<{
                                         type="text"
                                         placeholder="Culinary Chef"
                                         class="flex-grow bg-transparent outline-none text-primary-blue text-sm font-normal placeholder-primary-blue"
-                                        value={title()}
-                                        onInput={(e) =>
-                                            setTitle(e.currentTarget.value)
-                                        }
+                                        value={props.loginStore.title}
+                                        onInput={updateArtisanTitle}
                                     />
                                 </div>
 
                                 {/* Skill Tags Input */}
                                 <div class="w-full flex flex-col items-end gap-2">
                                     <div class="w-full p-3 border border-border-gray rounded-lg flex flex-wrap items-center gap-2">
-                                        <For each={skills()}>
+                                        <For each={props.loginStore.skills}>
                                             {(skill) => (
                                                 <div class="flex items-center gap-1 bg-[#1376A1] rounded-full px-2 py-1 text-white text-sm font-normal">
                                                     <button
@@ -179,44 +194,83 @@ export const ArtisansSkillNTitle: Component<{
                                             }
                                             onKeyDown={handleKeyDown}
                                             disabled={
-                                                skills().length >= maxSkills
+                                                props.loginStore.skills
+                                                    .length >= maxSkills
                                             }
                                         />
                                     </div>
-                                    <div class="text-right text-light-gray-text text-xs font-normal">
-                                        Max {maxSkills - skills().length} skills
-                                        left
+                                    <div class="text-right text-gray-600 dark:text-gray-400 text-xs font-normal">
+                                                                               
+                                        Max                                    
+                                           {' '}
+                                        {maxSkills -
+                                            props.loginStore.skills.length}{' '}
+                                                                               
+                                        skills left                            
+                                               {' '}
                                     </div>
                                 </div>
 
                                 {/* Dropdown for Years */}
-                                <div class="w-full h-11 px-3 py-2 border border-primary-blue rounded-lg flex items-center justify-between relative">
+                                <div
+                                    class="w-full h-11 px-3 py-2 border border-primary-blue rounded-lg flex items-center justify-between relative 
+     bg-white dark:bg-gray-800 dark:border-cyan-700"
+                                >
                                     <select
-                                        class="absolute inset-0 w-full h-full bg-transparent appearance-none text-primary-blue text-sm font-normal outline-none cursor-pointer px-3"
-                                        value={selectedYears()}
-                                        onInput={(e) =>
-                                            setSelectedYears(
-                                                e.currentTarget.value
-                                            )
+                                        class="absolute inset-0 w-full h-full bg-transparent appearance-none text-primary-blue text-sm font-normal outline-none cursor-pointer px-3 dark:text-cyan-400"
+                                        value={
+                                            props.loginStore.yearsOfExperience
                                         }
+                                        onInput={handleYearsofExperienceChange}
                                     >
-                                        <option value="" disabled selected>
-                                            Skills / Specialization
+                                        <option
+                                            value=""
+                                            disabled
+                                            selected
+                                            class="text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                                        >
+                                            Years of experience
                                         </option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5+">5+</option>
+                                        {/* Note: Option elements inherit the select's text color, but the background needs to be set */}
+                                        <option
+                                            value="1"
+                                            class="dark:bg-gray-800"
+                                        >
+                                            1
+                                        </option>
+                                        <option
+                                            value="2"
+                                            class="dark:bg-gray-800"
+                                        >
+                                            2
+                                        </option>
+                                        <option
+                                            value="3"
+                                            class="dark:bg-gray-800"
+                                        >
+                                            3
+                                        </option>
+                                        <option
+                                            value="4"
+                                            class="dark:bg-gray-800"
+                                        >
+                                            4
+                                        </option>
+                                        <option
+                                            value="5+"
+                                            class="dark:bg-gray-800"
+                                        >
+                                            5+
+                                        </option>
                                     </select>
-                                    <span class="text-primary-blue text-sm font-normal pointer-events-none">
-                                        {selectedYears()}
+                                    <span class="text-primary-blue text-sm font-normal pointer-events-none dark:text-white">
+                                        {props.loginStore.yearsOfExperience}
                                     </span>{' '}
                                     {/* Display selected value */}
                                     {/* Custom Dropdown Arrow */}
                                     <div class="pointer-events-none absolute right-3 flex items-center justify-center">
                                         <svg
-                                            class="w-4 h-4 text-light-gray-text"
+                                            class="w-4 h-4 text-gray-600 dark:text-gray-400"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -233,9 +287,17 @@ export const ArtisansSkillNTitle: Component<{
                             </div>
                             <div class="self-stretch flex flex-col justify-start items-center gap-3">
                                 <button
+                                    disabled={!isFormValid()}
                                     type="submit"
-                                    class="self-stretch h-12 px-4 py-3 bg-cyan-700 rounded-lg inline-flex justify-center items-center gap-2.5 text-white text-base font-semibold leading-relaxed
-                                       transition duration-150 hover:bg-[#1376A1] focus:outline-none focus:ring-4 focus:ring-cyan-700/50 cursor-pointer"
+                                    class={`
+                                        self-stretch h-12 px-4 py-3 bg-cyan-700 rounded-lg inline-flex justify-center items-center gap-2.5 text-white text-base font-semibold leading-relaxed
+                                        transition duration-150
+                                        ${
+                                            !isFormValid()
+                                                ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                                                : 'hover:bg-[#1376A1] focus:outline-none focus:ring-4 focus:ring-cyan-700/50 cursor-pointer'
+                                        }
+                                    `}
                                 >
                                     Next
                                 </button>

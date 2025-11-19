@@ -4,45 +4,41 @@ import { LoginStore, COUNTRIES, StepTransitions } from './types';
 export const ArtisansVerificationNTrust: Component<{
     loginStore: LoginStore;
 }> = (props) => {
-    const [profilePhotoUrl, setProfilePhotoUrl] = createSignal<string | null>(
-        null
-    );
-    const [idDocumentFile, setIdDocumentFile] = createSignal<File | null>(null);
-    const [phoneNumber, setPhoneNumber] = createSignal('');
-    const [selectedCountryCode, setSelectedCountryCode] = createSignal(
-        COUNTRIES[0].dialCode
-    );
+    // const [selectedCountryCode, setSelectedCountryCode] = createSignal(
+    //     COUNTRIES[0].dialCode
+    // );
     const [isCodeSent, setIsCodeSent] = createSignal(false);
     const [verificationCode, setVerificationCode] = createSignal('');
 
     // Handles the profile photo upload (File to URL conversion)
     const handleProfilePhotoChange = (e: Event) => {
+        e.preventDefault();
         const target = e.target as HTMLInputElement;
         const file = target.files?.[0];
         if (file) {
-            const url = URL.createObjectURL(file);
-            setProfilePhotoUrl(url);
+            props.loginStore.updateStore('profileImage', file);
         }
     };
 
     // Handles the ID document upload
     const handleIdDocumentChange = (e: Event) => {
+        e.preventDefault();
         const target = e.target as HTMLInputElement;
         const file = target.files?.[0];
         if (file) {
-            setIdDocumentFile(file);
-            console.log('ID Document selected:', file.name);
+            props.loginStore.updateStore('idDocument', file);
         }
     };
 
     // Sends a dummy verification code
     const handleSendCode = () => {
-        if (!phoneNumber() || phoneNumber().length < 8) {
-            alert('Please enter a valid phone number.');
+        if (props.loginStore.phoneNumber.length < 8) {
+            console.log('Please enter a valid phone number.');
             return;
         }
+
         console.log(
-            `Sending code to: ${selectedCountryCode()}${phoneNumber()}`
+            `Sending code to: ${props.loginStore.countryCallingCode}${props.loginStore.phoneNumber}`
         );
         setIsCodeSent(true);
         // Simulate code being sent
@@ -52,11 +48,11 @@ export const ArtisansVerificationNTrust: Component<{
     // Final submission handler
     const handleFinish = () => {
         console.log('--- Form Data ---');
-        console.log('Photo Uploaded:', !!profilePhotoUrl());
-        console.log('ID Document Uploaded:', !!idDocumentFile());
+        console.log('Photo Uploaded:', !!props.loginStore.profileImage);
+        console.log('ID Document Uploaded:', !!props.loginStore.idDocument);
         console.log(
             'Full Phone Number:',
-            `${selectedCountryCode()}${phoneNumber()}`
+            `${props.loginStore.countryCallingCode}${props.loginStore.phoneNumber}`
         );
         console.log('Verification Code:', verificationCode());
         // Add actual form submission logic here
@@ -65,16 +61,20 @@ export const ArtisansVerificationNTrust: Component<{
 
     // Determine if the "Finish" button should be active
     const canFinish = () =>
-        !!profilePhotoUrl() &&
-        !!idDocumentFile() &&
+        !!props.loginStore.profileImage &&
+        !!props.loginStore.idDocument &&
         isCodeSent() &&
-        verificationCode().length === 6; // Assuming a 6-digit code
+        verificationCode().length === 6; // a 6-digit code
 
     const totalSteps = 5;
     const currentStep = 5;
     const progressWidth = `${(currentStep / totalSteps) * 100}%`;
 
-    const handleSubmit = () => {};
+    const handleSubmit = () => {
+        console.log(props.loginStore, 'props.loginStore');
+        alert('Form submitted!');
+    };
+
     const handleCaret = () => {
         props.loginStore.updateStore(
             'currentStep',
@@ -82,10 +82,30 @@ export const ArtisansVerificationNTrust: Component<{
         );
     };
 
+    const handleCountryCallingCode = (e: Event) => {
+        const select = e.target as HTMLSelectElement;
+        props.loginStore.updateStore('countryCallingCode', select.value);
+    };
+
+    const handlePhoneNumber = (value: string) => {
+        props.loginStore.updateStore(
+            'phoneNumber',
+            value // Only digits
+        );
+        console.log(props.loginStore.phoneNumber, 'phoneNumberphoneNumber');
+    };
+
+    const getProfileImageUrl = () => {
+        if (props.loginStore.profileImage) {
+            return URL.createObjectURL(props.loginStore.profileImage);
+        }
+        return null;
+    };
+
     return (
         <form
             onSubmit={handleSubmit}
-            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD]"
+            class="w-full px-4 pt-4 flex flex-col items-center justify-start min-h-screen md:px-12 bg-[#FCFCFD] dark:bg-gray-900"
         >
             <div class="w-full flex flex-col justify-start items-right gap-10">
                 <div class="w-full flex flex-col justify-start items-right gap-10">
@@ -130,10 +150,10 @@ export const ArtisansVerificationNTrust: Component<{
                     </div>
                     <div class="w-full flex flex-col items-center justify-center gap-10">
                         <div class="w-full flex flex-col items-center gap-1">
-                            <h1 class="w-full text-center text-dark-text text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
+                            <h1 class="w-full text-center text-gray-900 dark:text-white text-2xl md:text-3xl lg:text-4xl font-bold leading-tight md:leading-snug">
                                 Tell us a little about yourself
                             </h1>
-                            <p class="text-center text-gray-text text-sm md:text-base font-normal leading-relaxed">
+                            <p class="text-center text-gray-600 dark:text-gray-400 text-sm md:text-base font-normal leading-relaxed">
                                 This will help clients trust and know you
                                 better.
                             </p>
@@ -144,7 +164,7 @@ export const ArtisansVerificationNTrust: Component<{
                         <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
                             {/* 1. Profile Photo Upload */}
                             <div style="width: 100px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
-                                <div style="align-self: stretch; color: #EEF2F6; font-size: 14px;  font-weight: 400; line-height: 22.40px; word-wrap: break-word">
+                                <div class="text-sm font-normal leading-relaxed text-gray-700 dark:text-gray-300">
                                     Upload photo
                                 </div>
                                 <div style="align-self: stretch; height: 100px; position: relative;">
@@ -163,9 +183,9 @@ export const ArtisansVerificationNTrust: Component<{
                                         style="display: block; width: 100%; height: 100%; cursor: pointer;"
                                     >
                                         <div style="width: 100px; height: 100px; position: absolute; background: #EEF2F6; overflow: hidden; border-radius: 100px;">
-                                            {profilePhotoUrl() ? (
+                                            {props.loginStore.profileImage ? (
                                                 <img
-                                                    src={profilePhotoUrl()!}
+                                                    src={getProfileImageUrl()!}
                                                     alt="Profile Photo Preview"
                                                     style="width: 100%; height: 100%; object-fit: cover;"
                                                 />
@@ -231,9 +251,9 @@ export const ArtisansVerificationNTrust: Component<{
                                     style="display: none;"
                                 />
                                 <div style="text-align: center; color: #697586; font-size: 14px;  font-weight: 400; line-height: 22.40px; word-wrap: break-word">
-                                    {idDocumentFile()
+                                    {props.loginStore.idDocument
                                         ? `File Selected: ${
-                                              idDocumentFile()!.name
+                                              props.loginStore.idDocument!.name
                                           }`
                                         : 'Upload any government ID or business document'}
                                 </div>
@@ -263,15 +283,16 @@ export const ArtisansVerificationNTrust: Component<{
                                 <div style="width: 100%; align-self: stretch; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
                                     {/* Country Code Dropdown */}
                                     <div style="width: 100%; justify-content: flex-start; align-items: center; gap: 16px; display: flex">
-                                        <div style="width: 25%; padding: 12px 8px; background: #FCFCFD; border-radius: 8px; outline: 1px #E3E8EF solid; outline-offset: -1px; display: flex; justify-content: flex-start; align-items: center;">
+                                        <div style="width: 30%; padding: 12px 8px; background: #FCFCFD; border-radius: 8px; outline: 1px #E3E8EF solid; outline-offset: -1px; display: flex; justify-content: flex-start; align-items: center;">
                                             <select
-                                                value={selectedCountryCode()}
-                                                onChange={(e) =>
-                                                    setSelectedCountryCode(
-                                                        e.currentTarget.value
-                                                    )
+                                                value={
+                                                    props.loginStore
+                                                        .countryCallingCode
                                                 }
-                                                style="width: 100%; border: none; background: none; color: #0D121C; font-size: 14px;  font-weight: 600; appearance: none; padding-right: 20px; cursor: pointer;"
+                                                onInput={
+                                                    handleCountryCallingCode
+                                                }
+                                                style="width: 100%; border: none; background: none; font-size: 12px;  font-weight: 600; appearance: none; padding-right: 20px; cursor: pointer; margin:0"
                                             >
                                                 <For each={COUNTRIES}>
                                                     {(country) => (
@@ -280,7 +301,7 @@ export const ArtisansVerificationNTrust: Component<{
                                                                 country.dialCode
                                                             }
                                                         >
-                                                            {`${country.dialCode}`}
+                                                            {`${country.flag} ${country.dialCode} ${country.country}`}
                                                         </option>
                                                     )}
                                                 </For>
@@ -291,15 +312,75 @@ export const ArtisansVerificationNTrust: Component<{
                                             <input
                                                 type="tel"
                                                 placeholder="Phone number"
-                                                value={phoneNumber()}
-                                                onInput={(e) =>
-                                                    setPhoneNumber(
+                                                value={
+                                                    props.loginStore.phoneNumber
+                                                }
+                                                onKeyDown={(e) => {
+                                                    const key = e.key;
+                                                    // 1. Allow standard navigation/editing keys
+                                                    // (Backspace, Tab, Escape, Delete, Arrow keys, Home, End)
+                                                    const allowedKeys = [
+                                                        'Backspace',
+                                                        'Tab',
+                                                        'Escape',
+                                                        'Delete',
+                                                        'ArrowLeft',
+                                                        'ArrowRight',
+                                                        'Home',
+                                                        'End',
+                                                    ];
+
+                                                    if (
+                                                        allowedKeys.includes(
+                                                            key
+                                                        )
+                                                    ) {
+                                                        return; // Allow the default action
+                                                    }
+
+                                                    // 2. Allow paste (Cmd/Ctrl + V), Cut (Cmd/Ctrl + X), Select All (Cmd/Ctrl + A)
+                                                    if (
+                                                        e.metaKey ||
+                                                        e.ctrlKey
+                                                    ) {
+                                                        // Check for Cmd/Ctrl combinations
+                                                        if (
+                                                            [
+                                                                'a',
+                                                                'A',
+                                                                'c',
+                                                                'C',
+                                                                'v',
+                                                                'V',
+                                                                'x',
+                                                                'X',
+                                                            ].includes(key)
+                                                        ) {
+                                                            return; // Allow copy, cut, paste, select all
+                                                        }
+                                                    }
+
+                                                    // 3. Check for digits (0-9) - allows both number row and numpad
+                                                    if (key.match(/^[0-9]$/)) {
+                                                        return; // It is a digit, allow it
+                                                    }
+
+                                                    // 4. If none of the allowed conditions are met, prevent the default action
+                                                    e.preventDefault();
+                                                }}
+                                                onInput={(e) => {
+                                                    handlePhoneNumber(
                                                         e.currentTarget.value.replace(
                                                             /[^0-9]/g,
                                                             ''
                                                         )
-                                                    )
-                                                } // Only allow digits
+                                                    );
+                                                    console.log(
+                                                        props.loginStore
+                                                            .phoneNumber,
+                                                        'props.loginStore.phoneNumber'
+                                                    );
+                                                }}
                                                 disabled={isCodeSent()}
                                                 style="width:100%; border: none; background: #FCFCFD; color: #1E1E1E; font-size: 14px;  font-weight: 400; line-height: 10px; outline: none;"
                                             />
@@ -310,7 +391,8 @@ export const ArtisansVerificationNTrust: Component<{
                                         onClick={handleSendCode}
                                         disabled={
                                             isCodeSent() ||
-                                            phoneNumber().length < 8
+                                            props.loginStore.phoneNumber
+                                                .length < 8
                                         }
                                         style={`
                                             padding: 6px; 
@@ -320,20 +402,23 @@ export const ArtisansVerificationNTrust: Component<{
                                             align-items: center; 
                                             background: ${
                                                 isCodeSent() ||
-                                                phoneNumber().length < 8
+                                                props.loginStore.phoneNumber
+                                                    .length < 8
                                                     ? 'rgba(208, 228, 236, 0.16)'
                                                     : 'white'
                                             };
                                             color: ${
                                                 isCodeSent() ||
-                                                phoneNumber().length < 8
+                                                props.loginStore.phoneNumber
+                                                    .length < 8
                                                     ? '#9AA4B2'
                                                     : '#1376A1'
                                             };
                                             border: none;
                                             cursor: ${
                                                 isCodeSent() ||
-                                                phoneNumber().length < 8
+                                                props.loginStore.phoneNumber
+                                                    .length < 8
                                                     ? 'not-allowed'
                                                     : 'pointer'
                                             };
@@ -370,7 +455,7 @@ export const ArtisansVerificationNTrust: Component<{
                                     </div>
                                 </div>
                             </Show>
-                            <div style="align-self: stretch; color: #202939; font-size: 12px; font-weight: 400; line-height: 19.20px; word-wrap: break-word">
+                            <div class="text-sm font-normal leading-relaxed text-gray-700 dark:text-gray-300">
                                 We'll send a code to you to verify your phone
                                 number.
                             </div>

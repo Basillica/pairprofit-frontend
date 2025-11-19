@@ -55,7 +55,7 @@ export const ResetPasswordCard: Component<{
     };
 
     return (
-        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans bg-[#FCFCFD]">
+        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans bg-[#FCFCFD] dark:bg-gray-900">
             <div class="bg-white rounded-xl shadow-lg shadow-card-shadow p-10 w-full max-w-md text-center">
                 <h1 class="text-2xl font-semibold text-gray-800 mb-2">
                     Create new password

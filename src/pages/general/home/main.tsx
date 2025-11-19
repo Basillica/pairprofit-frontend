@@ -70,20 +70,6 @@ const ServiceIcon: Component<{
             <Trending active={props.active} />
         </Match>
     </Switch>
-    // <svg
-    //     class={`w-6 h-6 ${props.active ? 'text-[#1376a1]' : 'text-gray-800'}`}
-    //     viewBox="0 0 24 24"
-    //     fill="none"
-    //     stroke="currentColor"
-    //     {...props}
-    // >
-    //     <circle cx="12" cy="12" r="2" fill="currentColor" />
-    //     <path
-    //         d="M14.83 14.83L17.66 17.66L20 20L22 22M2 2L4 4M22 2L2 22"
-    //         stroke="currentColor"
-    //         stroke-width="2"
-    //     />
-    // </svg>
 );
 
 // --- Mock Data ---
@@ -102,24 +88,19 @@ const HeroSection: Component = () => {
     const [word, setWord] = createSignal('Artisans');
     const [animationClass, setAnimationClass] = createSignal('');
 
-    // Function to toggle the word
     const toggleWord = () => {
-        setAnimationClass('fade-out'); // Start the fade-out animation
-
-        // Schedule the word change and fade-in animation after 0.5 seconds
+        setAnimationClass('fade-out');
         setTimeout(() => {
             setWord((prev) => (prev === 'Artisans' ? 'Providers' : 'Artisans'));
-            setAnimationClass('fade-in'); // Start the fade-in animation
+            setAnimationClass('fade-in');
         }, 500);
     };
 
-    // Set up an interval to toggle the word every 5 seconds
     let intervalId: NodeJS.Timeout;
     onMount(() => {
         intervalId = setInterval(toggleWord, 5000);
     });
 
-    // Clean up the interval when the component is unmounted
     onCleanup(() => clearInterval(intervalId));
 
     const [isOpen, setIsOpen] = createSignal(false);
@@ -129,8 +110,6 @@ const HeroSection: Component = () => {
         { name: 'Nigeria' },
         { name: 'United States' },
         { name: 'Canada' },
-        // { name: 'United Kingdom' },
-        // { name: 'Australia' },
     ];
 
     const toggleDropdown = () => {
@@ -143,8 +122,9 @@ const HeroSection: Component = () => {
     };
 
     return (
-        <section class="w-full flex justify-center relative overflow-hidden py-24 md:py-[130px] px-4 md:px-[100px]">
-            {/* Background Blur Gradients */}
+        // Add a base background/text color class to the section
+        <section class="w-full flex justify-center relative overflow-hidden py-24 md:py-[130px] px-4 md:px-[100px] transition-colors bg-primary-bg text-default">
+            {/* Background Blur Gradients - Keeping these fixed as they are decorative/accent colors */}
             <div
                 class="absolute top-[-112px] left-[-260px] w-[956px] h-[643px] rounded-full blur-[200px]"
                 style={{
@@ -166,9 +146,9 @@ const HeroSection: Component = () => {
             <div class="relative w-full max-w-[1100px] flex flex-col items-center text-center gap-14">
                 {/* Text Block */}
                 <div class="flex flex-col items-center gap-10 max-w-4xl">
-                    <h1 class="text-4xl sm:text-6xl md:text-[58px] font-bold text-[#0e0d13] leading-tight md:leading-[74px]">
+                    {/* Replaced hardcoded text-[#0e0d13] with text-default */}
+                    <h1 class="text-4xl sm:text-6xl md:text-[58px] font-bold text-default leading-tight md:leading-[74px]">
                         Trusted
-                        {/* <span class="inline-block mx-2 px-4 bg-gradient-to-r from-[#2196f3] to-[#1a7aa0] text-white rounded-lg"> */}
                         <span
                             class={`inline-block mx-2 px-4 bg-gradient-to-r from-[#2196f3] to-[#1a7aa0] text-white rounded-lg ${animationClass()}`}
                         >
@@ -177,7 +157,8 @@ const HeroSection: Component = () => {
                         for all your
                         <span class="block">Home Needs and services</span>
                     </h1>
-                    <p class="text-lg md:text-xl font-normal text-[#4b5565] leading-8 max-w-3xl">
+                    {/* Replaced hardcoded text-[#4b5565] with text-muted */}
+                    <p class="text-lg md:text-xl font-normal text-muted leading-8 max-w-3xl">
                         We make your life easier and stress-free by connecting
                         you with verified professionals for your plumbing,
                         electrical, carpentry and more.
@@ -185,11 +166,14 @@ const HeroSection: Component = () => {
                 </div>
 
                 {/* Search Bar */}
-                <div class="w-full max-w-4xl p-4 bg-white rounded-xl shadow-lg border border-[#e3e8ef] flex flex-col md:flex-row items-center gap-4 md:gap-6">
-                    <div class="flex-1 w-full p-4 bg-[#f2f2f2] rounded-xl border border-[#e3e8ef] flex justify-between items-center">
+                {/* Replaced bg-white and border-[#e3e8ef] with theme aliases */}
+                <div class="w-full max-w-4xl p-4 bg-card-bg rounded-xl shadow-lg border border-secondary-bg flex flex-col md:flex-row items-center gap-4 md:gap-6">
+                    {/* Replaced bg-[#f2f2f2] and border-[#e3e8ef] with theme aliases */}
+                    <div class="flex-1 w-full p-4 bg-secondary-bg rounded-xl border border-secondary-bg flex justify-between items-center">
                         <div class="flex items-center gap-3 w-[50%]">
+                            {/* Replaced text-[#4b5565] with text-muted */}
                             <svg
-                                class="w-5 h-5 text-[#4b5565]"
+                                class="w-5 h-5 text-muted"
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -202,21 +186,24 @@ const HeroSection: Component = () => {
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                 />
                             </svg>
+                            {/* Ensured input text also uses theme-aware classes */}
                             <input
                                 type="text"
                                 placeholder="What services do you need?"
-                                class="bg-transparent text-base font-medium text-[#4b5565] focus:outline-none w-full"
+                                class="bg-transparent text-base font-medium text-default focus:outline-none w-full"
                             />
                         </div>
                         <div class="relative flex items-center gap-2">
+                            {/* Replaced text-[#4b5565] with text-muted */}
                             <span
-                                class="text-base font-medium text-[#4b5565] cursor-pointer"
+                                class="text-base font-medium text-muted cursor-pointer"
                                 onClick={toggleDropdown}
                             >
                                 {selectedCountry()}
                             </span>
+                            {/* Replaced text-[#4b5565] with text-muted */}
                             <svg
-                                class="w-6 h-6 text-[#4b5565] transition-transform duration-300"
+                                class="w-6 h-6 text-muted transition-transform duration-300"
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -235,11 +222,12 @@ const HeroSection: Component = () => {
                                 />
                             </svg>
                             {isOpen() && (
-                                <div class="absolute top-full left-0 right-0 mt-1 w-[120px] bg-white border border-[#e3e8ef] rounded-b-lg shadow-lg z-10">
+                                <div class="absolute top-full left-0 right-0 mt-1 w-[120px] bg-card-bg border border-secondary-bg rounded-b-lg shadow-lg z-10">
                                     <For each={countries}>
                                         {(country) => (
                                             <div
-                                                class="px-4 py-2 text-base font-medium text-[#4b5565] cursor-pointer hover:bg-[#f2f2f2]"
+                                                // Dropdown item text and hover background updated
+                                                class="px-4 py-2 text-base font-medium text-default cursor-pointer hover:bg-secondary-bg"
                                                 onClick={() =>
                                                     selectCountry(country.name)
                                                 }
@@ -252,37 +240,38 @@ const HeroSection: Component = () => {
                             )}
                         </div>
                     </div>
+                    {/* The search button uses a fixed accent color, which is usually fine for primary CTAs */}
                     <button class="w-full md:w-auto px-6 py-3 bg-[#1376a1] text-lg font-semibold text-white rounded-lg hover:bg-[#106283] transition cursor-pointer">
                         Search
                     </button>
                 </div>
             </div>
 
-            {/* Deco Elements (Absolute Positioning) - Mobile hidden */}
+            {/* Deco Elements (Absolute Positioning) - Images must be imported */}
             <div class="hidden lg:block">
-                <div class="absolute p-4 left-[151px] top-[247px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4">
+                {/* Note: In a real app, you must ensure p1, p2, p3 are valid image URLs */}
+                <div class="absolute p-4 left-[151px] top-[247px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4 bg-card-bg shadow-lg">
                     <img
                         class="w-12 h-12 rounded-full"
                         src={p1}
                         alt="Artisan Profile"
                     />
                 </div>
-                <div class="absolute p-4 left-[1358px] top-[132px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4">
+                <div class="absolute p-4 left-[1358px] top-[132px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4 bg-card-bg shadow-lg">
                     <img
                         class="w-12 h-12 rounded-full"
                         src={p1}
                         alt="Artisan Profile"
                     />
                 </div>
-                <div class="absolute p-4 left-[60px] top-[477px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4">
+                <div class="absolute p-4 left-[60px] top-[477px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4 bg-card-bg shadow-lg">
                     <img
                         class="w-12 h-12 rounded-full"
                         src={p2}
                         alt="Artisan Profile"
                     />
                 </div>
-                {/* The last deco element is yellow/orange themed and has no badge in the HTML, reproducing the unique style */}
-                <div class="absolute p-4 left-[1458px] top-[341px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4">
+                <div class="absolute p-4 left-[1458px] top-[341px] rounded-tl-2xl rounded-tr-xl rounded-br-2xl rounded-bl-xl flex justify-start items-center gap-4 bg-card-bg shadow-lg">
                     <img
                         class="w-12 h-12 rounded-full"
                         src={p3}
@@ -476,7 +465,7 @@ const ServicesCategory: Component = () => {
 
     return (
         // <section class="w-full flex justify-center py-20 px-4 md:px-[100px] bg-white">
-        <section class="w-full flex justify-center py-2 px-4 md:px-[10px] bg-white">
+        <section class="w-full flex justify-center py-2 px-4 md:px-[10px]">
             <div class="w-full flex flex-col items-center gap-16">
                 {/* Heading Block */}
                 <div class="flex flex-col items-center gap-3 text-center max-w-4xl">

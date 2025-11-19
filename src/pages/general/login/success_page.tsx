@@ -34,7 +34,7 @@ export const SuccessPage: Component<{
     };
 
     return (
-        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans bg-[#FCFCFD]">
+        <div class="bg-light-bg flex justify-center items-center min-h-screen m-0 font-sans bg-[#FCFCFD]  dark:bg-gray-900">
             <div class="bg-white rounded-xl shadow-lg shadow-card-shadow p-10 w-full max-w-md text-center">
                 {/* Animated Checkmark Icon */}
                 <div class="flex justify-center mb-6">

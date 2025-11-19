@@ -122,7 +122,7 @@ export const Header: Component = () => {
                             Login
                         </a>
                         <a
-                            class="px-4 py-3 bg-[#1376a1] text-base font-semibold text-white rounded-lg hover:bg-[#106283] transition"
+                            class="px-4 py-3 bg-[#1376a1] text-base font-semibold  rounded-lg hover:bg-[#106283] transition"
                             href="/login"
                         >
                             Sign Up
@@ -133,7 +133,6 @@ export const Header: Component = () => {
                     {/* On mobile, we hide the desktop actions and show the hamburger menu button */}
                     <div class="flex lg:hidden items-center gap-4">
                         {/* We hide the Login/Sign Up buttons on mobile to only show Logo and Hamburger */}
-                        {/* If you wish to keep the buttons on mobile next to the menu, move them here */}
                         <MenuIcon open={isMenuOpen()} />
                     </div>
                 </div>
@@ -166,7 +165,7 @@ export const Header: Component = () => {
                             Login
                         </button>
                         <button
-                            class="w-full px-4 py-3 bg-[#1376a1] text-base font-semibold text-white rounded-lg hover:bg-[#106283] transition"
+                            class="w-full px-4 py-3 bg-[#1376a1] text-base font-semibold  rounded-lg hover:bg-[#106283] transition"
                             onClick={() => toggleMenu('/login')}
                         >
                             Sign Up
