@@ -42,7 +42,10 @@ export const ArtisansVerificationNTrust: Component<{
         );
         setIsCodeSent(true);
         // Simulate code being sent
-        setTimeout(() => console.log('Code sent successfully!'), 500);
+        setTimeout(
+            () => console.log('Code sent successfully!', props.loginStore),
+            500
+        );
     };
 
     // Final submission handler
@@ -71,7 +74,7 @@ export const ArtisansVerificationNTrust: Component<{
     const progressWidth = `${(currentStep / totalSteps) * 100}%`;
 
     const handleSubmit = () => {
-        console.log(props.loginStore, 'props.loginStore');
+        console.table(props.loginStore);
         alert('Form submitted!');
     };
 
@@ -92,7 +95,6 @@ export const ArtisansVerificationNTrust: Component<{
             'phoneNumber',
             value // Only digits
         );
-        console.log(props.loginStore.phoneNumber, 'phoneNumberphoneNumber');
     };
 
     const getProfileImageUrl = () => {
@@ -375,11 +377,6 @@ export const ArtisansVerificationNTrust: Component<{
                                                             ''
                                                         )
                                                     );
-                                                    console.log(
-                                                        props.loginStore
-                                                            .phoneNumber,
-                                                        'props.loginStore.phoneNumber'
-                                                    );
                                                 }}
                                                 disabled={isCodeSent()}
                                                 style="width:100%; border: none; background: #FCFCFD; color: #1E1E1E; font-size: 14px;  font-weight: 400; line-height: 10px; outline: none;"
@@ -450,7 +447,8 @@ export const ArtisansVerificationNTrust: Component<{
                                                 )
                                             }
                                             maxLength={6}
-                                            style="width: 100%; border: none; background: none; color: #1E1E1E; font-size: 14px;  font-weight: 400; line-height: 22.40px; outline: none;"
+                                            class="w-full text-gray-900 text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 bg-transparent"
+                                            // style="width: 100%; border: none; background: none; color: #1E1E1E; font-size: 14px;  font-weight: 400; line-height: 22.40px; outline: none;"
                                         />
                                     </div>
                                 </div>

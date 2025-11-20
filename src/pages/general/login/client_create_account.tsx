@@ -73,16 +73,15 @@ const InputField = ({
     };
 
     return (
-        // <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300">
-        <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300 dark:border-gray-700">
+        // <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300 dark:border-gray-700">
+        <div class="self-stretch flex items-center h-11 px-3 rounded-lg border border-slate-300">
             <input
                 type={inputType()}
                 name={label}
                 value={value}
                 onInput={(e) => onChange(e.target.value, key)}
                 placeholder={placeholder}
-                // class="w-full text-gray-900 text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 bg-transparent"
-                class="w-full text-gray-900 dark:text-black text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 bg-transparent"
+                class="w-full text-gray-900 text-sm font-normal leading-snug focus:outline-none placeholder-gray-500 bg-transparent"
             />
             {isPassword && <VisibilityIcon onClick={toggleShowPassword} />}
         </div>

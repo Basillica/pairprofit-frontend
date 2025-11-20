@@ -226,8 +226,7 @@ const HeroSection: Component = () => {
                                     <For each={countries}>
                                         {(country) => (
                                             <div
-                                                // Dropdown item text and hover background updated
-                                                class="px-4 py-2 text-base font-medium text-default cursor-pointer hover:bg-secondary-bg"
+                                                class="px-4 py-2 text-base font-medium text-default cursor-pointer hover:bg-secondary-bg bg-white"
                                                 onClick={() =>
                                                     selectCountry(country.name)
                                                 }
